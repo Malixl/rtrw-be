@@ -9,7 +9,7 @@ use Exception;
 
 class UserService
 {
-    public function getAll($request)
+    public function getAll()
     {
         return User::with('roles')->latest()->get();
     }

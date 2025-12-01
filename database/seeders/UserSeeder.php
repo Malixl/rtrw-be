@@ -22,8 +22,14 @@ class UserSeeder extends Seeder
         $permissions = [
             'manajemen_wilayah',
             'manajemen_polaruang',
+            'manajemen_struktur_ruang',
             'manajemen_klasifikasi',
             'manajemen_rtrw',
+            'manajemen_periode',
+            'manajemen_ketentuan_khusus',
+            'manajemen_indikasi_program',
+            'manajemen_pkkprl',
+            'manajemen_berita',
             'view_map',
         ];
 
