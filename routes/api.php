@@ -7,11 +7,12 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\IndikasiProgram\IndikasiProgramController;
 use App\Http\Controllers\KetentuanKhusus\KetentuanKhususController;
 use App\Http\Controllers\Pkkprl\PkkprlController;
-use App\Http\Controllers\Klasifikasi\klasifikasiController;
+use App\Http\Controllers\Klasifikasi\KlasifikasiController;
 use App\Http\Controllers\Periode\PeriodeController;
 use App\Http\Controllers\Polaruang\PolaruangController;
 use App\Http\Controllers\Rtrw\RtrwController;
 use App\Http\Controllers\StrukturRuang\StrukturRuangController;
+use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 $registerPublicRoutes = function (?string $nameSuffix = null) {
@@ -33,8 +34,8 @@ $registerPublicRoutes = function (?string $nameSuffix = null) {
     Route::get('/periode', [PeriodeController::class, 'index']);
     Route::get('/periode/{id}', [PeriodeController::class, 'show']);
 
-    Route::get('/klasifikasi', [klasifikasiController::class, 'index']);
-    Route::get('/klasifikasi/{id}', [klasifikasiController::class, 'show']);
+    Route::get('/klasifikasi', [KlasifikasiController::class, 'index']);
+    Route::get('/klasifikasi/{id}', [KlasifikasiController::class, 'show']);
 
     Route::get('/polaruang', [PolaruangController::class, 'index']);
     Route::get('/polaruang/{id}', [PolaruangController::class, 'show']);
@@ -78,10 +79,10 @@ $registerAdminRoutes = function () {
     Route::delete('/periode/multi-delete', [PeriodeController::class, 'multiDestroy']);
     Route::delete('/periode/{id}', [PeriodeController::class, 'destroy']);
 
-    Route::post('/klasifikasi', [klasifikasiController::class, 'store']);
-    Route::put('/klasifikasi/{id}', [klasifikasiController::class, 'update']);
-    Route::delete('/klasifikasi/multi-delete', [klasifikasiController::class, 'multiDestroy']);
-    Route::delete('/klasifikasi/{id}', [klasifikasiController::class, 'destroy']);
+    Route::post('/klasifikasi', [KlasifikasiController::class, 'store']);
+    Route::put('/klasifikasi/{id}', [KlasifikasiController::class, 'update']);
+    Route::delete('/klasifikasi/multi-delete', [KlasifikasiController::class, 'multiDestroy']);
+    Route::delete('/klasifikasi/{id}', [KlasifikasiController::class, 'destroy']);
 
     Route::post('/batas_administrasi', [BatasAdministrasiController::class, 'store']);
     Route::put('/batas_administrasi/{id}', [BatasAdministrasiController::class, 'update']);
@@ -122,6 +123,11 @@ $registerAdminRoutes = function () {
     Route::post('/berita/{id}', [BeritaController::class, 'update']);
     Route::delete('/berita/multi-delete', [BeritaController::class, 'multiDestroy']);
     Route::delete('/berita/{id}', [BeritaController::class, 'destroy']);
+
+    // User Management (Admin Only)
+    Route::prefix('admin')->group(function () {
+        Route::apiResource('users', UserController::class);
+    });
 };
 
 $registerPublicRoutes();
