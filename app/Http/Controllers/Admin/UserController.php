@@ -18,10 +18,10 @@ class UserController extends Controller
         $this->userService = $userService;
     }
 
-    public function index(Request $request)
+    public function index()
     {
         try {
-            $users = $this->userService->getAll($request);
+            $users = $this->userService->getAll();
 
             return $this->successResponseWithData($users, 'Data user berhasil diambil');
         } catch (\Exception $e) {
@@ -50,7 +50,7 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'name' => 'required',
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$id,
             'role' => 'required|in:admin,opd',
         ]);

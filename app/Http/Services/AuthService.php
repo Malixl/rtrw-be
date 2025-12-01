@@ -2,7 +2,6 @@
 
 namespace App\Http\Services;
 
-use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,9 +17,7 @@ class AuthService
             throw new Exception('Email atau password salah');
         }
 
-        $user = User::where('email', $request->email)
-            ->orWhere('name', $request->email)
-            ->firstOrFail();
+        $user = Auth::user();
 
         $token = $user->createToken('auth_token')->plainTextToken;
 

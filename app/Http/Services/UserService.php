@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    public function getAll($request)
+    public function getAll()
     {
         return User::with('roles')->latest()->get();
     }
