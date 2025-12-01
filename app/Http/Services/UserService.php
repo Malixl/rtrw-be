@@ -63,6 +63,15 @@ class UserService
     public function delete($id)
     {
         $user = User::findOrFail($id);
+
+        // Prevent deleting the last admin user
+        if ($user->hasRole('admin')) {
+            $adminCount = User::role('admin')->count();
+            if ($adminCount <= 1) {
+                throw new Exception('Tidak dapat menghapus admin terakhir');
+            }
+        }
+
         $user->delete();
         return true;
     }

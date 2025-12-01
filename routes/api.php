@@ -125,9 +125,7 @@ $registerAdminRoutes = function () {
     Route::delete('/berita/{id}', [BeritaController::class, 'destroy']);
 
     // User Management (Admin Only)
-    Route::prefix('admin')->group(function () {
-        Route::apiResource('users', UserController::class);
-    });
+    Route::apiResource('admin/users', UserController::class);
 };
 
 $registerPublicRoutes();
