@@ -19,7 +19,7 @@ class RtrwService
     public function getAll($request)
     {
         $per_page = $request->per_page ?? 10;
-        $data = $this->model->orderBy('created_at');
+        $data = $this->model->with('periode')->orderBy('created_at');
 
         if ($search = $request->query('search')) {
             $data->where('nama', 'like', '%' . $search . '%');

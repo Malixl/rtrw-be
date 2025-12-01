@@ -21,7 +21,7 @@ class KetentuanKhususRequest extends FormRequest
      */
     public function rules(): array
     {
-        $docRule = $this->isMethod('POST') ? 'required' : 'nullable';
+        $docRule = $this->route('id') ? 'nullable' : 'required';
 
         return [
             'nama' => 'required|string',

@@ -124,7 +124,14 @@ class KetentuanKhususController extends Controller
     public function multiDestroy(Request $request)
     {
         try {
-            $this->ketentuanKhususService->multiDestroy($request->ids);
+            $ids = $request->input('ids') ?? $request->query('ids');
+
+            // Jika ids adalah array, convert ke string comma-separated
+            if (is_array($ids)) {
+                $ids = implode(',', $ids);
+            }
+
+            $this->ketentuanKhususService->multiDestroy($ids);
 
             return $this->successResponse(
                 'Berhasil menghapus data ketentuan khusus',

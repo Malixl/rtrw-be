@@ -124,10 +124,17 @@ class StrukturRuangController extends Controller
     public function multiDestroy(Request $request)
     {
         try {
-            $this->strukturRuangService->multiDestroy($request->ids);
+            $ids = $request->input('ids') ?? $request->query('ids');
+
+            // Jika ids adalah array, convert ke string comma-separated
+            if (is_array($ids)) {
+                $ids = implode(',', $ids);
+            }
+
+            $this->strukturRuangService->multiDestroy($ids);
 
             return $this->successResponse(
-                'Berhasil menghapus data polaruang',
+                'Berhasil menghapus data struktur ruang',
                 Response::HTTP_OK
             );
         } catch (Exception $e) {

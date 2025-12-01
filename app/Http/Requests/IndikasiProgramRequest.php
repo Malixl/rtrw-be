@@ -21,13 +21,20 @@ class IndikasiProgramRequest extends FormRequest
      */
     public function rules(): array
     {
-        $docRule = $this->isMethod('POST') ? 'required' : 'nullable';
-
-        return [
+        $rules = [
             'nama' => 'required|string|max:255',
-            'file_dokumen' => "$docRule|file|mimes:pdf",
             'klasifikasi_id' => 'required',
         ];
+
+        // Validasi file hanya jika ada file yang diupload atau ini adalah request create
+        if ($this->hasFile('file_dokumen')) {
+            $rules['file_dokumen'] = 'required|file|mimes:pdf';
+        } elseif (!$this->route('id')) {
+            // Jika create (tidak ada ID), file wajib
+            $rules['file_dokumen'] = 'required|file|mimes:pdf';
+        }
+
+        return $rules;
     }
 
     public function messages(): array

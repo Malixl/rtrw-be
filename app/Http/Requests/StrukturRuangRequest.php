@@ -13,19 +13,25 @@ class StrukturRuangRequest extends FormRequest
 
     public function rules(): array
     {
-        $docRule = $this->isMethod('POST') ? 'required' : 'nullable';
-
-        return [
+        $rules = [
             'nama'           => 'required|string',
             'deskripsi'      => 'nullable|string',
-            'geojson_file' => "$docRule|file|extensions:geojson",
-
             'klasifikasi_id' => 'required|integer',
             'tipe_geometri'  => 'required|in:polyline,point',
             'icon_titik'     => 'nullable|string',
             'tipe_garis'     => 'nullable|string',
             'warna'          => 'required|string',
         ];
+
+        // Validasi file hanya jika ada file yang diupload atau ini adalah request create
+        if ($this->hasFile('geojson_file')) {
+            $rules['geojson_file'] = 'required|file|extensions:geojson';
+        } elseif (!$this->route('id')) {
+            // Jika create (tidak ada ID), file wajib
+            $rules['geojson_file'] = 'required|file|extensions:geojson';
+        }
+
+        return $rules;
     }
 
     public function messages(): array

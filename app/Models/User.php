@@ -12,7 +12,7 @@ use Spatie\Permission\Traits\HasRoles;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-        use HasApiTokens, HasFactory, Notifiable, HasRoles, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -46,5 +46,21 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->hasRole('admin');
+    }
+
+    /**
+     * Check if user is OPD
+     */
+    public function isOPD(): bool
+    {
+        return $this->hasRole('opd');
     }
 }

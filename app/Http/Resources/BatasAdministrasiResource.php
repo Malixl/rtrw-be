@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
+
+class BatasAdministrasiResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
+     */
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'nama' => $this->nama,
+            'deskripsi' => $this->deskripsi,
+            'warna' => $this->warna,
+            // Menggunakan helper url() manual untuk menghindari false error di editor
+            'geojson_file' => $this->geojson_file ? url('storage/' . $this->geojson_file) : null,
+            'created_at' => $this->created_at,
+            'updated_at' => $this->updated_at,
+        ];
+    }
+}

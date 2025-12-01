@@ -14,6 +14,27 @@ class AuthService
     protected $model;
     protected $layananMandiriService;
 
+    protected function resolveRole(User $user): string
+    {
+        return $user->getRoleNames()->first() ?? 'admin';
+    }
+
+    protected function resolvePermissions(User $user): array
+    {
+        return $user->getAllPermissions()->pluck('name')->toArray();
+    }
+
+    protected function formatUserPayload(User $user): array
+    {
+        return [
+            'id' => $user->id,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $this->resolveRole($user),
+            'permissions' => $this->resolvePermissions($user),
+        ];
+    }
+
     public function login($request)
     {
         DB::beginTransaction();
@@ -34,9 +55,11 @@ class AuthService
             $user = User::where('name', $request->email)->orWhere('email', $request->email)->firstOrFail();
 
             $token = $user->createToken('auth_token')->plainTextToken;
+
             $data = [
-                'token_type' => 'Bearer',
                 'token' => $token,
+                'token_type' => 'Bearer',
+                'user' => $this->formatUserPayload($user),
             ];
 
             DB::commit();
@@ -50,22 +73,9 @@ class AuthService
     public function getUser($request)
     {
         try {
-            
-            if ($request->user()->roles->first()->name == 'kasir' || $request->user()->roles->first()->name == 'admin') {
-                $responseData = [
-                    'id' => $request->user()->id,
-                    'name' => $request->user()->name,
-                    'email' => $request->user()->email,
-                    'role' => [
-                        'id' => $request->user()->roles->first()->id,
-                        'name' => $request->user()->roles->first()->name,
-                        'permissions' => $request->user()->roles->first()->permissions->pluck('name')
-                    ],
-                    'permissions' => $request->user()->permissions->pluck('name') ?? '-'
-                ];
-            }
+            $user = $request->user();
 
-            return $responseData;
+            return $this->formatUserPayload($user);
         } catch (Exception $e) {
             throw $e;
         }

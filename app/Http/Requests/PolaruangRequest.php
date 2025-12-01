@@ -15,21 +15,28 @@ class PolaruangRequest extends FormRequest
     }
 
     /**
- * Get the validation rules that apply to the request.
+     * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        $docRule = $this->isMethod('POST') ? 'required' : 'nullable';
-
-        return [
+        $rules = [
             'nama' => 'required|string',
-            'deskripsi' => 'string',
-            'geojson_file' => "$docRule|file|extensions:geojson",
+            'deskripsi' => 'nullable|string',
             'klasifikasi_id' => 'required',
             'warna' => 'required|string',
         ];
+
+        // Validasi file hanya jika ada file yang diupload atau ini adalah request create
+        if ($this->hasFile('geojson_file')) {
+            $rules['geojson_file'] = 'required|file|extensions:geojson';
+        } elseif (!$this->route('id')) {
+            // Jika create (tidak ada ID), file wajib
+            $rules['geojson_file'] = 'required|file|extensions:geojson';
+        }
+
+        return $rules;
     }
 
     public function messages(): array

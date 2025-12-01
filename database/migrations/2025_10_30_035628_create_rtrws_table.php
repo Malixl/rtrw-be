@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('rtrw', function (Blueprint $table) {
-            $table->id()->primary();
+            $table->id();
             $table->string('nama');
             $table->text('deskripsi')->nullable();
             $table->foreignId('periode_id')->constrained('periode')->onDelete('cascade');
