@@ -3,50 +3,54 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Role
-        $role1 = Role::findOrCreate('admin');
+        // 1. Create Roles
+        $adminRole = Role::findOrCreate('admin', 'web');
+        $opdRole = Role::findOrCreate('opd', 'web');
 
-        // Permissions
-        $permissions_admin = [
+        // 2. Create Permissions (Example)
+        $permissions = [
+            'manajemen_wilayah',
             'manajemen_polaruang',
-            'manajemen_struktur_ruang',
             'manajemen_klasifikasi',
             'manajemen_rtrw',
-            'manajemen_periode',
-            'manajemen_ketentuan_khusus',
-            'manajemen_indikasi_program',
-            'manajemen_pkkprl',
-            'manajemen_berita',
+            'view_map',
         ];
 
-        foreach ($permissions_admin as $permission) {
-            Permission::findOrCreate($permission, 'web');
+        foreach ($permissions as $perm) {
+            Permission::findOrCreate($perm, 'web');
         }
 
-        $role1->givePermissionTo($permissions_admin);
+        // 3. Assign Permissions
+        $adminRole->givePermissionTo(Permission::all());
+        $opdRole->givePermissionTo(['view_map']);
 
+        // 4. Create Users
         // Admin
-        $admin = User::create([
-            'name' => 'admin',
-            'email' => 'admin@app.id',
-            'password' => bcrypt('password'),
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@rtrw.go.id'],
+            [
+                'name' => 'Super Admin',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $admin->assignRole($adminRole);
 
-        $admin->assignRole('admin');
-
-
-       
+        // OPD
+        $opd = User::firstOrCreate(
+            ['email' => 'pupr@rtrw.go.id'],
+            [
+                'name' => 'Dinas PUPR',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $opd->assignRole($opdRole);
     }
 }

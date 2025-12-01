@@ -1,14 +1,15 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\BatasAdministrasi\BatasAdministrasiController;
 use App\Http\Controllers\Berita\BeritaController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\IndikasiProgram\IndikasiProgramController;
 use App\Http\Controllers\KetentuanKhusus\KetentuanKhususController;
-use App\Http\Controllers\Pkkprl\PkkprlController;
 use App\Http\Controllers\Klasifikasi\klasifikasiController;
 use App\Http\Controllers\Periode\PeriodeController;
+use App\Http\Controllers\Pkkprl\PkkprlController;
 use App\Http\Controllers\Polaruang\PolaruangController;
 use App\Http\Controllers\Rtrw\RtrwController;
 use App\Http\Controllers\StrukturRuang\StrukturRuangController;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Route;
 
 $registerPublicRoutes = function (?string $nameSuffix = null) {
     Route::prefix('auth')->controller(AuthController::class)->group(function () use ($nameSuffix) {
-        $routeName = $nameSuffix ? 'login.' . $nameSuffix : 'login';
+        $routeName = $nameSuffix ? 'login.'.$nameSuffix : 'login';
         Route::post('login', 'login')->name($routeName);
     });
 
@@ -68,6 +69,11 @@ $registerAuthenticatedRoutes = function () {
 };
 
 $registerAdminRoutes = function () {
+    // User Management (Admin Only)
+    Route::prefix('admin')->group(function () {
+        Route::apiResource('users', UserController::class);
+    });
+
     Route::post('/rtrw', [RtrwController::class, 'store']);
     Route::put('/rtrw/{id}', [RtrwController::class, 'update']);
     Route::delete('/rtrw/multi-delete', [RtrwController::class, 'multiDestroy']);
