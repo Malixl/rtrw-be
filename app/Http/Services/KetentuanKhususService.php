@@ -2,17 +2,22 @@
 
 namespace App\Http\Services;
 
-use App\Models\Wilayah;
+use App\Http\Traits\FileUpload;
+use App\Models\KetentuanKhusus;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
-class WilayahService
+class KetentuanKhususService
 {
 
+    use FileUpload;
+
+    protected $path = 'ketentuan_khusus_file';
 
     protected $model;
 
-    public function __construct(Wilayah $model)
+    public function __construct(KetentuanKhusus $model)
     {
         $this->model = $model;
     }
@@ -24,6 +29,10 @@ class WilayahService
 
         if ($search = $request->query('search')) {
             $data->where('nama', 'like', '%' . $search . '%');
+        }
+
+        if ($klasifikasi_id = $request->query('klasifikasi_id')) {
+        $data->where('klasifikasi_id', $klasifikasi_id);
         }
 
         if ($request->page) {
@@ -41,6 +50,12 @@ class WilayahService
 
         try {
             $validatedData = $request->validated();
+
+            if ($request->hasFile('geojson_file')) {
+                $extension = ['geojson'];
+                $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
+                $validatedData['geojson_file'] = $filePath;
+            }
 
             $data = $this->model->create($validatedData);
 
@@ -64,13 +79,26 @@ class WilayahService
         try {
             $validatedData = $request->validated();
 
-            $data = $this->model->findOrFail($id)->update($validatedData);
+            $data = $this->model->findOrFail($id);
+
+            if ($request->hasFile('geojson_file')) {
+                $extension = ['geojson'];
+
+                $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
+
+                if ($data->geojson_file) {
+                    $this->unlinkFile($data->geojson_file);
+                }
+
+                $validatedData['geojson_file'] = $filePath;
+            }
+
+            $data->update($validatedData);
 
             DB::commit();
 
-            return $data;
+            return $data; // tetap object model
         } catch (Exception $e) {
-
             DB::rollBack();
             throw $e;
         }
@@ -109,5 +137,30 @@ class WilayahService
             DB::rollBack();
             throw $e;
         }
+    }
+
+    public function showGeoJson($id)
+    {
+        $ketentuan_khusus = $this->model->findOrFail($id);
+
+        // Cek apakah ada file
+        if (!empty($ketentuan_khusus->geojson_file)) {
+
+            $filename = $ketentuan_khusus->geojson_file;
+
+            if (!Storage::disk('public')->exists($filename)) {
+                return response()->json(['error' => 'File not found on disk'], 404);
+            }
+
+            // ambil full path
+            $path = Storage::disk('public')->path($filename);
+
+            return response()->file($path, [
+                'Content-Type' => 'application/geo+json',
+                'Access-Control-Allow-Origin' => '*',
+            ]);
+        }
+
+        return response()->json(['error' => 'No GeoJSON file found for this entry'], 404);
     }
 }

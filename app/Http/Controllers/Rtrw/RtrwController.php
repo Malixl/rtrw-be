@@ -42,6 +42,24 @@ class RtrwController extends Controller
         }
     }
 
+    public function klasifikasiByRTRW($id)
+    {
+        try {
+            $data = $this->rtrwService->getKlasifikasiByRTRW($id);
+
+            return $this->successResponseWithData(
+                $data,
+                'Data klasifikasi dan pola ruang berhasil diambil',
+                Response::HTTP_OK
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse(
+                $e->getMessage(),
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+    }
+
     public function store(RtrwRequest $request)
     {
         try {

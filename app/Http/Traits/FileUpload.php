@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 
+use App\Helpers\ConvertImage\ConvertImage;
 use Illuminate\Support\Str;
 use Exception;
 use Illuminate\Support\Facades\Storage;
@@ -76,6 +77,39 @@ trait FileUpload
             throw new Exception('Error saat mengunggah dokumen: ' . $e->getMessage());
         }
     }
+
+    public function uploadPhotoAndConvertToWebP($file, string $folder = 'uploads', string $disk = 'public'): string
+    {
+        $filePath = $file->store($folder, $disk);
+        $extension = $file->getClientOriginalExtension();
+        $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
+        if (!in_array(strtolower($extension), $allowedExtensions)) {
+            throw new \Exception("File extension not allowed.");
+        }
+
+
+        if (strtolower($extension) !== 'webp') {
+            $webpPath = storage_path("app/{$disk}/" . $folder . '/' . pathinfo($filePath, PATHINFO_FILENAME) . '.webp');
+            ConvertImage::convertImageToWebP(storage_path("app/{$disk}/" . $filePath), $webpPath);
+
+            Storage::disk($disk)->delete($filePath);
+
+            $filePath = "{$folder}/" . pathinfo($webpPath, PATHINFO_BASENAME);
+        }
+
+        return $filePath;
+    }
+
+     public function unlinkPhoto(?string $filePath, string $disk = 'public'): bool
+    {
+        if (empty($filePath)) {
+            return true;
+        }
+
+        return Storage::disk($disk)->delete($filePath);
+    }
+
+
 
     public function unlinkFile(?string $filePath, string $disk = 'public'): bool
     {

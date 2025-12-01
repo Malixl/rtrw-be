@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('rtrw', function (Blueprint $table) {
-            $table->id()->primary();
+        Schema::create('klasifikasi', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('rtrw_id')->constrained('rtrw')->onDelete('cascade');
             $table->string('nama');
-            $table->year('tahun_mulai');
-            $table->year('tahun_akhir');
-            $table->foreignId('wilayah_id')->constrained('wilayah')->onDelete('cascade');
             $table->text('deskripsi')->nullable();
-            $table->string('dokumen_file')->nullable();
+            $table->enum('tipe', ['struktur_ruang', 'pola_ruang', 'ketentuan_khusus', 'indikasi_program', 'pkkprl']);
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('rtrw');
+        Schema::dropIfExists('klasifikasi');
     }
 };

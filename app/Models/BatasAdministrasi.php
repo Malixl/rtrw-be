@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class BatasAdministrasi extends Model
+{
+    use HasFactory;
+
+    protected $table = 'batas_administrasi';
+
+    protected $fillable = [
+        'nama',
+        'deskripsi',
+        'geojson_file',
+        'warna', // Warna batas administrasi
+    ];
+}

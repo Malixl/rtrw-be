@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('polaruang', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->foreignId('klasifikasi_id')->constrained('klasifikasi')->onDelete('cascade');
-            $table->string('nama');
-            $table->text('deskripsi')->nullable();
-            $table->string('geojson_file');
+        Schema::create('berita', function (Blueprint $table) {
+            $table->id();
+            $table->string('judul');
+            $table->string('slug');
+            $table->text('konten');
+            $table->string('thumbnail')->default('default.png');
+            $table->enum('status', ['publikasi', 'draft'])->default('publikasi');
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('polaruang');
+        Schema::dropIfExists('berita');
     }
 };

@@ -2,17 +2,12 @@
 
 namespace App\Http\Services;
 
-use App\Http\Traits\FileUpload;
 use App\Models\Rtrw;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
 class RtrwService
 {
-
-    use FileUpload;
-
-    protected $path = 'rtrw_dokumen';
 
     protected $model;
 
@@ -24,7 +19,7 @@ class RtrwService
     public function getAll($request)
     {
         $per_page = $request->per_page ?? 10;
-        $data = $this->model->orderBy('created_at');
+        $data = $this->model->with('periode')->orderBy('created_at');
 
         if ($search = $request->query('search')) {
             $data->where('nama', 'like', '%' . $search . '%');
@@ -39,18 +34,51 @@ class RtrwService
         return $data;
     }
 
+    public function getKlasifikasiByRTRW($rtrwId)
+    {
+        $rtrw = $this->model->findOrFail($rtrwId);
+
+        $klasifikasi_pola_ruang = $rtrw->klasifikasis()
+            ->whereHas('polaRuang')   // hanya yg punya relasi polaRuang
+            ->with('polaRuang')       // load datanya
+            ->get();
+        $klasifikasi_struktur_ruang = $rtrw->klasifikasis()
+            ->whereHas('strukturRuang')   // hanya yg punya relasi strukturRuang
+            ->with('strukturRuang')
+            ->get();
+        $klasifikasi_ketentuan_khusus = $rtrw->klasifikasis()
+            ->whereHas('ketentuanKhusus')   // hanya yg punya relasi strukturRuang
+            ->with('ketentuanKhusus')
+            ->get();
+        $klasifikasi_indikasi_program = $rtrw->klasifikasis()
+            ->whereHas('indikasiProgram')   // hanya yg punya relasi strukturRuang
+            ->with('indikasiProgram')
+            ->get();
+        $klasifikasi_pkkprl = $rtrw->klasifikasis()
+            ->whereHas('pkkprl')   // hanya yg punya relasi strukturRuang
+            ->with('pkkprl')
+            ->get();
+
+        return [
+            'rtrw' => [
+                'id' => $rtrw->id,
+                'nama' => $rtrw->nama,
+                'deskripsi' => $rtrw->deskripsi,
+            ],
+            'klasifikasi_pola_ruang' => $klasifikasi_pola_ruang,
+            'klasifikasi_struktur_ruang' => $klasifikasi_struktur_ruang,
+            'klasifikasi_ketentuan_khusus' => $klasifikasi_ketentuan_khusus,
+            'klasifikasi_indikasi_program' => $klasifikasi_indikasi_program,
+            'klasifikasi_pkkprl' => $klasifikasi_pkkprl,
+        ];
+    }
+
     public function store($request)
     {
         DB::beginTransaction();
 
         try {
             $validatedData = $request->validated();
-
-            if ($request->hasFile('dokumen_file')) {
-                $extension = ['pdf'];
-                $filePath = $this->uploadDocument($request->file('dokumen_file'), $extension, $this->path);
-                $validatedData['dokumen_file'] = $filePath;
-            }
 
             $data = $this->model->create($validatedData);
 
@@ -75,12 +103,6 @@ class RtrwService
             $validatedData = $request->validated();
 
             $data = $this->model->findOrFail($id)->update($validatedData);
-
-            if ($request->hasFile('dokumen_file')) {
-                $extension = ['pdf'];
-                $validatedData['dokumen_file'] = $this->uploadDocument($request->file('dokumen_file'), $extension, $this->path);
-                $this->unlinkFile($data->konten);
-            }
 
             DB::commit();
 

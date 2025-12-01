@@ -30,6 +30,10 @@ class KlasifikasiService
             $data->where('rtrw_id', $rtrw_id);
         }
 
+        if ($tipe = $request->query('tipe')) {
+            $data->where('tipe', $tipe);
+        }
+
         if ($request->page) {
             $data = $data->paginate($per_page);
         } else {

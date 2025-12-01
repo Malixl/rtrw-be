@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class WilayahRequest extends FormRequest
+class KetentuanKhususRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,10 +21,15 @@ class WilayahRequest extends FormRequest
      */
     public function rules(): array
     {
+        $docRule = $this->route('id') ? 'nullable' : 'required';
+
         return [
             'nama' => 'required|string',
-            'tipe' => 'required|string',
-            'kode_wilayah' => 'string',
+            'deskripsi' => 'string',
+            'geojson_file' => "$docRule|file|extensions:geojson",
+            'warna' => 'required|string',
+
+            'klasifikasi_id' => 'required',
         ];
     }
 
@@ -33,9 +38,12 @@ class WilayahRequest extends FormRequest
         return [
             'nama.required' => 'Nama wajib diisi.',
             'nama.string' => 'Nama harus berupa teks.',
-            'tipe.required' => 'Tipe wajib diisi.',
-            'tipe.string' => 'Tipe harus berupa teks.',
-            'kode_wilayah.string' => 'Kode wilayah harus berupa teks.',
+            'warna.required' => 'warna wajib diisi.',
+            'warna.string' => 'warna harus berupa teks.',
+            'deskripsi.string' => 'Deskripsi harus berupa text.',
+            'klasifikasi_id' => 'Klasifikasi wajib diisi',
+            'geojson_file.file' => 'geojson_file harus berupa file.',
+            'geojson_file.mimes' => 'geojson_file harus berformat geojson.',
         ];
     }
 }

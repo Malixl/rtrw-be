@@ -17,16 +17,17 @@ class RtrwResources extends JsonResource
         return [
             'id' => $this->id,
             'nama' => $this->nama,
-            'tahun_mulai' => $this->tahun_mulai,
-            'tahun_akhir' => $this->tahun_akhir,
-            'wilayah' => [
-                'id' => $this->wilayah->id ?? null,
-                'nama' => $this->wilayah->nama ?? null,
-                'tipe' => $this->wilayah->tipe ?? null,
-                'kode_wilayah' => $this->wilayah->kode_wilayah ?? null,
-            ],
             'deskripsi' => $this->deskripsi,
-            'dokumen_file' => $this->dokumen_file,
+            'periode_id' => $this->periode_id,
+            'tahun_mulai' => $this->periode->tahun_mulai ?? null,
+            'tahun_akhir' => $this->periode->tahun_akhir ?? null,
+
+            'periode' => [
+                'id' => $this->periode->id ?? null,
+                'tahun_mulai' => $this->periode->tahun_mulai ?? null,
+                'tahun_akhir' => $this->periode->tahun_akhir ?? null,
+            ],
+
         ];
     }
 }

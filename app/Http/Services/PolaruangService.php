@@ -6,6 +6,7 @@ use App\Http\Traits\FileUpload;
 use App\Models\Polaruang;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class PolaruangService
 {
@@ -31,7 +32,7 @@ class PolaruangService
         }
 
         if ($klasifikasi_id = $request->query('klasifikasi_id')) {
-            $data->where('klasifikasi_id', $klasifikasi_id);
+        $data->where('klasifikasi_id', $klasifikasi_id);
         }
 
         if ($request->page) {
@@ -78,19 +79,26 @@ class PolaruangService
         try {
             $validatedData = $request->validated();
 
-            $data = $this->model->findOrFail($id)->update($validatedData);
+            $data = $this->model->findOrFail($id);
 
             if ($request->hasFile('geojson_file')) {
                 $extension = ['geojson'];
-                $validatedData['geojson_file'] = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
-                $this->unlinkFile($data->konten);
+
+                $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
+
+                if ($data->geojson_file) {
+                    $this->unlinkFile($data->geojson_file);
+                }
+
+                $validatedData['geojson_file'] = $filePath;
             }
+
+            $data->update($validatedData);
 
             DB::commit();
 
-            return $data;
+            return $data; // tetap object model
         } catch (Exception $e) {
-
             DB::rollBack();
             throw $e;
         }
@@ -129,5 +137,30 @@ class PolaruangService
             DB::rollBack();
             throw $e;
         }
+    }
+
+    public function showGeoJson($id)
+    {
+        $polaruang = $this->model->findOrFail($id);
+
+        // Cek apakah ada file
+        if (!empty($polaruang->geojson_file)) {
+
+            $filename = $polaruang->geojson_file;
+
+            if (!Storage::disk('public')->exists($filename)) {
+                return response()->json(['error' => 'File not found on disk'], 404);
+            }
+
+            // ambil full path
+            $path = Storage::disk('public')->path($filename);
+
+            return response()->file($path, [
+                'Content-Type' => 'application/geo+json',
+                'Access-Control-Allow-Origin' => '*',
+            ]);
+        }
+
+        return response()->json(['error' => 'No GeoJSON file found for this entry'], 404);
     }
 }

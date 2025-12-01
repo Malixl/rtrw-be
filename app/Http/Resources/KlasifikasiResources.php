@@ -19,18 +19,16 @@ class KlasifikasiResources extends JsonResource
             'rtrw' => [
                 'id' => $this->rtrw->id ?? null,
                 'nama' => $this->rtrw->nama ?? null,
-                'tahun_mulai' => $this->rtrw->tahun_mulai ?? null,
-                'tahun_akhir' => $this->rtrw->tahun_akhir ?? null,
-                'deskripsi' => $this->rtrw->deskripsi ?? null,
-                'wilayah' => [
-                    'id' => $this->rtrw->wilayah->id ?? null,
-                    'nama' => $this->rtrw->wilayah->nama ?? null,
-                    'tipe' => $this->rtrw->wilayah->tipe ?? null,
-                    'kode_wilayah' => $this->rtrw->wilayah->kode_wilayah ?? null,
+                'periode' => [
+                    'id' => $this->rtrw->periode->id ?? null,
+                    'tahun_mulai' => $this->rtrw->periode->tahun_mulai ?? null,
+                    'tahun_akhir' => $this->rtrw->periode->tahun_akhir ?? null,
                 ],
+              
             ],
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
+            'tipe' => $this->tipe,
             'created_at' => $this->created_at->format('d F Y'),
             'updated_at' => $this->updated_at->format('d F Y'),
         ];

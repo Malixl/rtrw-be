@@ -11,11 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('wilayah', function (Blueprint $table) {
-            $table->id()->primary();
+        Schema::create('ketentuan_khusus', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('klasifikasi_id')->constrained('klasifikasi')->onDelete('cascade');
             $table->string('nama');
-            $table->enum('tipe', ['provinsi', 'kabupaten', 'kota']);
-            $table->string('kode_wilayah', 10)->nullable();
+            $table->text('deskripsi')->nullable();
+            $table->string('geojson_file');
+            $table->string('warna');
             $table->timestamps();
         });
     }
@@ -25,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('wilayah');
+        Schema::dropIfExists('ketentuan_khusus');
     }
 };

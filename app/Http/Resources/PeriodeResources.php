@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class WilayahResources extends JsonResource
+class PeriodeResources extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,9 +16,8 @@ class WilayahResources extends JsonResource
     {
         return [
             'id' => $this->id,
-            'nama' => $this->nama,
-            'tipe' => $this->tipe,
-            'kode_wilayah' => $this->kode_wilayah,
+            'tahun_mulai' => $this->tahun_mulai,
+            'tahun_akhir' => $this->tahun_akhir,
         ];
     }
 }

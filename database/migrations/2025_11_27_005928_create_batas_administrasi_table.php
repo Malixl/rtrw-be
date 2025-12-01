@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('klasifikasi', function (Blueprint $table) {
-            $table->id()->primary();
-            $table->foreignId('rtrw_id')->constrained('rtrw')->onDelete('cascade');
+        Schema::create('batas_administrasi', function (Blueprint $table) {
+            $table->id();
             $table->string('nama');
             $table->text('deskripsi')->nullable();
+            $table->string('geojson_file');
             $table->timestamps();
         });
     }
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('klasifikasi');
+        Schema::dropIfExists('batas_administrasi');
     }
 };

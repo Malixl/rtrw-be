@@ -25,6 +25,7 @@ class KlasifikasiRequest extends FormRequest
             'nama' => 'required|string',
             'deskripsi' => 'string',
             'rtrw_id' => 'required',
+            'tipe' => 'required|in:pola_ruang,struktur_ruang,ketentuan_khusus,indikasi_program,pkkprl',
         ];
     }
 
@@ -35,6 +36,8 @@ class KlasifikasiRequest extends FormRequest
             'nama.string' => 'Nama harus berupa teks.',
             'deskripsi.string' => 'Deskripsi harus berupa teks.',
             'rtrw_id.required' => 'RTRW wajib diisi.',
+            'tipe.required' => 'Tipe klasifikasi wajib dipilih.',
+            'tipe.in'       => 'Tipe klasifikasi harus pola_ruang, struktur ruang, ketentuan khusus, indikasi program, atau pkkprl.',
         ];
     }
 }
