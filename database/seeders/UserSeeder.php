@@ -19,7 +19,9 @@ class UserSeeder extends Seeder
         $opdRole   = Role::findOrCreate('opd', 'web');
 
         // 2. Create Permissions
-        $permissions = [
+        // Admin Permissions (Full CRUD)
+        $adminPermissions = [
+            // Map Management
             'manajemen_wilayah',
             'manajemen_polaruang',
             'manajemen_struktur_ruang',
@@ -29,20 +31,39 @@ class UserSeeder extends Seeder
             'manajemen_ketentuan_khusus',
             'manajemen_indikasi_program',
             'manajemen_pkkprl',
+            'manajemen_batas_administrasi',
+
+            // Content Management
             'manajemen_berita',
+
+            // User Management
+            'manajemen_users',
+
+            // Dashboard Access
+            'access_dashboard',
+
+            // Map Access
             'view_map',
+            'crud_map',
         ];
 
-        foreach ($permissions as $perm) {
+        // OPD Permissions (Read Only)
+        $opdPermissions = [
+            'view_map',
+            'access_dashboard', // Read-only dashboard
+        ];
+
+        // Create all permissions
+        foreach ($adminPermissions as $perm) {
             Permission::findOrCreate($perm, 'web');
         }
 
-        // 3. Assign Permissions
-        $adminRole->givePermissionTo(Permission::all());
-        $opdRole->givePermissionTo(['view_map']);
+        // 3. Assign Permissions to Roles
+        $adminRole->syncPermissions(Permission::all());
+        $opdRole->syncPermissions($opdPermissions);
 
         // 4. Create Users
-        // Admin
+        // Super Admin
         $admin = User::firstOrCreate(
             ['email' => 'admin@rtrw.go.id'],
             [
@@ -50,16 +71,36 @@ class UserSeeder extends Seeder
                 'password' => bcrypt('password'),
             ]
         );
-        $admin->assignRole($adminRole);
+        $admin->syncRoles([$adminRole]);
 
-        // OPD
-        $opd = User::firstOrCreate(
+        // OPD User - Dinas PUPR
+        $opdPupr = User::firstOrCreate(
             ['email' => 'pupr@rtrw.go.id'],
             [
                 'name' => 'Dinas PUPR',
                 'password' => bcrypt('password'),
             ]
         );
-        $opd->assignRole($opdRole);
+        $opdPupr->syncRoles([$opdRole]);
+
+        // OPD User - Bappeda
+        $opdBappeda = User::firstOrCreate(
+            ['email' => 'bappeda@rtrw.go.id'],
+            [
+                'name' => 'Bappeda',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $opdBappeda->syncRoles([$opdRole]);
+
+        // OPD User - DLHK
+        $opdDlhk = User::firstOrCreate(
+            ['email' => 'dlhk@rtrw.go.id'],
+            [
+                'name' => 'Dinas LHK',
+                'password' => bcrypt('password'),
+            ]
+        );
+        $opdDlhk->syncRoles([$opdRole]);
     }
 }

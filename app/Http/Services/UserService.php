@@ -9,9 +9,20 @@ use Exception;
 
 class UserService
 {
-    public function getAll()
+    public function getAll($perPage = null)
     {
-        return User::with('roles')->latest()->get();
+        $query = User::with('roles')->latest();
+
+        if ($perPage) {
+            return $query->paginate($perPage);
+        }
+
+        return $query->get();
+    }
+
+    public function getById($id)
+    {
+        return User::with('roles')->findOrFail($id);
     }
 
     public function store($data)
@@ -39,7 +50,7 @@ class UserService
         DB::beginTransaction();
         try {
             $user = User::findOrFail($id);
-            
+
             $updateData = [
                 'name' => $data['name'],
                 'email' => $data['email'],
@@ -64,6 +75,13 @@ class UserService
     {
         $user = User::findOrFail($id);
 
+        // Prevent deleting yourself
+        /** @var int|null $currentUserId */
+        $currentUserId = auth()->id();
+        if ($currentUserId === $user->id) {
+            throw new Exception('Tidak dapat menghapus akun sendiri');
+        }
+
         // Prevent deleting the last admin user
         if ($user->hasRole('admin')) {
             $adminCount = User::role('admin')->count();
@@ -74,5 +92,35 @@ class UserService
 
         $user->delete();
         return true;
+    }
+
+    public function multiDelete(array $ids)
+    {
+        DB::beginTransaction();
+        try {
+            /** @var int|null $currentUserId */
+            $currentUserId = auth()->id();
+
+            // Check if trying to delete self
+            if (in_array($currentUserId, $ids)) {
+                throw new Exception('Tidak dapat menghapus akun sendiri');
+            }
+
+            // Check admin count
+            $adminsToDelete = User::role('admin')->whereIn('id', $ids)->count();
+            $totalAdmins = User::role('admin')->count();
+
+            if ($adminsToDelete >= $totalAdmins) {
+                throw new Exception('Tidak dapat menghapus semua admin');
+            }
+
+            User::whereIn('id', $ids)->delete();
+
+            DB::commit();
+            return true;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 }

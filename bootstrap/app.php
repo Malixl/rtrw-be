@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Middleware\CheckPermission;
+use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\forceJSONResponse;
 use App\Http\Middleware\TrackVisitor;
 use Illuminate\Auth\AuthenticationException;
@@ -32,6 +34,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
+            'check.role' => CheckRole::class,
+            'check.permission' => CheckPermission::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

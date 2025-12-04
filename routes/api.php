@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\RoleController;
 use App\Http\Controllers\BatasAdministrasi\BatasAdministrasiController;
 use App\Http\Controllers\Berita\BeritaController;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -15,15 +16,38 @@ use App\Http\Controllers\StrukturRuang\StrukturRuangController;
 use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
+/*
+|--------------------------------------------------------------------------
+| API Routes - RBAC Structure
+|--------------------------------------------------------------------------
+| A. PUBLIC ROUTES (Guest - No Token Required)
+|    - Login, Berita Landing, Guest Capabilities
+| B. AUTHENTICATED ROUTES (Admin + OPD - Token Required)
+|    - Get User, Logout, View Map Data, Dashboard (Admin only)
+| C. ADMIN ONLY ROUTES (Admin Only - Token + Role Check)
+|    - CRUD Operations, User Management
+|--------------------------------------------------------------------------
+*/
+
 $registerPublicRoutes = function (?string $nameSuffix = null) {
+    // Auth Routes
     Route::prefix('auth')->controller(AuthController::class)->group(function () use ($nameSuffix) {
         $routeName = $nameSuffix ? 'login.' . $nameSuffix : 'login';
         Route::post('login', 'login')->name($routeName);
     });
 
+    // Role Check (untuk guest capabilities)
+    Route::get('/role/guest', [RoleController::class, 'guestCapabilities']);
+
+    // Public Berita
     Route::get('/berita', [BeritaController::class, 'landing']);
     Route::get('/berita/{slug}', [BeritaController::class, 'detail']);
 
+    // Alias untuk landing berita (frontend compatibility)
+    Route::get('/landing/berita', [BeritaController::class, 'landing']);
+    Route::get('/landing/berita/{slug}', [BeritaController::class, 'detail']);
+
+    // Public Map Data (Read Only - untuk OPD dan preview)
     Route::get('/batas_administrasi', [BatasAdministrasiController::class, 'index']);
     Route::get('/batas_administrasi/{id}/geojson', [BatasAdministrasiController::class, 'showGeoJson']);
 
@@ -58,82 +82,111 @@ $registerPublicRoutes = function (?string $nameSuffix = null) {
 };
 
 $registerAuthenticatedRoutes = function () {
+    // Auth Routes (Authenticated)
     Route::prefix('auth')->controller(AuthController::class)->group(function () {
         Route::get('me', 'getUser');
         Route::post('logout', 'logout');
     });
 
+    // Role Check (Authenticated)
+    Route::get('/role/check', [RoleController::class, 'checkRole']);
+
+    // Dashboard (Admin + OPD dapat akses summary, tapi OPD read-only)
     Route::get('/summary', [DashboardController::class, 'index']);
+
+    // Berita Admin View (Admin + OPD)
     Route::get('/berita-admin', [BeritaController::class, 'index']);
     Route::get('/berita-admin/{id}', [BeritaController::class, 'show']);
 };
 
 $registerAdminRoutes = function () {
+    // Role Capabilities (Admin Only)
+    Route::get('/role/all-capabilities', [RoleController::class, 'allCapabilities']);
+
+    // RTRW CRUD
     Route::post('/rtrw', [RtrwController::class, 'store']);
     Route::put('/rtrw/{id}', [RtrwController::class, 'update']);
     Route::delete('/rtrw/multi-delete', [RtrwController::class, 'multiDestroy']);
     Route::delete('/rtrw/{id}', [RtrwController::class, 'destroy']);
 
+    // Periode CRUD
     Route::post('/periode', [PeriodeController::class, 'store']);
     Route::put('/periode/{id}', [PeriodeController::class, 'update']);
     Route::delete('/periode/multi-delete', [PeriodeController::class, 'multiDestroy']);
     Route::delete('/periode/{id}', [PeriodeController::class, 'destroy']);
 
+    // Klasifikasi CRUD
     Route::post('/klasifikasi', [KlasifikasiController::class, 'store']);
     Route::put('/klasifikasi/{id}', [KlasifikasiController::class, 'update']);
     Route::delete('/klasifikasi/multi-delete', [KlasifikasiController::class, 'multiDestroy']);
     Route::delete('/klasifikasi/{id}', [KlasifikasiController::class, 'destroy']);
 
+    // Batas Administrasi CRUD
     Route::post('/batas_administrasi', [BatasAdministrasiController::class, 'store']);
     Route::put('/batas_administrasi/{id}', [BatasAdministrasiController::class, 'update']);
     Route::delete('/batas_administrasi/multi-delete', [BatasAdministrasiController::class, 'multiDestroy']);
     Route::delete('/batas_administrasi/{id}', [BatasAdministrasiController::class, 'destroy']);
 
+    // Polaruang CRUD
     Route::post('/polaruang', [PolaruangController::class, 'store']);
     Route::post('/polaruang/batch', [PolaruangController::class, 'multiDestroy']);
     Route::match(['post', 'put'], '/polaruang/{id}', [PolaruangController::class, 'update']);
     Route::delete('/polaruang/multi-delete', [PolaruangController::class, 'multiDestroy']);
     Route::delete('/polaruang/{id}', [PolaruangController::class, 'destroy']);
 
+    // Struktur Ruang CRUD
     Route::post('/struktur_ruang', [StrukturRuangController::class, 'store']);
     Route::post('/struktur_ruang/batch', [StrukturRuangController::class, 'multiDestroy']);
     Route::match(['post', 'put'], '/struktur_ruang/{id}', [StrukturRuangController::class, 'update']);
     Route::delete('/struktur_ruang/multi-delete', [StrukturRuangController::class, 'multiDestroy']);
     Route::delete('/struktur_ruang/{id}', [StrukturRuangController::class, 'destroy']);
 
+    // Ketentuan Khusus CRUD
     Route::post('/ketentuan_khusus', [KetentuanKhususController::class, 'store']);
     Route::post('/ketentuan_khusus/batch', [KetentuanKhususController::class, 'multiDestroy']);
     Route::post('/ketentuan_khusus/{id}', [KetentuanKhususController::class, 'update']);
     Route::delete('/ketentuan_khusus/multi-delete', [KetentuanKhususController::class, 'multiDestroy']);
     Route::delete('/ketentuan_khusus/{id}', [KetentuanKhususController::class, 'destroy']);
 
+    // PKKPRL CRUD
     Route::post('/pkkprl', [PkkprlController::class, 'store']);
     Route::post('/pkkprl/batch', [PkkprlController::class, 'multiDestroy']);
     Route::match(['post', 'put'], '/pkkprl/{id}', [PkkprlController::class, 'update']);
     Route::delete('/pkkprl/multi-delete', [PkkprlController::class, 'multiDestroy']);
     Route::delete('/pkkprl/{id}', [PkkprlController::class, 'destroy']);
 
+    // Indikasi Program CRUD
     Route::post('/indikasi_program', [IndikasiProgramController::class, 'store']);
     Route::post('/indikasi_program/batch', [IndikasiProgramController::class, 'multiDestroy']);
     Route::match(['post', 'put'], '/indikasi_program/{id}', [IndikasiProgramController::class, 'update']);
     Route::delete('/indikasi_program/multi-delete', [IndikasiProgramController::class, 'multiDestroy']);
     Route::delete('/indikasi_program/{id}', [IndikasiProgramController::class, 'destroy']);
 
+    // Berita CRUD
     Route::post('/berita', [BeritaController::class, 'store']);
     Route::post('/berita/{id}', [BeritaController::class, 'update']);
     Route::delete('/berita/multi-delete', [BeritaController::class, 'multiDestroy']);
     Route::delete('/berita/{id}', [BeritaController::class, 'destroy']);
 
     // User Management (Admin Only)
+    Route::delete('/admin/users/multi-delete', [UserController::class, 'multiDestroy']);
     Route::apiResource('admin/users', UserController::class);
 };
 
+// ============================================
+// REGISTER ROUTES
+// ============================================
+
+// Public Routes (Guest Access)
 $registerPublicRoutes();
 
+// Authenticated Routes (Admin + OPD)
 Route::middleware(['auth:sanctum'])->group($registerAuthenticatedRoutes);
 
+// Admin Only Routes
 Route::middleware(['auth:sanctum', 'role:admin'])->group($registerAdminRoutes);
 
+// Versioned API (v1)
 Route::prefix('v1')->group(function () use ($registerPublicRoutes, $registerAuthenticatedRoutes, $registerAdminRoutes) {
     $registerPublicRoutes('v1');
 
