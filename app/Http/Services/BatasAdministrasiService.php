@@ -46,7 +46,7 @@ class BatasAdministrasiService
             $validatedData = $request->validated();
 
             if ($request->hasFile('geojson_file')) {
-                $extension = ['geojson', 'json'];
+                $extension = ['geojson'];
                 $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
                 $validatedData['geojson_file'] = $filePath;
             }

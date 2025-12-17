@@ -21,7 +21,8 @@ class BatasAdministrasiResource extends JsonResource
             'deskripsi' => $this->deskripsi,
             'warna' => $this->warna,
             // Menggunakan helper url() manual untuk menghindari false error di editor
-            'geojson_file' => $this->geojson_file ? url('storage/' . $this->geojson_file) : null,
+            // 'geojson_file' => $this->geojson_file ? url('storage/' . $this->geojson_file) : null,
+            'geojson_file' => $this->geojson_file,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

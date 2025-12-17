@@ -21,13 +21,22 @@ class BatasAdministrasiRequest extends FormRequest
      */
     public function rules(): array
     {
-        $docRule = $this->isMethod('POST') ? 'required' : 'nullable';
-
-        return [
+        $rules = [
             'nama' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
-            'geojson_file' => "$docRule|file|mimes:json,geojson",
             'warna' => 'nullable|string|max:20',
         ];
+
+        // Tidak ada klasifikasi_id di BatasAdministrasi
+
+        // Validasi file hanya jika ada file yang diupload atau ini adalah request create
+        if ($this->hasFile('geojson_file')) {
+            $rules['geojson_file'] = 'required|file|extensions:geojson';
+        } elseif (!$this->route('id')) {
+            // Jika create (tidak ada ID), file wajib
+            $rules['geojson_file'] = 'required|file|extensions:geojson';
+        }
+
+        return $rules;
     }
 }
