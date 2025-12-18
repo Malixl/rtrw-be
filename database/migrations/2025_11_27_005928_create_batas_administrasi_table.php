@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('nama');
             $table->text('deskripsi')->nullable();
             $table->string('geojson_file');
+            $table->enum('tipe_geometri', ['polyline', 'polygon']);
+            $table->enum('tipe_garis', ['solid', 'dashed', 'bold'])->nullable();
             $table->timestamps();
         });
     }

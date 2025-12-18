@@ -24,7 +24,10 @@ class BatasAdministrasiRequest extends FormRequest
         $rules = [
             'nama' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
+            'tipe_geometri'  => 'required|in:polyline,polygon',
+            'tipe_garis'     => 'nullable|string',
             'warna' => 'nullable|string|max:20',
+
         ];
 
         // Tidak ada klasifikasi_id di BatasAdministrasi

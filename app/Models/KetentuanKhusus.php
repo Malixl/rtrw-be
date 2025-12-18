@@ -15,6 +15,9 @@ class KetentuanKhusus extends Model
         'nama',
         'deskripsi',
         'geojson_file',
+        'tipe_geometri',
+        'icon_titik',
+        'tipe_garis',
         'warna',
     ];
 

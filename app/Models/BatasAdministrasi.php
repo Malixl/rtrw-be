@@ -15,6 +15,8 @@ class BatasAdministrasi extends Model
         'nama',
         'deskripsi',
         'geojson_file',
-        'warna', // Warna batas administrasi
+        'tipe_geometri',
+        'tipe_garis',
+        'warna',
     ];
 }

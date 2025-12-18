@@ -27,9 +27,11 @@ class KetentuanKhususRequest extends FormRequest
             'nama' => 'required|string',
             'deskripsi' => 'string',
             'geojson_file' => "$docRule|file|extensions:geojson",
-            'warna' => 'required|string',
-
             'klasifikasi_id' => 'required',
+            'tipe_geometri'  => 'required|in:polyline,point,polygon',
+            'icon_titik'      => 'nullable|image|mimes:png,jpg,jpeg,webp',
+            'tipe_garis'     => 'nullable|string',
+            'warna' => 'nullable|string',
         ];
     }
 
@@ -38,12 +40,11 @@ class KetentuanKhususRequest extends FormRequest
         return [
             'nama.required' => 'Nama wajib diisi.',
             'nama.string' => 'Nama harus berupa teks.',
-            'warna.required' => 'warna wajib diisi.',
-            'warna.string' => 'warna harus berupa teks.',
             'deskripsi.string' => 'Deskripsi harus berupa text.',
             'klasifikasi_id' => 'Klasifikasi wajib diisi',
             'geojson_file.file' => 'geojson_file harus berupa file.',
             'geojson_file.mimes' => 'geojson_file harus berformat geojson.',
+            'warna.string' => 'warna harus berupa teks.',
         ];
     }
 }

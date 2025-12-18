@@ -32,7 +32,7 @@ class PkkprlService
         }
 
         if ($klasifikasi_id = $request->query('klasifikasi_id')) {
-        $data->where('klasifikasi_id', $klasifikasi_id);
+            $data->where('klasifikasi_id', $klasifikasi_id);
         }
 
         if ($request->page) {
@@ -55,6 +55,11 @@ class PkkprlService
                 $extension = ['geojson'];
                 $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
                 $validatedData['geojson_file'] = $filePath;
+            }
+
+            if ($request->hasFile('icon_titik')) {
+                $icon_titik = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
+                $validatedData['icon_titik'] = $icon_titik;
             }
 
             $data = $this->model->create($validatedData);
@@ -91,6 +96,14 @@ class PkkprlService
                 }
 
                 $validatedData['geojson_file'] = $filePath;
+            }
+
+            if ($request->hasFile('icon_titik')) {
+                $icon_titik = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
+                $validatedData['icon_titik'] = $icon_titik;
+                if ($data->icon_titik != 'default.png') {
+                    $this->unlinkPhoto($data->icon_titik);
+                }
             }
 
             $data->update($validatedData);

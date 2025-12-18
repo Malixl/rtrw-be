@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pkkprl extends Model
 {
-     protected $table = 'pkkprl';
+    protected $table = 'pkkprl';
     public $incrementing = false;
     protected $keyType = 'string';
 
@@ -15,6 +15,9 @@ class Pkkprl extends Model
         'nama',
         'deskripsi',
         'geojson_file',
+        'tipe_geometri',
+        'icon_titik',
+        'tipe_garis',
         'warna',
     ];
 
