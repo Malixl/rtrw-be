@@ -18,9 +18,9 @@ class StrukturRuangRequest extends FormRequest
             'deskripsi'      => 'nullable|string',
             'klasifikasi_id' => 'required|integer',
             'tipe_geometri'  => 'required|in:polyline,point',
-            'icon_titik'     => 'nullable|string',
+            'icon_titik'      => 'nullable|image|mimes:png,jpg,jpeg,webp',
             'tipe_garis'     => 'nullable|string',
-            'warna'          => 'required|string',
+            'warna'          => 'nullable|string',
         ];
 
         // Validasi file hanya jika ada file yang diupload atau ini adalah request create
@@ -52,7 +52,6 @@ class StrukturRuangRequest extends FormRequest
 
             'icon_titik.string'      => 'Icon harus berupa teks.',
 
-            'warna.required'     => 'Warna wajib diisi.',
             'warna.string'       => 'Warna harus berupa teks.',
         ];
     }

@@ -59,6 +59,11 @@ class StrukturRuangService
                 $validatedData['geojson_file'] = $filePath;
             }
 
+            if ($request->hasFile('icon_titik')) {
+                $icon_titik = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
+                $validatedData['icon_titik'] = $icon_titik;
+            }
+
             $data = $this->model->create($validatedData);
 
             DB::commit();
@@ -95,6 +100,14 @@ class StrukturRuangService
                 }
 
                 $validatedData['geojson_file'] = $filePath;
+            }
+
+            if ($request->hasFile('icon_titik')) {
+                $icon_titik = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
+                $validatedData['icon_titik'] = $icon_titik;
+                if ($data->icon_titik != 'default.png') {
+                    $this->unlinkPhoto($data->icon_titik);
+                }
             }
 
             $data->update($validatedData);
