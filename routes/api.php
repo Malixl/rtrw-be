@@ -8,7 +8,9 @@ use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\IndikasiProgram\IndikasiProgramController;
 use App\Http\Controllers\KetentuanKhusus\KetentuanKhususController;
 use App\Http\Controllers\Pkkprl\PkkprlController;
+use App\Http\Controllers\DataSpasial\DataSpasialController;
 use App\Http\Controllers\Klasifikasi\KlasifikasiController;
+use App\Http\Controllers\LayerGroup\LayerGroupController;
 use App\Http\Controllers\Periode\PeriodeController;
 use App\Http\Controllers\Polaruang\PolaruangController;
 use App\Http\Controllers\Rtrw\RtrwController;
@@ -58,6 +60,9 @@ $registerPublicRoutes = function (?string $nameSuffix = null) {
     Route::get('/periode', [PeriodeController::class, 'index']);
     Route::get('/periode/{id}', [PeriodeController::class, 'show']);
 
+    Route::get('/layer-groups', [LayerGroupController::class, 'index']);
+    Route::get('/layer-groups/{id}', [LayerGroupController::class, 'show']);
+
     Route::get('/klasifikasi', [KlasifikasiController::class, 'index']);
     Route::get('/klasifikasi/{id}', [KlasifikasiController::class, 'show']);
 
@@ -76,6 +81,11 @@ $registerPublicRoutes = function (?string $nameSuffix = null) {
     Route::get('/pkkprl', [PkkprlController::class, 'index']);
     Route::get('/pkkprl/{id}', [PkkprlController::class, 'show']);
     Route::get('/pkkprl/{id}/geojson', [PkkprlController::class, 'showGeoJson']);
+
+    // Data Spasial (mirip PKKPRL - public read)
+    Route::get('/data_spasial', [DataSpasialController::class, 'index']);
+    Route::get('/data_spasial/{id}', [DataSpasialController::class, 'show']);
+    Route::get('/data_spasial/{id}/geojson', [DataSpasialController::class, 'showGeoJson']);
 
     Route::get('/indikasi_program', [IndikasiProgramController::class, 'index']);
     Route::get('/indikasi_program/{id}', [IndikasiProgramController::class, 'show']);
@@ -121,6 +131,12 @@ $registerAdminRoutes = function () {
     Route::delete('/klasifikasi/multi-delete', [KlasifikasiController::class, 'multiDestroy']);
     Route::delete('/klasifikasi/{id}', [KlasifikasiController::class, 'destroy']);
 
+    // LayerGroup CRUD
+    Route::post('/layer-groups', [LayerGroupController::class, 'store']);
+    Route::put('/layer-groups/{id}', [LayerGroupController::class, 'update']);
+    Route::delete('/layer-groups/multi-delete', [LayerGroupController::class, 'multiDestroy']);
+    Route::delete('/layer-groups/{id}', [LayerGroupController::class, 'destroy']);
+
     // Batas Administrasi CRUD
     Route::post('/batas_administrasi', [BatasAdministrasiController::class, 'store']);
     Route::put('/batas_administrasi/{id}', [BatasAdministrasiController::class, 'update']);
@@ -154,6 +170,13 @@ $registerAdminRoutes = function () {
     Route::match(['post', 'put'], '/pkkprl/{id}', [PkkprlController::class, 'update']);
     Route::delete('/pkkprl/multi-delete', [PkkprlController::class, 'multiDestroy']);
     Route::delete('/pkkprl/{id}', [PkkprlController::class, 'destroy']);
+
+    // Data Spasial CRUD (mirip PKKPRL)
+    Route::post('/data_spasial', [DataSpasialController::class, 'store']);
+    Route::post('/data_spasial/batch', [DataSpasialController::class, 'multiDestroy']);
+    Route::match(['post', 'put'], '/data_spasial/{id}', [DataSpasialController::class, 'update']);
+    Route::delete('/data_spasial/multi-delete', [DataSpasialController::class, 'multiDestroy']);
+    Route::delete('/data_spasial/{id}', [DataSpasialController::class, 'destroy']);
 
     // Indikasi Program CRUD
     Route::post('/indikasi_program', [IndikasiProgramController::class, 'store']);

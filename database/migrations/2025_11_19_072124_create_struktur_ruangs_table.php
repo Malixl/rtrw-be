@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('geojson_file');
             $table->enum('tipe_geometri', ['polyline', 'point']);
             $table->string('icon_titik')->nullable();
-            $table->enum('tipe_garis', ['solid', 'dashed', 'solid'])->nullable();
+            $table->enum('tipe_garis', ['solid', 'dashed', 'bold'])->nullable();
             $table->string('warna')->nullable();
             $table->timestamps();
         });

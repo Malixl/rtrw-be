@@ -24,11 +24,15 @@ class KlasifikasiResources extends JsonResource
                     'tahun_mulai' => $this->rtrw->periode->tahun_mulai ?? null,
                     'tahun_akhir' => $this->rtrw->periode->tahun_akhir ?? null,
                 ],
-              
+
             ],
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'tipe' => $this->tipe,
+            'layer_group' => [
+                'id' => $this->layerGroup->id ?? null,
+                'nama_layer_group' => $this->layerGroup->nama_layer_group ?? null,
+            ],
             'created_at' => $this->created_at->format('d F Y'),
             'updated_at' => $this->updated_at->format('d F Y'),
         ];

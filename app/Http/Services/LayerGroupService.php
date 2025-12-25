@@ -2,17 +2,15 @@
 
 namespace App\Http\Services;
 
-use App\Models\Klasifikasi;
+use App\Models\LayerGroup;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
-class KlasifikasiService
+class LayerGroupService
 {
-
-
     protected $model;
 
-    public function __construct(Klasifikasi $model)
+    public function __construct(LayerGroup $model)
     {
         $this->model = $model;
     }
@@ -20,19 +18,28 @@ class KlasifikasiService
     public function getAll($request)
     {
         $per_page = $request->per_page ?? 10;
-        $data = $this->model->with(['rtrw.periode', 'layerGroup'])->orderBy('created_at');
+
+        $data = $this->model->orderBy('urutan_tampil')
+            ->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%' . $search . '%');
+            $data->where('nama_layer_group', 'like', '%' . $search . '%');
         }
 
-        if ($rtrw_id = $request->query('rtrw_id')) {
-            $data->where('rtrw_id', $rtrw_id);
-        }
-
-        if ($tipe = $request->query('tipe')) {
-            $data->where('tipe', $tipe);
-        }
+        // eager load klasifikasis and their related data
+        $data->with([
+            'klasifikasis' => function ($q) {
+                $q->orderBy('nama')
+                    ->with([
+                        'polaRuang',
+                        'strukturRuang',
+                        'ketentuanKhusus',
+                        'indikasiProgram',
+                        'pkkprl',
+                        'dataSpasial',
+                    ]);
+            }
+        ]);
 
         if ($request->page) {
             $data = $data->paginate($per_page);
@@ -63,7 +70,7 @@ class KlasifikasiService
 
     public function show($id)
     {
-        return $this->model->with(['rtrw.periode', 'layerGroup'])->findOrFail($id);
+        return $this->model->with(['klasifikasis'])->findOrFail($id);
     }
 
     public function update($request, $id)
@@ -72,7 +79,9 @@ class KlasifikasiService
         try {
             $validatedData = $request->validated();
 
-            $data = $this->model->findOrFail($id)->update($validatedData);
+            $data = $this->model->findOrFail($id);
+
+            $data->update($validatedData);
 
             DB::commit();
 

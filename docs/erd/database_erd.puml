@@ -1,0 +1,145 @@
+@startuml Database ERD - RTRW
+hide circle
+skinparam linetype ortho
+
+' Entities
+entity "periode" as periode {
+  * id : bigint <<PK>>
+  --
+  tahun_mulai : year
+  tahun_akhir : year
+  created_at
+  updated_at
+}
+
+entity "rtrw" as rtrw {
+  * id : bigint <<PK>>
+  --
+  nama : string
+  deskripsi : text
+  periode_id : bigint <<FK>>
+  created_at
+  updated_at
+}
+
+entity "layer_groups" as layer_groups {
+  * id : bigint <<PK>>
+  --
+  nama_layer_group : string
+  deskripsi : text
+  urutan_tampil : integer
+  created_at
+  updated_at
+}
+
+entity "klasifikasi" as klasifikasi {
+  * id : bigint <<PK>>
+  --
+  rtrw_id : bigint <<FK>>
+  layer_group_id : bigint <<FK, nullable>>
+  nama : string
+  deskripsi : text
+  tipe : enum
+  created_at
+  updated_at
+}
+
+entity "polaruang" as polaruang {
+  * id : bigint <<PK>>
+  --
+  klasifikasi_id : bigint <<FK>>
+  nama : string
+  deskripsi : text
+  geojson_file : string
+  warna : string
+  created_at
+  updated_at
+}
+
+entity "struktur_ruang" as struktur_ruang {
+  * id : bigint <<PK>>
+  --
+  klasifikasi_id : bigint <<FK>>
+  nama : string
+  deskripsi : text
+  geojson_file : string
+  tipe_geometri : string
+  icon_titik : string
+  tipe_garis : string
+  warna : string
+  created_at
+  updated_at
+}
+
+entity "ketentuan_khusus" as ketentuan_khusus {
+  * id : bigint <<PK>>
+  --
+  klasifikasi_id : bigint <<FK>>
+  nama : string
+  deskripsi : text
+  geojson_file : string
+  tipe_geometri : string
+  icon_titik : string
+  tipe_garis : string
+  warna : string
+  created_at
+  updated_at
+}
+
+entity "pkkprl" as pkkprl {
+  * id : bigint <<PK>>
+  --
+  klasifikasi_id : bigint <<FK>>
+  nama : string
+  deskripsi : text
+  geojson_file : string
+  tipe_geometri : string
+  icon_titik : string
+  tipe_garis : string
+  warna : string
+  created_at
+  updated_at
+}
+
+entity "data_spasial" as data_spasial {
+  * id : bigint <<PK>>
+  --
+  klasifikasi_id : bigint <<FK>>
+  nama : string
+  deskripsi : text
+  geojson_file : string
+  tipe_geometri : string
+  icon_titik : string
+  tipe_garis : string
+  warna : string
+  created_at
+  updated_at
+}
+
+entity "indikasi_program" as indikasi_program {
+  * id : bigint <<PK>>
+  --
+  klasifikasi_id : bigint <<FK>>
+  nama : string
+  file_dokumen : string
+  created_at
+  updated_at
+}
+
+' Relations
+periode ||--o{ rtrw : "has many"
+rtrw ||--o{ klasifikasi : "has many"
+layer_groups ||--o{ klasifikasi : "has many"
+klasifikasi ||--o{ polaruang : "has many"
+klasifikasi ||--o{ struktur_ruang : "has many"
+klasifikasi ||--o{ ketentuan_khusus : "has many"
+klasifikasi ||--o{ pkkprl : "has many"
+klasifikasi ||--o{ data_spasial : "has many"
+klasifikasi ||--o{ indikasi_program : "has many"
+
+note left of klasifikasi
+  layer_group_id: FK -> layer_groups.id
+  (onDelete: SET NULL)
+end note
+
+@enduml

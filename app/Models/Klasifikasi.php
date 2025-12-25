@@ -12,6 +12,7 @@ class Klasifikasi extends Model
 
     protected $fillable = [
         'rtrw_id',
+        'layer_group_id',
         'nama',
         'deskripsi',
         'tipe',
@@ -20,6 +21,11 @@ class Klasifikasi extends Model
     public function rtrw()
     {
         return $this->belongsTo(Rtrw::class);
+    }
+
+    public function layerGroup()
+    {
+        return $this->belongsTo(LayerGroup::class, 'layer_group_id');
     }
 
     public function polaRuang()
@@ -43,5 +49,10 @@ class Klasifikasi extends Model
     public function pkkprl()
     {
         return $this->hasMany(Pkkprl::class);
+    }
+
+    public function dataSpasial()
+    {
+        return $this->hasMany(DataSpasial::class);
     }
 }

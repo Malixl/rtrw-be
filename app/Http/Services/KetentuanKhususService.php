@@ -25,7 +25,7 @@ class KetentuanKhususService
     public function getAll($request)
     {
         $per_page = $request->per_page ?? 10;
-        $data = $this->model->orderBy('created_at');
+        $data = $this->model->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])->orderBy('created_at');
 
         if ($search = $request->query('search')) {
             $data->where('nama', 'like', '%' . $search . '%');
@@ -75,7 +75,7 @@ class KetentuanKhususService
 
     public function show($id)
     {
-        return $this->model->findOrFail($id);
+        return $this->model->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])->findOrFail($id);
     }
 
     public function update($request, $id)

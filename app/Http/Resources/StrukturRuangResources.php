@@ -36,6 +36,10 @@ class StrukturRuangResources extends JsonResource
                     'deskripsi' => $rtrw->deskripsi,
 
                 ],
+                'layer_group' => [
+                    'id' => $klasifikasi->layerGroup->id,
+                    'nama_layer_group' => $klasifikasi->layerGroup->nama_layer_group,
+                ],
             ],
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,

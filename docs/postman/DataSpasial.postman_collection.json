@@ -1,0 +1,119 @@
+{
+  "info": {
+    "name": "Data Spasial Smoke Tests",
+    "_postman_id": "d3a0b6a4-fc9b-4f11-9d3b-xxxxxxxxxxxx",
+    "description": "Collection to test Data Spasial endpoints (login -> create periode/rtrw/klasifikasi -> create data_spasial -> get/update/delete)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/auth/login",
+          "host": ["{{baseUrl}}"],
+          "path": ["api","auth","login"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Periode",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"tahun_mulai\": 2020,\n  \"tahun_akhir\": 2025\n}" },
+        "url": { "raw": "{{baseUrl}}/api/periode", "host": ["{{baseUrl}}"], "path": ["api","periode"] }
+      }
+    },
+    {
+      "name": "Create RTRW",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Test RTRW\",\n  \"deskripsi\": \"desc\",\n  \"periode_id\": {{periode_id}}\n}" },
+        "url": { "raw": "{{baseUrl}}/api/rtrw", "host": ["{{baseUrl}}"], "path": ["api","rtrw"] }
+      }
+    },
+    {
+      "name": "Create Klasifikasi",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"rtrw_id\": {{rtrw_id}},\n  \"nama\": \"Klas Data Spasial\",\n  \"deskripsi\": \"desc\",\n  \"tipe\": \"pkkprl\"\n}" },
+        "url": { "raw": "{{baseUrl}}/api/klasifikasi", "host": ["{{baseUrl}}"], "path": ["api","klasifikasi"] }
+      }
+    },
+    {
+      "name": "Create Data Spasial (multipart)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            { "key": "nama", "value": "Spatial 1", "type": "text" },
+            { "key": "deskripsi", "value": "desc", "type": "text" },
+            { "key": "klasifikasi_id", "value": "{{klasifikasi_id}}", "type": "text" },
+            { "key": "tipe_geometri", "value": "polygon", "type": "text" },
+            { "key": "geojson_file", "type": "file", "src": "" },
+            { "key": "icon_titik", "type": "file", "src": "" }
+          ]
+        },
+        "url": { "raw": "{{baseUrl}}/api/data_spasial", "host": ["{{baseUrl}}"], "path": ["api","data_spasial"] }
+      }
+    },
+    {
+      "name": "Show Data Spasial GeoJSON",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": { "raw": "{{baseUrl}}/api/data_spasial/{{data_spasial_id}}/geojson", "host": ["{{baseUrl}}"], "path": ["api","data_spasial","{{data_spasial_id}}","geojson"] }
+      }
+    },
+    {
+      "name": "Update Data Spasial (multipart)",
+      "request": {
+        "method": "PUT",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "formdata", "formdata": [ { "key": "nama", "value": "Updated", "type": "text" }, { "key": "geojson_file", "type": "file", "src": "" }, { "key": "icon_titik", "type": "file", "src": "" } ] },
+        "url": { "raw": "{{baseUrl}}/api/data_spasial/{{data_spasial_id}}", "host": ["{{baseUrl}}"], "path": ["api","data_spasial","{{data_spasial_id}}"] }
+      }
+    },
+    {
+      "name": "Delete Data Spasial Batch",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{ \"ids\": [{{data_spasial_id}}] }" },
+        "url": { "raw": "{{baseUrl}}/api/data_spasial/batch", "host": ["{{baseUrl}}"], "path": ["api","data_spasial","batch"] }
+      }
+    }
+  ],
+  "event": [],
+  "variable": [
+    { "key": "baseUrl", "value": "http://127.0.0.1:8000" },
+    { "key": "token", "value": "" },
+    { "key": "periode_id", "value": "" },
+    { "key": "rtrw_id", "value": "" },
+    { "key": "klasifikasi_id", "value": "" },
+    { "key": "data_spasial_id", "value": "" }
+  ]
+}

@@ -25,7 +25,8 @@ class KlasifikasiRequest extends FormRequest
             'nama' => 'required|string',
             'deskripsi' => 'string',
             'rtrw_id' => 'required',
-            'tipe' => 'required|in:pola_ruang,struktur_ruang,ketentuan_khusus,indikasi_program,pkkprl',
+            'layer_group_id' => 'nullable|exists:layer_groups,id',
+            'tipe' => 'required|in:pola_ruang,struktur_ruang,ketentuan_khusus,indikasi_program,pkkprl,data_spasial',
         ];
     }
 
@@ -36,8 +37,9 @@ class KlasifikasiRequest extends FormRequest
             'nama.string' => 'Nama harus berupa teks.',
             'deskripsi.string' => 'Deskripsi harus berupa teks.',
             'rtrw_id.required' => 'RTRW wajib diisi.',
+            'layer_group_id.exists' => 'Layer group yang dipilih tidak valid.',
             'tipe.required' => 'Tipe klasifikasi wajib dipilih.',
-            'tipe.in'       => 'Tipe klasifikasi harus pola_ruang, struktur ruang, ketentuan khusus, indikasi program, atau pkkprl.',
+            'tipe.in'       => 'Tipe klasifikasi harus pola_ruang, struktur ruang, ketentuan khusus, indikasi program, pkkprl, atau data_spasial.',
         ];
     }
 }

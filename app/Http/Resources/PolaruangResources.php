@@ -30,7 +30,11 @@ class PolaruangResources extends JsonResource
                         'tahun_akhir' => $this->klasifikasi->rtrw->periode->tahun_akhir ?? null,
                     ],
                     'deskripsi' => $this->klasifikasi->rtrw->deskripsi ?? null,
-                   
+
+                ],
+                'layer_group' => [
+                    'id' => $this->klasifikasi->layerGroup->id ?? null,
+                    'nama_layer_group' => $this->klasifikasi->layerGroup->nama_layer_group ?? null,
                 ],
             ],
             'nama' => $this->nama,

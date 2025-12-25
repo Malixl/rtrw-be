@@ -32,6 +32,10 @@ class KetentuanKhususResources extends JsonResource
                     'deskripsi' => $this->klasifikasi->rtrw->deskripsi ?? null,
 
                 ],
+                'layer_group' => [
+                    'id' => $this->klasifikasi->layerGroup->id ?? null,
+                    'nama_layer_group' => $this->klasifikasi->layerGroup->nama_layer_group ?? null,
+                ],
             ],
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,

@@ -3,21 +3,20 @@
 namespace App\Http\Services;
 
 use App\Http\Traits\FileUpload;
-use App\Models\StrukturRuang;
+use App\Models\DataSpasial;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class StrukturRuangService
+class DataSpasialService
 {
-
     use FileUpload;
 
-    protected $path = 'struktur_ruang_file';
+    protected $path = 'data_spasial_service';
 
     protected $model;
 
-    public function __construct(StrukturRuang $model)
+    public function __construct(DataSpasial $model)
     {
         $this->model = $model;
     }
@@ -25,9 +24,7 @@ class StrukturRuangService
     public function getAll($request)
     {
         $per_page = $request->per_page ?? 10;
-        $data = $this->model
-            ->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])
-            ->orderBy('created_at');
+        $data = $this->model->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])->orderBy('created_at');
 
         if ($search = $request->query('search')) {
             $data->where('nama', 'like', '%' . $search . '%');
@@ -77,9 +74,7 @@ class StrukturRuangService
 
     public function show($id)
     {
-        return $this->model
-            ->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])
-            ->findOrFail($id);
+        return $this->model->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])->findOrFail($id);
     }
 
     public function update($request, $id)
@@ -158,12 +153,12 @@ class StrukturRuangService
 
     public function showGeoJson($id)
     {
-        $struktur_ruang = $this->model->findOrFail($id);
+        $model = $this->model->findOrFail($id);
 
         // Cek apakah ada file
-        if (!empty($struktur_ruang->geojson_file)) {
+        if (!empty($model->geojson_file)) {
 
-            $filename = $struktur_ruang->geojson_file;
+            $filename = $model->geojson_file;
 
             if (!Storage::disk('public')->exists($filename)) {
                 return response()->json(['error' => 'File not found on disk'], 404);

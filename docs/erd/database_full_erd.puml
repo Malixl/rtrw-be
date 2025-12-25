@@ -1,0 +1,190 @@
+@startuml
+title SIG RTRW Provinsi Gorontalo
+skinparam shadowing false
+
+' =======================
+' User, Role, Permission
+' =======================
+class User {
+  Integer id
+  String name
+  String email
+  String password
+  Timestamp email_verified_at
+  String remember_token
+  Timestamp created_at
+  Timestamp updated_at
+}
+class Role {
+  Integer id
+  String name
+  String guard_name
+  Timestamp created_at
+  Timestamp updated_at
+}
+class Permission {
+  Integer id
+  String name
+  String guard_name
+  Timestamp created_at
+  Timestamp updated_at
+}
+User "many" -- "many" Role : many to many
+Role "many" -- "many" Permission : many to many
+
+' =======================
+' Periode, RTRW, LayerGroup, Klasifikasi
+' =======================
+class Periode {
+  Integer id
+  Year tahun_mulai
+  Year tahun_akhir
+  Timestamp created_at
+  Timestamp updated_at
+}
+class RTRW {
+  Integer id
+  String nama
+  Text deskripsi
+  Integer periode_id
+  Timestamp created_at
+  Timestamp updated_at
+}
+class LayerGroup {
+  Integer id
+  String nama_layer_group
+  Text deskripsi
+  Integer urutan_tampil
+  Timestamp created_at
+  Timestamp updated_at
+}
+class Klasifikasi {
+  Integer id
+  Integer rtrw_id
+  Integer layer_group_id
+  String nama
+  Text deskripsi
+  Enum tipe
+  Timestamp created_at
+  Timestamp updated_at
+}
+Periode "1" -- "many" RTRW : one to many
+RTRW "1" -- "many" LayerGroup : one to many
+LayerGroup "1" -- "many" Klasifikasi : one to many
+
+' =======================
+' Child dari Klasifikasi
+' =======================
+class Polaruang {
+  Integer id
+  Integer klasifikasi_id
+  String nama
+  Text deskripsi
+  String geojson_file
+  String warna
+  Timestamp created_at
+  Timestamp updated_at
+}
+class StrukturRuang {
+  Integer id
+  Integer klasifikasi_id
+  String nama
+  Text deskripsi
+  String geojson_file
+  Enum tipe_geometri
+  String icon_titik
+  Enum tipe_garis
+  String warna
+  Timestamp created_at
+  Timestamp updated_at
+}
+class KetentuanKhusus {
+  Integer id
+  Integer klasifikasi_id
+  String nama
+  Text deskripsi
+  String geojson_file
+  Enum tipe_geometri
+  String icon_titik
+  Enum tipe_garis
+  String warna
+  Timestamp created_at
+  Timestamp updated_at
+}
+class Pkkprl {
+  Integer id
+  Integer klasifikasi_id
+  String nama
+  Text deskripsi
+  String geojson_file
+  Enum tipe_geometri
+  String icon_titik
+  Enum tipe_garis
+  String warna
+  Timestamp created_at
+  Timestamp updated_at
+}
+class IndikasiProgram {
+  Integer id
+  Integer klasifikasi_id
+  String nama
+  String file_dokumen
+  Timestamp created_at
+  Timestamp updated_at
+}
+
+class DataSpasial {
+  Integer id
+  Integer klasifikasi_id
+  String nama
+  Text deskripsi
+  String geojson_file
+  Enum tipe_geometri
+  String icon_titik
+  Enum tipe_garis
+  String warna
+  Timestamp created_at
+  Timestamp updated_at
+}
+
+Klasifikasi "1" -- "many" Polaruang : one to many
+Klasifikasi "1" -- "many" DataSpasial : one to many
+Klasifikasi "1" -- "many" StrukturRuang : one to many
+Klasifikasi "1" -- "many" KetentuanKhusus : one to many
+Klasifikasi "1" -- "many" Pkkprl : one to many
+Klasifikasi "1" -- "many" IndikasiProgram : one to many
+
+' =======================
+' StandAlone Entity
+' =======================
+package "StandAlone" {
+  class BatasAdministrasi {
+    Integer id
+    String nama
+    Text deskripsi
+    String geojson_file
+    Enum tipe_geometri
+    Enum tipe_garis
+    String warna
+    Timestamp created_at
+    Timestamp updated_at
+  }
+  class Berita {
+    Integer id
+    String judul
+    String slug
+    Text konten
+    String thumbnail
+    Enum status
+    Timestamp created_at
+    Timestamp updated_at
+  }
+}
+User "1" -- "many" Berita : one to many
+
+note left of Klasifikasi
+  layer_group_id: FK -> LayerGroup.id
+  onDelete: SET NULL
+end note
+
+@enduml
