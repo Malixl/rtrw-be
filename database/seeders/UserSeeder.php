@@ -32,6 +32,8 @@ class UserSeeder extends Seeder
             'manajemen_indikasi_program',
             'manajemen_pkkprl',
             'manajemen_batas_administrasi',
+            'manajemen_layer_group',
+            'manajemen_data_spasial',
 
             // Content Management
             'manajemen_berita',
