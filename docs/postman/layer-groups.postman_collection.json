@@ -154,6 +154,22 @@
           ]
         }
       }
+    },
+    {
+      "name": "LayerGroups - With Klasifikasi (Flat per-type)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/layer-groups/with-klasifikasi?format=flat&rtrw_id={{rtrw_id}}",
+          "host": ["{{base_url}}"],
+          "path": ["layer-groups","with-klasifikasi"],
+          "query": [
+            { "key": "format", "value": "flat" },
+            { "key": "rtrw_id", "value": "{{rtrw_id}}" }
+          ]
+        }
+      }
     }
   ],
   "event": [],

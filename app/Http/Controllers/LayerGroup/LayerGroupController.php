@@ -7,6 +7,7 @@ use App\Http\Requests\StoreLayerGroupRequest;
 use App\Http\Requests\UpdateLayerGroupRequest;
 use App\Http\Resources\LayerGroupResource;
 use App\Http\Resources\LayerGroupMapResource;
+use App\Http\Resources\KlasifikasiMapResources;
 use App\Http\Services\LayerGroupService;
 use App\Http\Traits\ApiResponse;
 use Exception;
@@ -71,6 +72,29 @@ class LayerGroupController extends Controller
         try {
             $rtrwId = $request->query('rtrw_id');
             $onlyWithChildren = filter_var($request->query('only_with_children', true), FILTER_VALIDATE_BOOLEAN);
+            $format = $request->query('format', 'group');
+
+            if ($format === 'flat') {
+                // flat format requires rtrw_id
+                if (!$rtrwId) {
+                    return $this->errorResponse('rtrw_id is required for flat format', Response::HTTP_BAD_REQUEST);
+                }
+
+                $flat = $this->layerGroupService->getAllWithKlasifikasi($rtrwId, $onlyWithChildren, 'flat');
+
+                // transform with resources
+                $payload = [
+                    'rtrw' => $flat['rtrw'],
+                    'klasifikasi_pola_ruang' => KlasifikasiMapResources::collection($flat['klasifikasi_pola_ruang']),
+                    'klasifikasi_struktur_ruang' => KlasifikasiMapResources::collection($flat['klasifikasi_struktur_ruang']),
+                    'klasifikasi_ketentuan_khusus' => KlasifikasiMapResources::collection($flat['klasifikasi_ketentuan_khusus']),
+                    'klasifikasi_indikasi_program' => KlasifikasiMapResources::collection($flat['klasifikasi_indikasi_program']),
+                    'klasifikasi_pkkprl' => KlasifikasiMapResources::collection($flat['klasifikasi_pkkprl']),
+                    'klasifikasi_data_spasial' => KlasifikasiMapResources::collection($flat['klasifikasi_data_spasial']),
+                ];
+
+                return $this->successResponseWithData($payload, 'Data klasifikasi per type berhasil diambil', Response::HTTP_OK);
+            }
 
             $data = $this->layerGroupService->getAllWithKlasifikasi($rtrwId, $onlyWithChildren);
 
