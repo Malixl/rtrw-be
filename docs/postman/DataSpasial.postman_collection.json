@@ -15,7 +15,7 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"password\"\n}"
+          "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
         },
         "url": {
           "raw": "{{baseUrl}}/api/auth/login",
@@ -23,6 +23,17 @@
           "path": ["api","auth","login"]
         }
       },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Login returns 200\", function () { pm.response.to.have.status(200); });",
+              "try { var json = pm.response.json(); var token = (json.data && (json.data.token || json.data.access_token)) || json.token || json.access_token; if (token) pm.environment.set('token', token); } catch (e) {}"
+            ]
+          }
+        }
+      ],
       "response": []
     },
     {
@@ -107,8 +118,37 @@
       }
     }
   ],
-  "event": [],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "exec": [
+          "(function(){",
+          "  try {",
+          "    var base = pm.environment.get('baseUrl') || pm.environment.get('base_url') || pm.global.get('baseUrl') || pm.global.get('base_url') || 'http://127.0.0.1:8000';",
+          "    base = base.replace(/\/+$/, '');",
+          "    var loginUrl = base + '/api/auth/login';",
+          "    if (!pm.environment.get('token') && pm.environment.get('admin_email') && pm.environment.get('admin_password')) {",
+          "      pm.sendRequest({",
+          "        url: loginUrl,",
+          "        method: 'POST',",
+          "        header: { 'Content-Type': 'application/json' },",
+          "        body: { mode: 'raw', raw: JSON.stringify({ email: pm.environment.get('admin_email'), password: pm.environment.get('admin_password') }) }",
+          "      }, function (err, res) {",
+          "        if (err) { console.log('Auth auto-login failed', err); return; }",
+          "        try { var json = res.json(); var token = (json.data && (json.data.token || json.data.access_token)) || json.token || json.access_token; if (token) pm.environment.set('token', token); } catch (e) { console.log('Auth parse error', e); }",
+          "      });",
+          "    }",
+          "  } catch(e) { console.log('Auth prerequest error', e); }",
+          "})();"
+        ]
+      }
+    }
+  ],
   "variable": [
+    { "key": "admin_email", "value": "" },
+    { "key": "admin_password", "value": "" },
+
     { "key": "baseUrl", "value": "http://127.0.0.1:8000" },
     { "key": "token", "value": "" },
     { "key": "periode_id", "value": "" },
