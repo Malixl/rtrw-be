@@ -138,6 +138,22 @@
         "method": "GET",
         "url": "{{base_url}}/polaruang"
       }
+    },
+    {
+      "name": "LayerGroups - With Klasifikasi (Map)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true",
+          "host": ["{{base_url}}"],
+          "path": ["layer-groups","with-klasifikasi"],
+          "query": [
+            { "key": "rtrw_id", "value": "{{rtrw_id}}" },
+            { "key": "only_with_children", "value": "true" }
+          ]
+        }
+      }
     }
   ],
   "event": [],

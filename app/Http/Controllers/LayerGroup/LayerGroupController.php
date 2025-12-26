@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLayerGroupRequest;
 use App\Http\Requests\UpdateLayerGroupRequest;
 use App\Http\Resources\LayerGroupResource;
+use App\Http\Resources\LayerGroupMapResource;
 use App\Http\Services\LayerGroupService;
 use App\Http\Traits\ApiResponse;
 use Exception;
@@ -60,6 +61,28 @@ class LayerGroupController extends Controller
         } catch (ValidationException $e) {
             return $this->errorResponse(
                 $e->errors(),
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+    }
+
+    public function withKlasifikasi(Request $request)
+    {
+        try {
+            $rtrwId = $request->query('rtrw_id');
+            $onlyWithChildren = filter_var($request->query('only_with_children', true), FILTER_VALIDATE_BOOLEAN);
+
+            $data = $this->layerGroupService->getAllWithKlasifikasi($rtrwId, $onlyWithChildren);
+
+            return $this->successResponseWithDataIndex(
+                $data,
+                LayerGroupMapResource::collection($data),
+                'Data layer group dengan klasifikasi berhasil diambil',
+                Response::HTTP_OK
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse(
+                $e->getMessage(),
                 Response::HTTP_BAD_REQUEST
             );
         }

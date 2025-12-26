@@ -61,6 +61,7 @@ $registerPublicRoutes = function (?string $nameSuffix = null) {
     Route::get('/periode/{id}', [PeriodeController::class, 'show']);
 
     Route::get('/layer-groups', [LayerGroupController::class, 'index']);
+    Route::get('/layer-groups/with-klasifikasi', [LayerGroupController::class, 'withKlasifikasi']);
     Route::get('/layer-groups/{id}', [LayerGroupController::class, 'show']);
 
     Route::get('/klasifikasi', [KlasifikasiController::class, 'index']);

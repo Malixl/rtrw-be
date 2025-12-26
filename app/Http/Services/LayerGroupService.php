@@ -50,6 +50,54 @@ class LayerGroupService
         return $data;
     }
 
+    /**
+     * Get all layer groups with nested klasifikasis and geo-data children
+     * Optionally filter klasifikasis by rtrw_id and only include klasifikasi that have geo children
+     */
+    public function getAllWithKlasifikasi($rtrwId = null, $onlyWithChildren = true)
+    {
+        $groups = $this->model->orderBy('urutan_tampil')
+            ->orderBy('created_at')
+            ->with(['klasifikasis' => function ($q) use ($rtrwId) {
+                if ($rtrwId) {
+                    $q->where('rtrw_id', $rtrwId);
+                }
+
+                $q->orderBy('nama')
+                    ->with([
+                        'polaRuang',
+                        'strukturRuang',
+                        'ketentuanKhusus',
+                        'indikasiProgram',
+                        'pkkprl',
+                        'dataSpasial',
+                    ]);
+            }])->get();
+
+        if ($onlyWithChildren) {
+            // filter klasifikasis that have at least one geo child
+            $groups = $groups->map(function ($g) {
+                $filtered = $g->klasifikasis->filter(function ($k) {
+                    return (
+                        ($k->polaRuang && $k->polaRuang->isNotEmpty()) ||
+                        ($k->strukturRuang && $k->strukturRuang->isNotEmpty()) ||
+                        ($k->ketentuanKhusus && $k->ketentuanKhusus->isNotEmpty()) ||
+                        ($k->indikasiProgram && $k->indikasiProgram->isNotEmpty()) ||
+                        ($k->pkkprl && $k->pkkprl->isNotEmpty()) ||
+                        ($k->dataSpasial && $k->dataSpasial->isNotEmpty())
+                    );
+                })->values();
+
+                $g->setRelation('klasifikasis', $filtered);
+                return $g;
+            })->filter(function ($g) {
+                return $g->klasifikasis->isNotEmpty();
+            })->values();
+        }
+
+        return $groups;
+    }
+
     public function store($request)
     {
         DB::beginTransaction();
