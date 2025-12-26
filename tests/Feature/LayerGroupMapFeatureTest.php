@@ -128,4 +128,81 @@ class LayerGroupMapFeatureTest extends TestCase
         $this->assertArrayHasKey('struktur_ruang', $topo);
         $this->assertNotEmpty($topo['struktur_ruang']);
     }
+
+    public function test_default_compact_hides_empty_relations()
+    {
+        // create admin user to setup data via API
+        Role::create(['name' => 'admin']);
+        $user = User::factory()->create();
+        $user->assignRole('admin');
+        $this->actingAs($user, 'sanctum');
+
+        // Create periode and rtrw
+        $periodeId = \Illuminate\Support\Facades\DB::table('periode')->insertGetId([
+            'tahun_mulai' => 2020,
+            'tahun_akhir' => 2025,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        $rtrwId = \Illuminate\Support\Facades\DB::table('rtrw')->insertGetId([
+            'nama' => 'RTRW Compact Test',
+            'deskripsi' => 'desc',
+            'periode_id' => $periodeId,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        // create one layer group
+        $this->postJson('/api/layer-groups', ['nama_layer_group' => 'Peta Compact', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
+
+        $lgList = $this->getJson('/api/layer-groups');
+        $lgData = $lgList->json('data');
+        $petaCompactId = collect($lgData)->firstWhere('nama_layer_group', 'Peta Compact')['id'];
+
+        // create klasifikasi with only data_spasial child
+        $this->postJson('/api/klasifikasi', [
+            'nama' => 'Perahu',
+            'deskripsi' => 'layer perahu',
+            'rtrw_id' => $rtrwId,
+            'layer_group_id' => $petaCompactId,
+            'tipe' => 'data_spasial'
+        ])->assertStatus(201);
+
+        $klList = $this->getJson('/api/klasifikasi');
+        $klData = $klList->json('data');
+        $perahuId = collect($klData)->firstWhere('nama', 'Perahu')['id'];
+
+        // attach data_spasial only
+        \App\Models\DataSpasial::create([
+            'klasifikasi_id' => $perahuId,
+            'nama' => 'Danau',
+            'deskripsi' => 'desc',
+            'geojson_file' => '',
+            'tipe_geometri' => 'polygon'
+        ]);
+
+        // Now call the new endpoint without compact param (default compact=true)
+        $resp = $this->getJson('/api/layer-groups/with-klasifikasi?rtrw_id=' . $rtrwId);
+        $resp->assertStatus(200);
+
+        $data = $resp->json('data');
+        $this->assertNotEmpty($data);
+
+        $petaCompact = collect($data)->firstWhere('nama_layer_group', 'Peta Compact');
+        $this->assertNotNull($petaCompact);
+        $k = collect($petaCompact['klasifikasis'])->firstWhere('nama', 'Perahu');
+        $this->assertNotNull($k);
+
+        // default compact should NOT include empty relation keys
+        $this->assertArrayNotHasKey('pola_ruang', $k);
+        $this->assertArrayNotHasKey('struktur_ruang', $k);
+        $this->assertArrayNotHasKey('ketentuan_khusus', $k);
+        $this->assertArrayNotHasKey('indikasi_program', $k);
+        $this->assertArrayNotHasKey('pkkprl', $k);
+
+        // but it should include data_spasial
+        $this->assertArrayHasKey('data_spasial', $k);
+        $this->assertNotEmpty($k['data_spasial']);
+    }
 }

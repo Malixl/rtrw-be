@@ -29,7 +29,6 @@
       ]
     },
 
-    // LayerGroup - Public
     {
       "name": "LayerGroups - List (public)",
       "request": { "method": "GET", "url": { "raw": "{{base_url}}/layer-groups", "host": ["{{base_url}}"], "path": ["layer-groups"] }, "description": "Get all layer groups (ordered by urutan_tampil)." },
@@ -41,7 +40,7 @@
       "event": [{ "listen": "test", "script": { "exec": ["pm.test(\"Show returns 200\", function () { pm.response.to.have.status(200); });"] }}]
     },
 
-    // LayerGroup - Admin CRUD
+ 
     {
       "name": "LayerGroups - Create (admin)",
       "request": {
@@ -70,7 +69,6 @@
       "event": [{ "listen": "test", "script": { "exec": ["pm.test(\"Delete returns 200\", function () { pm.response.to.have.status(200); });"] }}]
     },
 
-    // Klasifikasi CRUD (admin)
     {
       "name": "Klasifikasi - Create (admin, include layer_group)",
       "request": {
@@ -88,14 +86,13 @@
       "event": [{ "listen": "test", "script": { "exec": ["pm.test(\"Show klasifikasi returns 200\", function () { pm.response.to.have.status(200); });"] }}]
     },
 
-    // Child entities (check geo children)
+
     {
       "name": "Pola Ruang - List (check nested klasifikasi.layer_group)",
       "request": { "method": "GET", "url": { "raw": "{{base_url}}/polaruang", "host": ["{{base_url}}"], "path": ["polaruang"] }, "description": "List pola ruang and verify nested klasifikasi include layer_group." },
       "event": [{ "listen": "test", "script": { "exec": ["pm.test(\"Pola Ruang list returns 200\", function () { pm.response.to.have.status(200); });"] }}]
     },
 
-    // Map endpoints
     {
       "name": "LayerGroups - With Klasifikasi (Map) - group format",
       "request": {
@@ -104,6 +101,83 @@
         "description": "Default grouped response: LayerGroup -> klasifikasis (each with nested geo child arrays)"
       },
       "event": [{ "listen": "test", "script": { "exec": ["pm.test(\"Map group returns 200\", function () { pm.response.to.have.status(200); });"] }}]
+    },
+    {
+      "name": "LayerGroups - With Klasifikasi (Map, compact default)",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true", "host": ["{{base_url}}"], "path": ["layer-groups","with-klasifikasi"], "query": [{ "key": "rtrw_id", "value": "{{rtrw_id}}" }, { "key": "only_with_children", "value": "true" }] },
+        "description": "Compact by default: empty relation keys are omitted. Use &compact=false to include empty arrays."
+      },
+      "event": [{ "listen": "test", "script": { "exec": [
+        "pm.test(\"Map compact-default returns 200\", function () { pm.response.to.have.status(200); });",
+        "try {",
+        "  const json = pm.response.json();",
+        "  const groups = json.data || [];",
+        "  const gid = parseInt(pm.environment.get('layer_group_id') || '0');",
+        "  const target = groups.find(g => g.id === gid);",
+        "  if (target) {",
+        "    const klas = (target.klasifikasis || []).find(k => (k.id == parseInt(pm.environment.get('klasifikasi_id') || '0')));",
+        "    if (klas) {",
+        "      pm.test('Empty relation keys should not exist by default', function () {",
+        "        pm.expect(klas).to.not.have.property('pola_ruang');",
+        "        pm.expect(klas).to.not.have.property('struktur_ruang');",
+        "        pm.expect(klas).to.not.have.property('ketentuan_khusus');",
+        "        pm.expect(klas).to.not.have.property('indikasi_program');",
+        "        pm.expect(klas).to.not.have.property('pkkprl');",
+        "      });",
+        "    }",
+        "  }",
+        "} catch (e) {}"
+      ] }}]
+    },
+    {
+      "name": "LayerGroups - Show (with klasifikasi & geojson)",
+      "request": {
+        "method": "GET",
+        "url": {
+          "raw": "{{base_url}}/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true",
+          "host": ["{{base_url}}"],
+          "path": ["layer-groups","with-klasifikasi"],
+          "query": [
+            { "key": "rtrw_id", "value": "{{rtrw_id}}" },
+            { "key": "only_with_children", "value": "true" }
+          ]
+        },
+        "description": "Cari dan tampilkan detail layer group sesuai {{layer_group_id}} termasuk klasifikasi dan geojson child."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Response 200\", function () { pm.response.to.have.status(200); });",
+              "try {",
+              "  const json = pm.response.json();",
+              "  const groups = json.data || [];",
+              "  const gid = parseInt(pm.environment.get('layer_group_id') || '0');",
+              "  pm.test('Terdapat layer group dengan id yang dicari', function () {",
+              "    pm.expect(groups.some(g => g.id === gid)).to.be.true;",
+              "  });",
+              "  const target = groups.find(g => g.id === gid);",
+              "  pm.test('Target memiliki klasifikasi dengan geochildren', function () {",
+              "    pm.expect(target).to.not.be.undefined;",
+              "    const hasGeo = (target.klasifikasis || []).some(k =>",
+              "      (k.pola_ruang && k.pola_ruang.length) ||",
+              "      (k.struktur_ruang && k.struktur_ruang.length) ||",
+              "      (k.ketentuan_khusus && k.ketentuan_khusus.length) ||",
+              "      (k.indikasi_program && k.indikasi_program.length) ||",
+              "      (k.pkkprl && k.pkkprl.length) ||",
+              "      (k.data_spasial && k.data_spasial.length)",
+              "    );",
+              "    pm.expect(hasGeo).to.be.true;",
+              "  });",
+              "  if (target) pm.environment.set('last_layer_group', JSON.stringify(target));",
+              "} catch (e) {}"
+            ]
+          }
+        }
+      ]
     },
     {
       "name": "LayerGroups - With Klasifikasi (Flat per-type)",

@@ -32,6 +32,34 @@ Flat per-type endpoint (Rafiq's example):
 6. Test Map endpoints:
     - Group format: GET `/api/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true`
     - Flat format: GET `/api/layer-groups/with-klasifikasi?format=flat&rtrw_id={{rtrw_id}}`
+    - Compact behavior (default): responses now omit empty relation keys (mis. `pola_ruang`, `struktur_ruang`, dll.). To include empty arrays for backward compatibility, add `&compact=false` to the query string (example: `/api/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true&compact=false`).
+
+## Cara melihat detail Layer Group beserta geometrinya (Postman) ✅
+
+1. Pastikan environment:
+
+    - `{{base_url}}` = `http://localhost:8000` (atau URL server Anda).
+    - `{{rtrw_id}}` telah terisi (contoh: `1`).
+    - `{{layer_group_id}}` telah terisi (id layer group yang ingin dilihat).
+
+2. Jalankan request **"LayerGroups - Show (with klasifikasi & geojson)"** di koleksi ini.
+
+    - Request ini memanggil endpoint: `GET /api/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true`.
+
+3. Yang perlu diperiksa di response:
+
+    - Response code harus `200`.
+    - Cari object dengan `id` sama seperti `{{layer_group_id}}` di `response.data`.
+    - Pastikan object tersebut memiliki `klasifikasis` dan setiap klasifikasi memiliki salah satu properti geochild: `pola_ruang`, `struktur_ruang`, `ketentuan_khusus`, `indikasi_program`, `pkkprl`, atau `data_spasial`.
+    - Contoh path yang bisa diperiksa di Postman: `response.data[?].klasifikasis[*].pola_ruang[*].geojson`
+
+4. Skrip Test otomatis (terpasang pada request):
+
+    - Request akan memverifikasi bahwa ada layer group dengan `{{layer_group_id}}` dan setidaknya satu klasifikasi memiliki geochildren.
+
+5. Jika test gagal: periksa apakah data geo (Pola Ruang / Struktur Ruang / dsb.) sudah dibuat dan terkait dengan klasifikasi yang benar.
+
+Tip cepat: setelah test lulus, request menyimpan object layer group yang ditemukan di environment variable `{{last_layer_group}}` untuk pemeriksaan lanjutan.
 
 ---
 

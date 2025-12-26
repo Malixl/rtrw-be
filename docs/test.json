@@ -1,0 +1,72 @@
+{
+    "code": 200,
+    "status": true,
+    "message": "Data layer group dengan klasifikasi berhasil diambil",
+    "data": [
+        {
+            "id": 1,
+            "nama_layer_group": "Peta Dasar V2",
+            "deskripsi": "Updated description",
+            "urutan_tampil": 2,
+            "klasifikasis": [
+                {
+                    "id": 12,
+                    "rtrw": {
+                        "id": 1,
+                        "nama": "Provinsi Gorontalo",
+                        "periode": {
+                            "id": 1,
+                            "tahun_mulai": "2024",
+                            "tahun_akhir": "2043"
+                        }
+                    },
+                    "nama": "perahu",
+                    "deskripsi": "wow",
+                    "tipe": "data_spasial",
+                    "pola_ruang": [],
+                    "struktur_ruang": [],
+                    "ketentuan_khusus": [],
+                    "indikasi_program": [],
+                    "pkkprl": [],
+                    "data_spasial": [
+                        {
+                            "id": 3,
+                            "klasifikasi": {
+                                "id": 12,
+                                "nama": "perahu",
+                                "deskripsi": "wow",
+                                "tipe": "data_spasial",
+                                "rtrw": {
+                                    "id": 1,
+                                    "nama": "Provinsi Gorontalo",
+                                    "periode": {
+                                        "id": 1,
+                                        "tahun_mulai": "2024",
+                                        "tahun_akhir": "2043"
+                                    },
+                                    "deskripsi": "Dalam peraturan ini diatur tentang Rencana Tata Ruang Wilayah Provinsi Gorontalo Tahun 2024-2043 termasuk didalamnya mengatur mengenai ketentuan umum, ruang lingkup, tujuan, kebijakan, dan strategi penataan ruang wilayah provinsi, rencana struktur ruang wilayah provinsi, rencana pola ruang wilayah provinsi, kawasan strategi provinsi, arahan pemanfaatan ruang wilayah provinsi, arahan pengendalian pemanfaatan ruang wilayah provinsi, hak, kewajiban, dan peran masyarakat, kelembagaan, penyelesaian sengketa, penyidikan, ketentuan pidana, ketentuan lain-lain, ketentuan peralihan, ketentuan penutup."
+                                },
+                                "layer_group": {
+                                    "id": 1,
+                                    "nama_layer_group": "Peta Dasar V2"
+                                }
+                            },
+                            "nama": "danauu",
+                            "deskripsi": "woww",
+                            "geojson_file": "data_spasial_service/BiaTps5RA1XjqRAzLLpv-1766770561.geojson",
+                            "tipe_geometri": "polygon",
+                            "icon_titik": "data_spasial_service/wN33Ok3q91IpfUIJT8UEv2rDf0z9sdB6tlfGRczs.webp",
+                            "tipe_garis": null,
+                            "warna": null,
+                            "created_at": "25 December 2025",
+                            "updated_at": "26 December 2025"
+                        }
+                    ]
+                }
+            ],
+            "created_at": "26 December 2025",
+            "updated_at": "26 December 2025"
+        }
+    ],
+    "pagination": null
+}
