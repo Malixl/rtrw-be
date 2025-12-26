@@ -31,6 +31,8 @@ class UserSeeder extends Seeder
             'manajemen_ketentuan_khusus',
             'manajemen_indikasi_program',
             'manajemen_pkkprl',
+            'manajemen_layer_group',
+            'manajemen_data_spasial',
             'manajemen_batas_administrasi',
             'manajemen_layer_group',
             'manajemen_data_spasial',

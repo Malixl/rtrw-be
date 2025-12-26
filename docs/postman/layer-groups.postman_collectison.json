@@ -21,28 +21,16 @@
           "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
         },
         "url": {
-          "raw": "{{baseUrl}}/api/auth/login",
+          "raw": "{{base_url}}/auth/login",
           "host": [
-            "{{baseUrl}}"
+            "{{base_url}}"
           ],
           "path": [
-            "api",
             "auth",
             "login"
           ]
         }
       },
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "exec": [
-              "pm.test(\"Login returns 200\", function () { pm.response.to.have.status(200); });",
-              "try { var json = pm.response.json(); var token = (json.data && (json.data.token || json.data.access_token)) || json.token || json.access_token; if (token) pm.environment.set('token', token); } catch (e) {}"
-            ]
-          }
-        }
-      ],
       "response": []
     },
     {
@@ -50,14 +38,14 @@
       "request": {
         "method": "GET",
         "header": [],
-        "url": "{{baseUrl}}/layer-groups"
+        "url": "{{base_url}}/layer-groups"
       }
     },
     {
       "name": "LayerGroups - Show (public)",
       "request": {
         "method": "GET",
-        "url": "{{baseUrl}}/layer-groups/{{layer_group_id}}"
+        "url": "{{base_url}}/layer-groups/{{layer_group_id}}"
       }
     },
     {
@@ -78,7 +66,7 @@
           "mode": "raw",
           "raw": "{\n  \"nama_layer_group\": \"Peta Dasar\",\n  \"deskripsi\": \"Contains base map layers\",\n  \"urutan_tampil\": 1\n}"
         },
-        "url": "{{baseUrl}}/layer-groups"
+        "url": "{{base_url}}/layer-groups"
       }
     },
     {
@@ -99,7 +87,7 @@
           "mode": "raw",
           "raw": "{\n  \"nama_layer_group\": \"Peta Dasar V2\",\n  \"deskripsi\": \"Updated description\",\n  \"urutan_tampil\": 2\n}"
         },
-        "url": "{{baseUrl}}/layer-groups/{{layer_group_id}}"
+        "url": "{{base_url}}/layer-groups/{{layer_group_id}}"
       }
     },
     {
@@ -112,21 +100,21 @@
             "value": "Bearer {{token}}"
           }
         ],
-        "url": "{{baseUrl}}/layer-groups/{{layer_group_id}}"
+        "url": "{{base_url}}/layer-groups/{{layer_group_id}}"
       }
     },
     {
       "name": "Klasifikasi - List (check layer_group)",
       "request": {
         "method": "GET",
-        "url": "{{baseUrl}}/klasifikasi"
+        "url": "{{base_url}}/klasifikasi"
       }
     },
     {
       "name": "Klasifikasi - Show (check layer_group)",
       "request": {
         "method": "GET",
-        "url": "{{baseUrl}}/klasifikasi/{{klasifikasi_id}}"
+        "url": "{{base_url}}/klasifikasi/{{klasifikasi_id}}"
       }
     },
     {
@@ -141,14 +129,14 @@
           "mode": "raw",
           "raw": "{\n  \"nama\": \"Sungai\",\n  \"deskripsi\": \"Layer sungai\",\n  \"rtrw_id\": {{rtrw_id}},\n  \"layer_group_id\": {{layer_group_id}},\n  \"tipe\": \"data_spasial\"\n}"
         },
-        "url": "{{baseUrl}}/klasifikasi"
+        "url": "{{base_url}}/klasifikasi"
       }
     },
     {
       "name": "Pola Ruang - List (check nested klasifikasi.layer_group)",
       "request": {
         "method": "GET",
-        "url": "{{baseUrl}}/polaruang"
+        "url": "{{base_url}}/polaruang"
       }
     },
     {
@@ -157,8 +145,8 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true",
-          "host": ["{{baseUrl}}"],
+          "raw": "{{base_url}}/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true",
+          "host": ["{{base_url}}"],
           "path": ["layer-groups","with-klasifikasi"],
           "query": [
             { "key": "rtrw_id", "value": "{{rtrw_id}}" },
@@ -173,8 +161,8 @@
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{baseUrl}}/layer-groups/with-klasifikasi?format=flat&rtrw_id={{rtrw_id}}",
-          "host": ["{{baseUrl}}"],
+          "raw": "{{base_url}}/layer-groups/with-klasifikasi?format=flat&rtrw_id={{rtrw_id}}",
+          "host": ["{{base_url}}"],
           "path": ["layer-groups","with-klasifikasi"],
           "query": [
             { "key": "format", "value": "flat" },
@@ -189,36 +177,20 @@
       "listen": "prerequest",
       "script": {
         "exec": [
-          "(function(){",
-          "  try {",
-          "    if (!pm.environment.get('token') && pm.environment.get('admin_email') && pm.environment.get('admin_password')) {",
-          "      var base = pm.environment.get('baseUrl') || pm.environment.get('base_url') || pm.global.get('baseUrl') || pm.global.get('base_url') || 'http://127.0.0.1:8000';",
-          "      base = base.replace(/\\/+$/, '');",
-          "      pm.sendRequest({",
-          "        url: base + '/api/auth/login',",
-          "        method: 'POST',",
-          "        header: { 'Content-Type': 'application/json' },",
-          "        body: { mode: 'raw', raw: JSON.stringify({ email: pm.environment.get('admin_email'), password: pm.environment.get('admin_password') }) }",
-          "      }, function (err, res) {",
-          "        if (!err) {",
-          "          try { var json = res.json(); var token = (json.data && (json.data.token || json.data.access_token)) || json.token || json.access_token; if (token) pm.environment.set('token', token); } catch (e) {}",
-          "        } else { console.log('Auth auto-login failed', err); }",
-          "      });",
-          "    }",
-          "  } catch(e) { console.log('Auth prerequest error', e); }",
-          "})();"
+          "if (!pm.environment.get('token')) {",
+          "  pm.sendRequest({",
+          "    url: pm.environment.get('base_url') + '/auth/login',",
+          "    method: 'POST',",
+          "    header: { 'Content-Type': 'application/json' },",
+          "    body: { mode: 'raw', raw: JSON.stringify({ email: pm.environment.get('admin_email'), password: pm.environment.get('admin_password') }) }",
+          "  }, function (err, res) {",
+          "    if (err) { console.log('Auth auto-login failed', err); return; }",
+          "    try { var json = res.json(); var token = (json.data && (json.data.token || json.data.access_token)) || json.token || json.access_token; if (token) pm.environment.set('token', token); } catch (e) { console.log('Auth parse error', e); }",
+          "  });",
+          "}"
         ]
       }
     }
-  ],
-  "variable": [
-    { "key": "baseUrl", "value": "http://127.0.0.1:8000" },
-    { "key": "token", "value": "" },
-    { "key": "admin_email", "value": "" },
-    { "key": "admin_password", "value": "" },
-    { "key": "layer_group_id", "value": "" },
-    { "key": "klasifikasi_id", "value": "" },
-    { "key": "rtrw_id", "value": "" }
   ],
   "protocolProfileBehavior": {}
 }
