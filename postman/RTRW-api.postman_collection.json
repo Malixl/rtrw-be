@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "RTRW API - Test Collection",
+    "description": "Collection for testing CRUD and import scenarios for map management (pola_ruang, struktur_ruang, klasifikasi, ketentuan_khusus, indikasi_program, pkkprl, layer_group, data_spasial, batas_administrasi). Use {{base_url}} and add Authorization header 'Bearer {{token}}' when needed.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000/api" },
+    { "key": "token", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Layer Groups",
+      "item": [
+        {
+          "name": "List Layer Groups",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{base_url}}/layer-groups", "host": ["{{base_url}}"], "path": ["layer-groups"] }
+          }
+        },
+        {
+          "name": "Create Layer Group",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"layer_group_name\": \"Peta Contoh\",\n  \"deskripsi\": \"Contoh deskripsi\",\n  \"urutan_tampil\": 1\n}"
+            },
+            "url": { "raw": "{{base_url}}/layer-groups", "host": ["{{base_url}}"], "path": ["layer-groups"] }
+          }
+        },
+        {
+          "name": "Import LayerGroups (bulk)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{token}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{{file:postman/imports/layer_groups_bulk_import.json}}"
+            },
+            "url": { "raw": "{{base_url}}/layer-groups/import", "host": ["{{base_url}}"], "path": ["layer-groups", "import"] }
+          }
+        },
+        {
+          "name": "Get Layer Group by ID",
+          "request": { "method": "GET", "url": { "raw": "{{base_url}}/layer-groups/:id", "host": ["{{base_url}}"], "path": ["layer-groups", ":id"] } }
+        },
+        {
+          "name": "Update Layer Group",
+          "request": {
+            "method": "PUT",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"layer_group_name\": \"Peta Diubah\",\n  \"deskripsi\": \"Deskripsi baru\",\n  \"urutan_tampil\": 2\n}" },
+            "url": { "raw": "{{base_url}}/layer-groups/:id", "host": ["{{base_url}}"], "path": ["layer-groups", ":id"] }
+          }
+        },
+        {
+          "name": "Delete Layer Group",
+          "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{base_url}}/layer-groups/:id", "host": ["{{base_url}}"], "path": ["layer-groups", ":id"] } }
+        }
+      ]
+    },
+    {
+      "name": "Klasifikasi",
+      "item": [
+        { "name": "List Klasifikasi", "request": { "method": "GET", "url": { "raw": "{{base_url}}/klasifikasi" } } },
+        {
+          "name": "Create Klasifikasi (use layer_group by name)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" } ],
+            "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Klasifikasi X\",\n  \"deskripsi\": \"Deskripsi\",\n  \"tipe\": \"pola_ruang\",\n  \"layer_group\": \"Peta Contoh\"\n}" },
+            "url": { "raw": "{{base_url}}/klasifikasi" }
+          }
+        },
+        { "name": "Get Klasifikasi by ID", "request": { "method": "GET", "url": { "raw": "{{base_url}}/klasifikasi/:id" } } },
+        { "name": "Update Klasifikasi", "request": { "method": "PUT", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "body": { "mode": "raw", "raw": "{\n  \"nama\": \"Klasifikasi Percobaan\"\n}" }, "url": { "raw": "{{base_url}}/klasifikasi/:id" } } },
+        { "name": "Delete Klasifikasi", "request": { "method": "DELETE", "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ], "url": { "raw": "{{base_url}}/klasifikasi/:id" } } }
+      ]
+    },
+    {
+      "name": "Pola Ruang (geojson)",
+      "item": [
+        { "name": "List Pola Ruang", "request": { "method": "GET", "url": { "raw": "{{base_url}}/polaruang" } } },
+        {
+          "name": "Create Pola Ruang (file upload)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "nama", "value": "Polaruang 1", "type": "text" },
+                { "key": "deskripsi", "value": "contoh", "type": "text" },
+                { "key": "klasifikasi_id", "value": "<klasifikasi-id>", "type": "text" },
+                { "key": "warna", "value": "#FF0000", "type": "text" },
+                { "key": "geojson_file", "type": "file", "src": "./imports/sample_polygons.geojson" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/polaruang" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Data Spasial (file)",
+      "item": [
+        { "name": "List Data Spasial", "request": { "method": "GET", "url": { "raw": "{{base_url}}/data_spasial" } } },
+        {
+          "name": "Create Data Spasial (file upload)",
+          "request": {
+            "method": "POST",
+            "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "nama", "value": "DS 1", "type": "text" },
+                { "key": "deskripsi", "value": "contoh data spasial", "type": "text" },
+                { "key": "klasifikasi_id", "value": "<klasifikasi-id>", "type": "text" },
+                { "key": "geojson_file", "type": "file", "src": "./imports/data_spasial_sample.geojson" }
+              ]
+            },
+            "url": { "raw": "{{base_url}}/data_spasial" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Other resources (struktur_ruang, ketentuan_khusus, indikasi_program, pkkprl, batas_administrasi)",
+      "item": [
+        { "name": "List Struktur Ruang", "request": { "method": "GET", "url": { "raw": "{{base_url}}/struktur_ruang" } } },
+        { "name": "List Ketentuan Khusus", "request": { "method": "GET", "url": { "raw": "{{base_url}}/ketentuan_khusus" } } },
+        { "name": "List Indikasi Program", "request": { "method": "GET", "url": { "raw": "{{base_url}}/indikasi_program" } } },
+        { "name": "List Pkkprl", "request": { "method": "GET", "url": { "raw": "{{base_url}}/pkkprl" } } },
+        { "name": "List Batas Administrasi", "request": { "method": "GET", "url": { "raw": "{{base_url}}/batas_administrasi" } } }
+      ]
+    }
+  ]
+}

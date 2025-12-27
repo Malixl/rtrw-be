@@ -22,14 +22,12 @@ class UserSeeder extends Seeder
         // Admin Permissions (Full CRUD)
         $adminPermissions = [
             // Map Management
-            'manajemen_wilayah',
             'manajemen_polaruang',
             'manajemen_struktur_ruang',
             'manajemen_klasifikasi',
             'manajemen_ketentuan_khusus',
             'manajemen_indikasi_program',
             'manajemen_pkkprl',
-            'manajemen_layer_group',
             'manajemen_data_spasial',
             'manajemen_batas_administrasi',
             'manajemen_layer_group',

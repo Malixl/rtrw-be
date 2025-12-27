@@ -1,0 +1,21 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "name": "Contoh Polygon" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [106.80, -6.21],
+            [106.82, -6.21],
+            [106.82, -6.20],
+            [106.80, -6.20],
+            [106.80, -6.21]
+          ]
+        ]
+      }
+    }
+  ]
+}

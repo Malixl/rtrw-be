@@ -25,7 +25,7 @@ class StrukturRuangResources extends JsonResource
                 'tipe' => $klasifikasi->tipe,
                 'layer_group' => [
                     'id' => optional($klasifikasi->layerGroup)->id,
-                    'nama_layer_group' => optional($klasifikasi->layerGroup)->nama_layer_group,
+                    'layer_group_name' => optional($klasifikasi->layerGroup)->layer_group_name,
                 ],
             ],
             'nama' => $this->nama,

@@ -11,7 +11,7 @@ class LayerGroupResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'nama_layer_group' => $this->nama_layer_group,
+            'layer_group_name' => $this->layer_group_name,
             'deskripsi' => $this->deskripsi,
             'urutan_tampil' => $this->urutan_tampil,
             'klasifikasis' => KlasifikasiResources::collection($this->whenLoaded('klasifikasis')),

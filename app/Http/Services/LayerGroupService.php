@@ -23,7 +23,7 @@ class LayerGroupService
             ->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama_layer_group', 'like', '%'.$search.'%');
+            $data->where('nama_layer_group', 'like', '%' . $search . '%');
         }
 
         // eager load klasifikasis and their related data
@@ -76,8 +76,7 @@ class LayerGroupService
                 // filter klasifikasis that have at least one geo child
                 $groups = $groups->map(function ($g) {
                     $filtered = $g->klasifikasis->filter(function ($k) {
-                        return
-                            ($k->polaRuang && $k->polaRuang->isNotEmpty()) ||
+                        return ($k->polaRuang && $k->polaRuang->isNotEmpty()) ||
                             ($k->strukturRuang && $k->strukturRuang->isNotEmpty()) ||
                             ($k->ketentuanKhusus && $k->ketentuanKhusus->isNotEmpty()) ||
                             ($k->indikasiProgram && $k->indikasiProgram->isNotEmpty()) ||
@@ -133,6 +132,69 @@ class LayerGroupService
         }
 
         throw new \Exception('Invalid format parameter');
+    }
+
+    /**
+     * Import an array of LayerGroup objects in Rafiq format and create LayerGroups + Klasifikasis atomically.
+     * Expects an array of associative arrays (payload) as validated by StoreLayerGroupRequest.
+     * Returns a Collection of created LayerGroup models.
+     *
+     * @param array $payload
+     * @return \Illuminate\Support\Collection
+     */
+    public function import(array $payload)
+    {
+        DB::beginTransaction();
+
+        try {
+            $created = collect();
+
+            foreach ($payload as $group) {
+                $name = $group['layer_group_name'] ?? $group['nama_layer_group'] ?? null;
+
+                $lg = $this->model->create([
+                    'nama_layer_group' => $name,
+                    'deskripsi' => $group['deskripsi'] ?? '',
+                    'urutan_tampil' => $group['urutan_tampil'] ?? null,
+                ]);
+
+                $mapping = [
+                    'klasifikasi_pola_ruang' => 'pola_ruang',
+                    'klasifikasi_struktur_ruang' => 'struktur_ruang',
+                    'klasifikasi_ketentuan_khusus' => 'ketentuan_khusus',
+                    'klasifikasi_pkkprl' => 'pkkprl',
+                    'klasifikasi_indikasi_program' => 'indikasi_program',
+                ];
+
+                $klasMap = $group['klasifikasis'] ?? [];
+
+                foreach ($mapping as $key => $tipe) {
+                    $items = $klasMap[$key] ?? [];
+
+                    if (! is_array($items)) {
+                        continue;
+                    }
+
+                    foreach ($items as $item) {
+                        \App\Models\Klasifikasi::create([
+                            'layer_group_id' => $lg->id,
+                            'nama' => $item['nama'] ?? ($item['name'] ?? 'Untitled'),
+                            'deskripsi' => $item['deskripsi'] ?? ($item['description'] ?? ''),
+                            'tipe' => $tipe,
+                        ]);
+                    }
+                }
+
+                $created->push($lg->fresh());
+            }
+
+            DB::commit();
+
+            return $created;
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
     }
 
     public function store($request)

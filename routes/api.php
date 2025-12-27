@@ -32,7 +32,7 @@ use Illuminate\Support\Facades\Route;
 $registerPublicRoutes = function (?string $nameSuffix = null) {
     // Auth Routes
     Route::prefix('auth')->controller(AuthController::class)->group(function () use ($nameSuffix) {
-        $routeName = $nameSuffix ? 'login.'.$nameSuffix : 'login';
+        $routeName = $nameSuffix ? 'login.' . $nameSuffix : 'login';
         Route::post('login', 'login')->name($routeName);
     });
 
@@ -120,6 +120,8 @@ $registerAdminRoutes = function () {
 
     // LayerGroup CRUD
     Route::post('/layer-groups', [LayerGroupController::class, 'store']);
+    // Bulk import LayerGroups (JSON array in Rafiq format)
+    Route::post('/layer-groups/import', [LayerGroupController::class, 'import']);
     Route::put('/layer-groups/{id}', [LayerGroupController::class, 'update']);
     Route::delete('/layer-groups/multi-delete', [LayerGroupController::class, 'multiDestroy']);
     Route::delete('/layer-groups/{id}', [LayerGroupController::class, 'destroy']);
@@ -194,13 +196,12 @@ $registerPublicRoutes();
 Route::middleware(['auth:sanctum'])->group($registerAuthenticatedRoutes);
 
 // Admin Only Routes
-Route::middleware(['auth:sanctum', 'role:admin'])->group($registerAdminRoutes);
-
+Route::middleware(['auth:sanctum', 'role:admin'])->name('admin.')->group($registerAdminRoutes);
 // Versioned API (v1)
 Route::prefix('v1')->group(function () use ($registerPublicRoutes, $registerAuthenticatedRoutes, $registerAdminRoutes) {
     $registerPublicRoutes('v1');
 
     Route::middleware(['auth:sanctum'])->group($registerAuthenticatedRoutes);
 
-    Route::middleware(['auth:sanctum', 'role:admin'])->group($registerAdminRoutes);
+    Route::middleware(['auth:sanctum', 'role:admin'])->name('v1.admin.')->group($registerAdminRoutes);
 });

@@ -21,7 +21,7 @@ class GisSearchTest extends TestCase
         $this->actingAs($user, 'sanctum');
 
         // create layer group
-        $this->postJson('/api/layer-groups', ['nama_layer_group' => 'Peta Dasar', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
+        $this->postJson('/api/layer-groups', ['layer_group_name' => 'Peta Dasar', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
         $lg = $this->getJson('/api/layer-groups')->json('data')[0];
         $petaDasarId = $lg['id'];
 
@@ -45,11 +45,11 @@ class GisSearchTest extends TestCase
             'tipe_geometri' => 'polygon',
         ]);
 
-        $resp = $this->getJson('/api/gis/search?klasifikasi_id='.$klId);
+        $resp = $this->getJson('/api/gis/search?klasifikasi_id=' . $klId);
         $resp->assertStatus(200);
 
         $resp->assertJson(
-            fn (\Illuminate\Testing\Fluent\AssertableJson $json) => $json->has('data')
+            fn(\Illuminate\Testing\Fluent\AssertableJson $json) => $json->has('data')
                 ->where('data.id', $klId)
                 ->has('data.data_spasial')
                 ->etc()
@@ -64,7 +64,7 @@ class GisSearchTest extends TestCase
         $this->actingAs($user, 'sanctum');
 
         // create layer group & two klasifikasi
-        $this->postJson('/api/layer-groups', ['nama_layer_group' => 'Peta Dasar', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
+        $this->postJson('/api/layer-groups', ['layer_group_name' => 'Peta Dasar', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
         $lg = $this->getJson('/api/layer-groups')->json('data')[0];
         $petaDasarId = $lg['id'];
 
@@ -86,7 +86,7 @@ class GisSearchTest extends TestCase
         $resp->assertStatus(200);
 
         $resp->assertJson(
-            fn (\Illuminate\Testing\Fluent\AssertableJson $json) => $json->has('data')->etc()
+            fn(\Illuminate\Testing\Fluent\AssertableJson $json) => $json->has('data')->etc()
         );
 
         $data = $resp->json('data');

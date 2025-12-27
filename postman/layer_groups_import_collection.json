@@ -1,0 +1,196 @@
+{
+  "info": {
+    "name": "LayerGroups Import (Rafiq format)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "Collection with import request and verification requests for LayerGroups (Rafiq grouped klasifikasis format). Replace {{base_url}} and set Authorization Bearer token if needed."
+  },
+  "item": [
+    {
+      "name": "Import LayerGroups (bulk)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "[\n  {\n    \"layer_group_name\": \"Peta Import A\",\n    \"deskripsi\": \"Contoh import A\",\n    \"urutan_tampil\": 10,\n    \"klasifikasis\": {\n      \"klasifikasi_pola_ruang\": [\n        {\n          \"nama\": \"Pola A1\",\n          \"deskripsi\": \"Deskripsi pola A1\"\n        }\n      ],\n      \"klasifikasi_struktur_ruang\": [\n        {\n          \"nama\": \"Struktur A1\",\n          \"deskripsi\": \"Deskripsi struktur A1\"\n        }\n      ],\n      \"klasifikasi_ketentuan_khusus\": [],\n      \"klasifikasi_indikasi_program\": [],\n      \"klasifikasi_pkkprl\": []\n    }\n  },\n  {\n    \"layer_group_name\": \"Peta Import B\",\n    \"deskripsi\": \"Contoh import B\",\n    \"urutan_tampil\": 20,\n    \"klasifikasis\": {\n      \"klasifikasi_pola_ruang\": [],\n      \"klasifikasi_struktur_ruang\": [],\n      \"klasifikasi_ketentuan_khusus\": [\n        {\n          \"nama\": \"Ketentuan B1\",\n          \"deskripsi\": \"Deskripsi ketentuan B1\"\n        }\n      ],\n      \"klasifikasi_indikasi_program\": [],\n      \"klasifikasi_pkkprl\": []\n    }\n  }\n]"
+        },
+        "url": {
+          "raw": "{{base_url}}/api/layer-groups/import",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "layer-groups",
+            "import"
+          ]
+        },
+        "description": "Bulk import LayerGroups in Rafiq format. Payload may be a raw array or an object { \"data\": [ ... ] } (both supported)."
+      },
+      "response": [
+        {
+          "name": "Successful import (201)",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "[...]"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/layer-groups/import"
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_body": {
+            "code": 201,
+            "status": true,
+            "message": "Layer groups imported successfully",
+            "data": [
+              {
+                "id": 101,
+                "layer_group_name": "Peta Import A",
+                "deskripsi": "Contoh import A",
+                "urutan_tampil": 10,
+                "klasifikasis": {
+                  "klasifikasi_pola_ruang": [
+                    {
+                      "id": 1001,
+                      "klasifikasi": {
+                        "id": 501,
+                        "nama": "Pola A1",
+                        "deskripsi": "Deskripsi pola A1",
+                        "tipe": "pola_ruang",
+                        "layer_group": {
+                          "id": 101,
+                          "layer_group_name": "Peta Import A"
+                        }
+                      },
+                      "nama": "Pola A1",
+                      "warna": "#FF0000",
+                      "deskripsi": "Deskripsi pola A1",
+                      "geojson_file": "polaruang/sample_polygon_1.geojson",
+                      "created_at": "27 December 2025",
+                      "updated_at": "27 December 2025"
+                    }
+                  ],
+                  "klasifikasi_struktur_ruang": [
+                    {
+                      "id": 1201,
+                      "klasifikasi": {
+                        "id": 502,
+                        "nama": "Struktur A1",
+                        "deskripsi": "Deskripsi struktur A1",
+                        "tipe": "struktur_ruang",
+                        "layer_group": {"id": 101, "layer_group_name": "Peta Import A"}
+                      },
+                      "nama": "Struktur A1",
+                      "deskripsi": "Deskripsi struktur A1",
+                      "tipe_geometri": "point",
+                      "icon_titik": "default.png",
+                      "tipe_garis": null,
+                      "warna": "#00FF00",
+                      "geojson_file": "",
+                      "created_at": "27 December 2025",
+                      "updated_at": "27 December 2025"
+                    }
+                  ],
+                  "klasifikasi_ketentuan_khusus": [],
+                  "klasifikasi_pkkprl": [],
+                  "klasifikasi_indikasi_program": [],
+                  "klasifikasi_data_spasial": []
+                },
+                "created_at": "27 December 2025",
+                "updated_at": "27 December 2025"
+              },
+              {
+                "id": 102,
+                "layer_group_name": "Peta Import B",
+                "deskripsi": "Contoh import B",
+                "urutan_tampil": 20,
+                "klasifikasis": {
+                  "klasifikasi_pola_ruang": [],
+                  "klasifikasi_struktur_ruang": [],
+                  "klasifikasi_ketentuan_khusus": [
+                    {
+                      "id": 2001,
+                      "klasifikasi": {
+                        "id": 601,
+                        "nama": "Ketentuan B1",
+                        "deskripsi": "Deskripsi ketentuan B1",
+                        "tipe": "ketentuan_khusus",
+                        "layer_group": {"id": 102, "layer_group_name": "Peta Import B"}
+                      },
+                      "nama": "Ketentuan B1",
+                      "deskripsi": "Deskripsi ketentuan B1",
+                      "tipe_geometri": "polygon",
+                      "icon_titik": "default.png",
+                      "tipe_garis": null,
+                      "warna": "#0000FF",
+                      "geojson_file": "",
+                      "created_at": "27 December 2025",
+                      "updated_at": "27 December 2025"
+                    }
+                  ],
+                  "klasifikasi_pkkprl": [],
+                  "klasifikasi_indikasi_program": [],
+                  "klasifikasi_data_spasial": []
+                },
+                "created_at": "27 December 2025",
+                "updated_at": "27 December 2025"
+              }
+            ],
+            "pagination": null
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get imported LayerGroups (with klasifikasi)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{token}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{base_url}}/api/layer-groups/with-klasifikasi",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "api",
+            "layer-groups",
+            "with-klasifikasi"
+          ]
+        },
+        "description": "Verify grouped klasifikasis after import."
+      },
+      "response": []
+    }
+  ]
+}

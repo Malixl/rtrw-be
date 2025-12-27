@@ -41,14 +41,14 @@ class LayerGroupAdditionalTest extends TestCase
 
         $this->actingAs($opd, 'sanctum');
 
-        $payload = ['nama_layer_group' => 'Should Not', 'deskripsi' => '', 'urutan_tampil' => 5];
+        $payload = ['layer_group_name' => 'Should Not', 'deskripsi' => '', 'urutan_tampil' => 5];
         $resp = $this->postJson('/api/layer-groups', $payload);
         $resp->assertStatus(403);
     }
 
     public function test_guest_cannot_create_layer_group()
     {
-        $payload = ['nama_layer_group' => 'Guest', 'deskripsi' => '', 'urutan_tampil' => 5];
+        $payload = ['layer_group_name' => 'Guest', 'deskripsi' => '', 'urutan_tampil' => 5];
         $resp = $this->postJson('/api/layer-groups', $payload);
         $resp->assertStatus(401);
     }
@@ -65,7 +65,7 @@ class LayerGroupAdditionalTest extends TestCase
             'nama' => 'Test K',
             'deskripsi' => 'desc',
             'layer_group_id' => 999999, // invalid
-            'tipe' => 'data_spasial',
+            'tipe' => 'data_spasial'
         ];
 
         $resp = $this->postJson('/api/klasifikasi', $payload);

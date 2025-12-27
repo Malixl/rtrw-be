@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('klasifikasi', function (Blueprint $table) {
-            $table->foreignId('layer_group_id')->nullable()->constrained('layer_groups')->nullOnDelete();
-        });
+        if (Schema::hasTable('klasifikasi') && ! Schema::hasColumn('klasifikasi', 'layer_group_id')) {
+            Schema::table('klasifikasi', function (Blueprint $table) {
+                $table->foreignId('layer_group_id')->nullable()->constrained('layer_groups')->nullOnDelete();
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('klasifikasi', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('layer_group_id');
-        });
+        if (Schema::hasTable('klasifikasi') && Schema::hasColumn('klasifikasi', 'layer_group_id')) {
+            Schema::table('klasifikasi', function (Blueprint $table) {
+                $table->dropConstrainedForeignId('layer_group_id');
+            });
+        }
     }
 };

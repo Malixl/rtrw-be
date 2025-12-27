@@ -48,9 +48,10 @@ class LayerGroupController extends Controller
     public function store(StoreLayerGroupRequest $request)
     {
         try {
-            $this->layerGroupService->store($request);
+            $lg = $this->layerGroupService->store($request);
 
-            return $this->successResponse(
+            return $this->successResponseWithData(
+                \App\Http\Resources\LayerGroupMapResource::make($lg->fresh()),
                 'Berhasil menambah data layer group',
                 Response::HTTP_CREATED
             );
@@ -210,6 +211,29 @@ class LayerGroupController extends Controller
                 $e->getMessage(),
                 Response::HTTP_BAD_REQUEST
             );
+        }
+    }
+
+    /**
+     * Bulk import LayerGroups in Rafiq format.
+     * Accepts an array of LayerGroup objects with grouped klasifikasis.
+     */
+    public function import(\App\Http\Requests\StoreLayerGroupRequest $request)
+    {
+        try {
+            // validated() will contain ['data' => [...]] as defined in StoreLayerGroupRequest
+            $payload = $request->validated()['data'];
+
+            $created = $this->layerGroupService->import($payload);
+
+            return $this->successResponseWithDataIndex(
+                collect($created),
+                LayerGroupMapResource::collection(collect($created)),
+                'Layer groups imported successfully',
+                Response::HTTP_CREATED
+            );
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
 }

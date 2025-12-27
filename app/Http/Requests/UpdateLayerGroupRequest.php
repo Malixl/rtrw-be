@@ -11,10 +11,17 @@ class UpdateLayerGroupRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation(): void
+    {
+        if ($this->has('layer_group_name')) {
+            $this->merge(['nama_layer_group' => $this->input('layer_group_name')]);
+        }
+    }
+
     public function rules(): array
     {
         return [
-            'nama_layer_group' => 'required|string|max:255',
+            'layer_group_name' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'urutan_tampil' => 'nullable|integer',
         ];

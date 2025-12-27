@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "layer_group_name": "Peta Contoh A",
+    "deskripsi": "Layer group contoh A",
+    "urutan_tampil": 1,
+    "klasifikasis": {
+      "klasifikasi_pola_ruang": [
+        { "id": 1001, "nama": "Sungai", "deskripsi": "Jaringan sungai" }
+      ],
+      "klasifikasi_struktur_ruang": [
+        { "id": 2001, "nama": "Kawasan Inti", "deskripsi": "Kawasan inti" }
+      ],
+      "klasifikasi_ketentuan_khusus": [],
+      "klasifikasi_pkkprl": [],
+      "klasifikasi_indikasi_program": []
+    }
+  }
+]

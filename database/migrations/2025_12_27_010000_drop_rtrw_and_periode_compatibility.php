@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -11,34 +12,37 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Remove foreign key and column from klasifikasi first
-        if (Schema::hasTable('klasifikasi')) {
-            if (Schema::hasColumn('klasifikasi', 'rtrw_id')) {
-                // Check if FK exists in information_schema before attempting to drop it
-                $foreignExists = false;
-                try {
-                    $foreignExists = ! empty(\Illuminate\Support\Facades\DB::select("SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'klasifikasi' AND CONSTRAINT_TYPE = 'FOREIGN KEY' AND CONSTRAINT_NAME = 'klasifikasi_rtrw_id_foreign'"));
-                } catch (\Exception $e) {
-                    // If query fails, fall back to attempting drop (with try-catch below)
-                    $foreignExists = false;
+        // 1) Remove rtrw_id column on klasifikasi if exists (drop FK if present)
+        if (Schema::hasTable('klasifikasi') && Schema::hasColumn('klasifikasi', 'rtrw_id')) {
+            // check information_schema for foreign key existence
+            $constraint = null;
+            try {
+                $rows = DB::select("SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'klasifikasi' AND CONSTRAINT_TYPE = 'FOREIGN KEY' AND CONSTRAINT_NAME = 'klasifikasi_rtrw_id_foreign'");
+                $constraint = ! empty($rows) ? $rows[0]->CONSTRAINT_NAME : null;
+            } catch (\Throwable $e) {
+                $constraint = null;
+            }
+
+            Schema::table('klasifikasi', function (Blueprint $table) use ($constraint) {
+                if ($constraint) {
+                    try {
+                        $table->dropForeign(['rtrw_id']);
+                    } catch (\Throwable $e) {
+                        // ignore if drop fails
+                    }
                 }
 
-                Schema::table('klasifikasi', function (Blueprint $table) use ($foreignExists) {
-                    if ($foreignExists) {
-                        $table->dropForeign(['rtrw_id']);
-                    }
-
+                if (Schema::hasColumn('klasifikasi', 'rtrw_id')) {
                     $table->dropColumn('rtrw_id');
-                });
-            }
+                }
+            });
         }
 
-        // Drop rtrw table
+        // 2) Drop rtrw and periode tables if they exist (non-destructive if already missing)
         if (Schema::hasTable('rtrw')) {
             Schema::dropIfExists('rtrw');
         }
 
-        // Drop periode table
         if (Schema::hasTable('periode')) {
             Schema::dropIfExists('periode');
         }
@@ -70,7 +74,7 @@ return new class extends Migration
             });
         }
 
-        // Re-add rtrw_id to klasifikasi
+        // Re-add rtrw_id to klasifikasi if the table exists and column missing
         if (Schema::hasTable('klasifikasi') && ! Schema::hasColumn('klasifikasi', 'rtrw_id')) {
             Schema::table('klasifikasi', function (Blueprint $table) {
                 $table->foreignId('rtrw_id')->constrained('rtrw')->onDelete('cascade');

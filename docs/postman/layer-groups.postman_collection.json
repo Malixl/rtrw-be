@@ -46,7 +46,7 @@
       "request": {
         "method": "POST",
         "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
-        "body": { "mode": "raw", "raw": "{\n  \"nama_layer_group\": \"Peta Dasar\",\n  \"deskripsi\": \"Contains base map layers\",\n  \"urutan_tampil\": 1\n}" },
+        "body": { "mode": "raw", "raw": "{\n  \"layer_group_name\": \"Peta Dasar\",\n  \"deskripsi\": \"Contains base map layers\",\n  \"urutan_tampil\": 1\n}" },
         "url": { "raw": "{{base_url}}/layer-groups", "host": ["{{base_url}}"], "path": ["layer-groups"] },
         "description": "Create a layer group (admin only). Use returned id to set {{layer_group_id}}."
       },
@@ -57,7 +57,7 @@
       "request": {
         "method": "PUT",
         "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
-        "body": { "mode": "raw", "raw": "{\n  \"nama_layer_group\": \"Peta Dasar V2\",\n  \"deskripsi\": \"Updated description\",\n  \"urutan_tampil\": 2\n}" },
+        "body": { "mode": "raw", "raw": "{\n  \"layer_group_name\": \"Peta Dasar V2\",\n  \"deskripsi\": \"Updated description\",\n  \"urutan_tampil\": 2\n}" },
         "url": { "raw": "{{base_url}}/layer-groups/{{layer_group_id}}", "host": ["{{base_url}}"], "path": ["layer-groups","{{layer_group_id}}"] },
         "description": "Update a layer group (admin only)."
       },

@@ -23,9 +23,14 @@ class KlasifikasiRequest extends FormRequest
     {
         return [
             'nama' => 'required|string',
-            'deskripsi' => 'string',
+            // Deskripsi wajib diisi menurut spesifikasi admin
+            'deskripsi' => 'required|string',
 
+            // Layer group harus dipilih saat membuat (required on POST) OR layer_group_id boleh dipakai
+            // required_without:layer_group_id => layer_group wajib jika layer_group_id tidak dikirim
+            'layer_group' => ($this->isMethod('post') ? 'required_without:layer_group_id' : 'nullable') . '|string|exists:layer_groups,nama_layer_group',
             'layer_group_id' => 'nullable|exists:layer_groups,id',
+
             'tipe' => 'required|in:pola_ruang,struktur_ruang,ketentuan_khusus,indikasi_program,pkkprl,data_spasial',
         ];
     }
@@ -35,9 +40,14 @@ class KlasifikasiRequest extends FormRequest
         return [
             'nama.required' => 'Nama wajib diisi.',
             'nama.string' => 'Nama harus berupa teks.',
+            'deskripsi.required' => 'Deskripsi wajib diisi.',
             'deskripsi.string' => 'Deskripsi harus berupa teks.',
 
-            'layer_group_id.exists' => 'Layer group yang dipilih tidak valid.',
+            'layer_group.required_without' => 'Layer Group wajib dipilih.',
+            'layer_group.required' => 'Layer Group wajib dipilih.',
+            'layer_group.exists' => 'Layer Group yang dipilih tidak valid.',
+            'layer_group_id.exists' => 'Layer Group yang dipilih tidak valid.',
+
             'tipe.required' => 'Tipe klasifikasi wajib dipilih.',
             'tipe.in' => 'Tipe klasifikasi harus pola_ruang, struktur ruang, ketentuan khusus, indikasi program, pkkprl, atau data_spasial.',
         ];

@@ -34,7 +34,7 @@ class IndikasiProgramResources extends JsonResource
                 // ],
                 'layer_group' => [
                     'id' => optional($this->klasifikasi->layerGroup)->id ?? null,
-                    'nama_layer_group' => optional($this->klasifikasi->layerGroup)->nama_layer_group ?? null,
+                    'layer_group_name' => optional($this->klasifikasi->layerGroup)->layer_group_name ?? null,
                 ],
             ],
             'nama' => $this->nama,

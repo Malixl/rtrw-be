@@ -3,11 +3,12 @@
 namespace Tests\Feature;
 
 use App\Models\Polaruang;
+use App\Models\StrukturRuang;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
-use Spatie\Permission\Models\Role;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Spatie\Permission\Models\Role;
 
 class LayerGroupMapFlatFeatureTest extends TestCase
 {
@@ -20,18 +21,19 @@ class LayerGroupMapFlatFeatureTest extends TestCase
         $user->assignRole('admin');
         $this->actingAs($user, 'sanctum');
 
+
         // create group and klasifikasi, attach children
-        $this->postJson('/api/layer-groups', ['nama_layer_group' => 'Peta Dasar', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
+        $this->postJson('/api/layer-groups', ['layer_group_name' => 'Peta Dasar', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
 
         $lgList = $this->getJson('/api/layer-groups');
         $lgData = $lgList->json('data');
-        $petaDasarId = collect($lgData)->firstWhere('nama_layer_group', 'Peta Dasar')['id'];
+        $petaDasarId = collect($lgData)->firstWhere('layer_group_name', 'Peta Dasar')['id'];
 
         $this->postJson('/api/klasifikasi', [
             'nama' => 'Sungai',
             'deskripsi' => 'layer sungai',
             'layer_group_id' => $petaDasarId,
-            'tipe' => 'data_spasial',
+            'tipe' => 'data_spasial'
         ])->assertStatus(201);
 
         $klList = $this->getJson('/api/klasifikasi');
@@ -43,7 +45,7 @@ class LayerGroupMapFlatFeatureTest extends TestCase
             'nama' => 'Sungai Layer',
             'deskripsi' => 'desc',
             'geojson_file' => '',
-            'warna' => '#000',
+            'warna' => '#000'
         ]);
 
         // call flat format (no rtrw)
@@ -58,7 +60,7 @@ class LayerGroupMapFlatFeatureTest extends TestCase
                 'klasifikasi_indikasi_program',
                 'klasifikasi_pkkprl',
                 'klasifikasi_data_spasial',
-            ],
+            ]
         ]);
 
         $data = $resp->json('data');

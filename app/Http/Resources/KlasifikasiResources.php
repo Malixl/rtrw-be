@@ -31,7 +31,7 @@ class KlasifikasiResources extends JsonResource
             'tipe' => $this->tipe,
             'layer_group' => [
                 'id' => optional($this->layerGroup)->id ?? null,
-                'nama_layer_group' => optional($this->layerGroup)->nama_layer_group ?? null,
+                'layer_group_name' => optional($this->layerGroup)->layer_group_name ?? null,
             ],
             'created_at' => $this->created_at->format('d F Y'),
             'updated_at' => $this->updated_at->format('d F Y'),

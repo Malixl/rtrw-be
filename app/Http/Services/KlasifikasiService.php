@@ -21,7 +21,7 @@ class KlasifikasiService
         $data = $this->model->with(['layerGroup'])->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%'.$search.'%');
+            $data->where('nama', 'like', '%' . $search . '%');
         }
 
         if ($tipe = $request->query('tipe')) {
@@ -44,6 +44,23 @@ class KlasifikasiService
         try {
             $validatedData = $request->validated();
 
+            // Resolve layer group name -> id if necessary
+            if (! empty($validatedData['layer_group_id'])) {
+                $validatedData['layer_group_id'] = $validatedData['layer_group_id'];
+            } elseif (! empty($validatedData['layer_group'])) {
+                $lg = \App\Models\LayerGroup::where('nama_layer_group', $validatedData['layer_group'])->first();
+                if (! $lg) {
+                    DB::rollBack();
+                    throw new Exception('Layer group yang dipilih tidak ditemukan.');
+                }
+                $validatedData['layer_group_id'] = $lg->id;
+            } else {
+                $validatedData['layer_group_id'] = null;
+            }
+
+            // Remove any layer_group key (we store by id)
+            unset($validatedData['layer_group']);
+
             $data = $this->model->create($validatedData);
 
             DB::commit();
@@ -65,6 +82,20 @@ class KlasifikasiService
         DB::beginTransaction();
         try {
             $validatedData = $request->validated();
+
+            // Resolve layer group if provided
+            if (! empty($validatedData['layer_group_id'])) {
+                $validatedData['layer_group_id'] = $validatedData['layer_group_id'];
+            } elseif (! empty($validatedData['layer_group'])) {
+                $lg = \App\Models\LayerGroup::where('nama_layer_group', $validatedData['layer_group'])->first();
+                if (! $lg) {
+                    DB::rollBack();
+                    throw new Exception('Layer group yang dipilih tidak ditemukan.');
+                }
+                $validatedData['layer_group_id'] = $lg->id;
+            }
+
+            unset($validatedData['layer_group']);
 
             $data = $this->model->findOrFail($id)->update($validatedData);
 

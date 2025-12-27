@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('klasifikasi', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('rtrw_id')->constrained('rtrw')->onDelete('cascade');
+            $table->unsignedBigInteger('layer_group_id')->nullable();
             $table->string('nama');
             $table->text('deskripsi')->nullable();
             $table->enum('tipe', ['struktur_ruang', 'pola_ruang', 'ketentuan_khusus', 'indikasi_program', 'pkkprl', 'data_spasial']);
