@@ -4,11 +4,9 @@ namespace Tests\Feature;
 
 use App\Models\DataSpasial;
 use App\Models\Klasifikasi;
-use App\Models\Periode;
-use App\Models\Rtrw;
 use App\Models\User;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Spatie\Permission\Models\Role;
 use Tests\TestCase;
@@ -26,29 +24,11 @@ class LayerGroupFeatureTest extends TestCase
 
         $this->actingAs($user, 'sanctum');
 
-        // Create periode and rtrw via DB/Eloquent
-        $periodeId = \Illuminate\Support\Facades\DB::table('periode')->insertGetId([
-            'tahun_mulai' => 2020,
-            'tahun_akhir' => 2025,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $rtrwId = \Illuminate\Support\Facades\DB::table('rtrw')->insertGetId([
-            'nama' => 'RTRW Test',
-            'deskripsi' => 'desc',
-            'periode_id' => $periodeId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $rtrw = Rtrw::find($rtrwId);
-
         // Create LayerGroup via API
         $payload = [
             'nama_layer_group' => 'Peta Dasar',
             'deskripsi' => 'Base layers',
-            'urutan_tampil' => 1
+            'urutan_tampil' => 1,
         ];
 
         $createResp = $this->postJson('/api/layer-groups', $payload);
@@ -59,8 +39,7 @@ class LayerGroupFeatureTest extends TestCase
         $listResp = $this->getJson('/api/layer-groups');
         $listResp->assertStatus(200);
         $listResp->assertJson(
-            fn(AssertableJson $json) =>
-            $json->has('data')->etc()
+            fn (AssertableJson $json) => $json->has('data')->etc()
         );
 
         $layerGroupId = $listResp->json('data')[0]['id'] ?? null;
@@ -70,9 +49,8 @@ class LayerGroupFeatureTest extends TestCase
         $klPayload = [
             'nama' => 'Sungai',
             'deskripsi' => 'layer sungai',
-            'rtrw_id' => $rtrw->id,
             'layer_group_id' => $layerGroupId,
-            'tipe' => 'data_spasial'
+            'tipe' => 'data_spasial',
         ];
 
         $klCreate = $this->postJson('/api/klasifikasi', $klPayload);
@@ -105,7 +83,7 @@ class LayerGroupFeatureTest extends TestCase
         $this->assertArrayHasKey('layer_group', $dsData[0]['klasifikasi']);
 
         // Test deleting layer group sets klasifikasi.layer_group to null (onDelete set null)
-        $del = $this->deleteJson('/api/layer-groups/' . $layerGroupId);
+        $del = $this->deleteJson('/api/layer-groups/'.$layerGroupId);
         $del->assertStatus(200);
 
         $klListAfter = $this->getJson('/api/klasifikasi');
@@ -134,16 +112,16 @@ class LayerGroupFeatureTest extends TestCase
         // Create klasifikasi linked to both groups
         foreach ($ids as $idx) {
             $this->postJson('/api/klasifikasi', [
-                'nama' => 'KL for ' . $idx,
+                'nama' => 'KL for '.$idx,
                 'deskripsi' => 'desc',
-                'rtrw_id' => $rtrw->id,
+
                 'layer_group_id' => $idx,
-                'tipe' => 'data_spasial'
+                'tipe' => 'data_spasial',
             ])->assertStatus(201);
         }
 
         // multi delete via query param
-        $multi = $this->deleteJson('/api/layer-groups/multi-delete?ids=' . implode(',', $ids));
+        $multi = $this->deleteJson('/api/layer-groups/multi-delete?ids='.implode(',', $ids));
         $multi->assertStatus(200);
 
         // verify klasifikasi layer_group becomes null for those klasifikasi

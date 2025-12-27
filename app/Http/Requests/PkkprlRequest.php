@@ -25,9 +25,9 @@ class PkkprlRequest extends FormRequest
             'nama' => 'required|string',
             'deskripsi' => 'nullable|string',
             'klasifikasi_id' => 'required',
-            'tipe_geometri'  => 'required|in:polyline,point,polygon',
-            'icon_titik'      => 'nullable|image|mimes:png,jpg,jpeg,webp',
-            'tipe_garis'     => 'nullable|string',
+            'tipe_geometri' => 'required|in:polyline,point,polygon',
+            'icon_titik' => 'nullable|image|mimes:png,jpg,jpeg,webp',
+            'tipe_garis' => 'nullable|string',
             'warna' => 'nullable|string',
 
         ];
@@ -35,7 +35,7 @@ class PkkprlRequest extends FormRequest
         // Validasi file hanya jika ada file yang diupload atau ini adalah request create
         if ($this->hasFile('geojson_file')) {
             $rules['geojson_file'] = 'required|file|extensions:geojson';
-        } elseif (!$this->route('id')) {
+        } elseif (! $this->route('id')) {
             // Jika create (tidak ada ID), file wajib
             $rules['geojson_file'] = 'required|file|extensions:geojson';
         }

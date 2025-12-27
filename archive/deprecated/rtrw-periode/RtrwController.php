@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Rtrw;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RtrwRequest;
 use App\Http\Resources\RtrwResources;
-use App\Http\Services\RtrwService;
 use App\Http\Traits\ApiResponse;
 use Exception;
 use Illuminate\Http\Request;
@@ -16,11 +15,20 @@ class RtrwController extends Controller
 {
     use ApiResponse;
 
-    protected $rtrwService;
-
-    public function __construct(RtrwService $rtrwService)
+    public function __construct()
     {
-        $this->rtrwService = $rtrwService;
+        // Controller kept for compat; all routes removed. If accidentally invoked,
+        // return 410 Gone to indicate resource is deprecated.
+    }
+
+    protected function goneResponse()
+    {
+        return response()->json(['status' => 'error', 'message' => 'RTRW module removed'], 410);
+    }
+
+    public function __call($method, $parameters)
+    {
+        return $this->goneResponse();
     }
 
     public function index(Request $request)
@@ -37,7 +45,7 @@ class RtrwController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
         }
     }

@@ -35,7 +35,6 @@ class RtrwRequest extends FormRequest
             'nama.string' => 'Nama RTRW harus berupa teks.',
             'nama.max' => 'Nama RTRW maksimal 255 karakter.',
 
-
             'periode_id.required' => 'Periode wajib diisi.',
             'periode_id.exists' => 'Periode yang dipilih tidak ditemukan.',
 

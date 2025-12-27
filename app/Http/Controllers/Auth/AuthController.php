@@ -13,7 +13,9 @@ use Symfony\Component\HttpFoundation\Response;
 class AuthController extends Controller
 {
     use ApiResponse;
+
     protected $authService;
+
     public function __construct(AuthService $authService)
     {
         $this->authService = $authService;

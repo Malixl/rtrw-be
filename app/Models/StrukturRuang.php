@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class StrukturRuang extends Model
 {
     protected $table = 'struktur_ruang';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [

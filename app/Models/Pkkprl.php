@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Pkkprl extends Model
 {
     protected $table = 'pkkprl';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [

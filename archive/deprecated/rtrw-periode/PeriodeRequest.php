@@ -22,7 +22,7 @@ class PeriodeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tahun_mulai' => 'required|digits:4|integer|min:1900|max:' . date('Y'),
+            'tahun_mulai' => 'required|digits:4|integer|min:1900|max:'.date('Y'),
             'tahun_akhir' => 'required|digits:4|integer|min:1900|gte:tahun_mulai',
         ];
     }

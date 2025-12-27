@@ -3,12 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\Polaruang;
-use App\Models\StrukturRuang;
 use App\Models\User;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class LayerGroupMapFlatFeatureTest extends TestCase
 {
@@ -21,22 +20,6 @@ class LayerGroupMapFlatFeatureTest extends TestCase
         $user->assignRole('admin');
         $this->actingAs($user, 'sanctum');
 
-        // setup periode and rtrw
-        $periodeId = \Illuminate\Support\Facades\DB::table('periode')->insertGetId([
-            'tahun_mulai' => 2020,
-            'tahun_akhir' => 2025,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $rtrwId = \Illuminate\Support\Facades\DB::table('rtrw')->insertGetId([
-            'nama' => 'RTRW Flat Test',
-            'deskripsi' => 'desc',
-            'periode_id' => $periodeId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         // create group and klasifikasi, attach children
         $this->postJson('/api/layer-groups', ['nama_layer_group' => 'Peta Dasar', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
 
@@ -47,9 +30,8 @@ class LayerGroupMapFlatFeatureTest extends TestCase
         $this->postJson('/api/klasifikasi', [
             'nama' => 'Sungai',
             'deskripsi' => 'layer sungai',
-            'rtrw_id' => $rtrwId,
             'layer_group_id' => $petaDasarId,
-            'tipe' => 'data_spasial'
+            'tipe' => 'data_spasial',
         ])->assertStatus(201);
 
         $klList = $this->getJson('/api/klasifikasi');
@@ -61,23 +43,22 @@ class LayerGroupMapFlatFeatureTest extends TestCase
             'nama' => 'Sungai Layer',
             'deskripsi' => 'desc',
             'geojson_file' => '',
-            'warna' => '#000'
+            'warna' => '#000',
         ]);
 
-        // call flat format
-        $resp = $this->getJson('/api/layer-groups/with-klasifikasi?format=flat&rtrw_id=' . $rtrwId);
+        // call flat format (no rtrw)
+        $resp = $this->getJson('/api/layer-groups/with-klasifikasi?format=flat');
         $resp->assertStatus(200);
 
         $resp->assertJsonStructure([
             'data' => [
-                'rtrw',
                 'klasifikasi_pola_ruang',
                 'klasifikasi_struktur_ruang',
                 'klasifikasi_ketentuan_khusus',
                 'klasifikasi_indikasi_program',
                 'klasifikasi_pkkprl',
                 'klasifikasi_data_spasial',
-            ]
+            ],
         ]);
 
         $data = $resp->json('data');

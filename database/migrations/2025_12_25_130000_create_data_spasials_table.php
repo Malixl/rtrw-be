@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Guard: buat hanya jika tabel belum ada (menghindari fatal error bila tabel dibuat manual/terlebih dahulu)
-        if (!Schema::hasTable('data_spasial')) {
+        if (! Schema::hasTable('data_spasial')) {
             Schema::create('data_spasial', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('klasifikasi_id')->constrained('klasifikasi')->onDelete('cascade');

@@ -15,8 +15,6 @@ class CheckRole
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @param  string  ...$roles  Roles yang diizinkan (admin, opd)
      * @return mixed
      */
@@ -25,7 +23,7 @@ class CheckRole
         $user = $request->user();
 
         // Fail-safe: Jika tidak login, anggap sebagai guest
-        if (!$user) {
+        if (! $user) {
             return $this->unauthorizedResponse('Silakan login untuk mengakses fitur ini');
         }
 
@@ -37,6 +35,7 @@ class CheckRole
             if (in_array($userRole, ['admin', 'opd'])) {
                 return $next($request);
             }
+
             return $this->forbiddenResponse('Anda tidak memiliki akses ke fitur ini');
         }
 
@@ -53,13 +52,13 @@ class CheckRole
      */
     private function getUserRole($user): string
     {
-        if (!$user) {
+        if (! $user) {
             return 'guest';
         }
 
         $role = $user->roles->first();
 
-        if (!$role) {
+        if (! $role) {
             return 'guest';
         }
 

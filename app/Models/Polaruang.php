@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Polaruang extends Model
 {
     protected $table = 'polaruang';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [

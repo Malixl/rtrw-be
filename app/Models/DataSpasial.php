@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class DataSpasial extends Model
 {
     protected $table = 'data_spasial';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [

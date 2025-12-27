@@ -9,7 +9,6 @@ use Illuminate\Support\Facades\DB;
 
 class IndikasiProgramService
 {
-
     use FileUpload;
 
     protected $path = 'indikasi_program_file';
@@ -27,7 +26,7 @@ class IndikasiProgramService
         $data = $this->model->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%' . $search . '%');
+            $data->where('nama', 'like', '%'.$search.'%');
         }
 
         if ($klasifikasi_id = $request->query('klasifikasi_id')) {
@@ -123,13 +122,13 @@ class IndikasiProgramService
     {
         DB::beginTransaction();
         try {
-            $data = $this->model->whereIn('id', explode(",", $ids))->get();
+            $data = $this->model->whereIn('id', explode(',', $ids))->get();
 
             if ($data->isEmpty()) {
                 DB::rollBack();
                 throw new Exception('Data tidak ditemukan');
             }
-            $this->model->whereIn('id', explode(",", $ids))->delete();
+            $this->model->whereIn('id', explode(',', $ids))->delete();
 
             DB::commit();
         } catch (Exception $e) {

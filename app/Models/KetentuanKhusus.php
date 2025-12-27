@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class KetentuanKhusus extends Model
 {
     protected $table = 'ketentuan_khusus';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [

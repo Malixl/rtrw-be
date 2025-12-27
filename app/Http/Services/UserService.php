@@ -3,9 +3,9 @@
 namespace App\Http\Services;
 
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Exception;
 
 class UserService
 {
@@ -38,6 +38,7 @@ class UserService
             $user->assignRole($data['role']);
 
             DB::commit();
+
             return $user;
         } catch (Exception $e) {
             DB::rollBack();
@@ -56,7 +57,7 @@ class UserService
                 'email' => $data['email'],
             ];
 
-            if (!empty($data['password'])) {
+            if (! empty($data['password'])) {
                 $updateData['password'] = Hash::make($data['password']);
             }
 
@@ -64,6 +65,7 @@ class UserService
             $user->syncRoles([$data['role']]);
 
             DB::commit();
+
             return $user;
         } catch (Exception $e) {
             DB::rollBack();
@@ -91,6 +93,7 @@ class UserService
         }
 
         $user->delete();
+
         return true;
     }
 
@@ -117,6 +120,7 @@ class UserService
             User::whereIn('id', $ids)->delete();
 
             DB::commit();
+
             return true;
         } catch (Exception $e) {
             DB::rollBack();

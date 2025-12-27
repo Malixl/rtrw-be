@@ -8,18 +8,16 @@ use App\Models\Pkkprl;
 use App\Models\Polaruang;
 use App\Models\StrukturRuang;
 
-
 class DashboardService
 {
-
     public function getCounts()
     {
         return [
-            'polaruang'          => Polaruang::count(),
-            'struktur_ruang'     => StrukturRuang::count(),
-            'ketentuan_khusus'   => KetentuanKhusus::count(),
-            'indikasi_program'   => IndikasiProgram::count(),
-            'pkkprl'             => Pkkprl::count(),
+            'polaruang' => Polaruang::count(),
+            'struktur_ruang' => StrukturRuang::count(),
+            'ketentuan_khusus' => KetentuanKhusus::count(),
+            'indikasi_program' => IndikasiProgram::count(),
+            'pkkprl' => Pkkprl::count(),
         ];
     }
 }

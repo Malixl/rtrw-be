@@ -10,8 +10,8 @@ class ConvertImage
     {
         // Pastikan direktori output ada
         $outputDir = dirname($outputPath);
-        if (!file_exists($outputDir)) {
-            if (!mkdir($outputDir, 0755, true) && !is_dir($outputDir)) {
+        if (! file_exists($outputDir)) {
+            if (! mkdir($outputDir, 0755, true) && ! is_dir($outputDir)) {
                 throw new Exception("Gagal membuat direktori: $outputDir");
             }
         }
@@ -35,14 +35,14 @@ class ConvertImage
                 throw new Exception("Format gambar tidak didukung: $extension");
         }
 
-        if (!$image) {
+        if (! $image) {
             throw new Exception("Gagal memuat gambar: $imagePath");
         }
 
         // Convert dan simpan sebagai WebP
-        if (!imagewebp($image, $outputPath, $quality)) {
+        if (! imagewebp($image, $outputPath, $quality)) {
             imagedestroy($image);
-            throw new Exception("Gagal mengonversi gambar ke format WebP");
+            throw new Exception('Gagal mengonversi gambar ke format WebP');
         }
 
         // Bebaskan memori

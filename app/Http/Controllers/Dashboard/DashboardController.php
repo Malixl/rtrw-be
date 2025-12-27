@@ -22,7 +22,7 @@ class DashboardController
             'code' => 200,
             'status' => true,
             'message' => 'Dashboard count data fetched successfully',
-            'data' => new DashboardResources($counts)
+            'data' => new DashboardResources($counts),
         ]);
     }
 }

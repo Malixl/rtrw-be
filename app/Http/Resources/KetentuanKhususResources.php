@@ -21,20 +21,20 @@ class KetentuanKhususResources extends JsonResource
                 'nama' => $this->klasifikasi->nama ?? null,
                 'deskripsi' => $this->klasifikasi->deskripsi ?? null,
                 'tipe' => $this->klasifikasi->tipe ?? null,
-                'rtrw' => [
-                    'id' => $this->klasifikasi->rtrw->id ?? null,
-                    'nama' => $this->klasifikasi->rtrw->nama ?? null,
-                    'periode' => [
-                        'id' => $this->klasifikasi->rtrw->periode->id ?? null,
-                        'tahun_mulai' => $this->klasifikasi->rtrw->periode->tahun_mulai ?? null,
-                        'tahun_akhir' => $this->klasifikasi->rtrw->periode->tahun_akhir ?? null,
-                    ],
-                    'deskripsi' => $this->klasifikasi->rtrw->deskripsi ?? null,
+                // 'rtrw' => [
+                //     'id' => $this->klasifikasi->rtrw->id ?? null,
+                //     'nama' => $this->klasifikasi->rtrw->nama ?? null,
+                //     'periode' => [
+                //         'id' => $this->klasifikasi->rtrw->periode->id ?? null,
+                //         'tahun_mulai' => $this->klasifikasi->rtrw->periode->tahun_mulai ?? null,
+                //         'tahun_akhir' => $this->klasifikasi->rtrw->periode->tahun_akhir ?? null,
+                //     ],
+                //     'deskripsi' => $this->klasifikasi->rtrw->deskripsi ?? null,
 
-                ],
+                // ],
                 'layer_group' => [
-                    'id' => $this->klasifikasi->layerGroup->id ?? null,
-                    'nama_layer_group' => $this->klasifikasi->layerGroup->nama_layer_group ?? null,
+                    'id' => optional($this->klasifikasi->layerGroup)->id ?? null,
+                    'nama_layer_group' => optional($this->klasifikasi->layerGroup)->nama_layer_group ?? null,
                 ],
             ],
             'nama' => $this->nama,

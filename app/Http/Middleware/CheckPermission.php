@@ -14,8 +14,6 @@ class CheckPermission
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
      * @param  string  ...$permissions  Permissions yang diperlukan
      * @return mixed
      */
@@ -24,7 +22,7 @@ class CheckPermission
         $user = $request->user();
 
         // Fail-safe: Jika tidak login
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Silakan login untuk mengakses fitur ini',

@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Http\Services\UserService;
 use App\Http\Requests\UserRequest;
 use App\Http\Resources\UserResources;
-use Illuminate\Http\Request;
+use App\Http\Services\UserService;
 use App\Http\Traits\ApiResponse;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -52,6 +52,7 @@ class UserController extends Controller
     {
         try {
             $user = $this->userService->store($request->validated());
+
             return $this->successResponseWithData(
                 new UserResources($user->load('roles')),
                 'User berhasil dibuat',
@@ -69,6 +70,7 @@ class UserController extends Controller
     {
         try {
             $user = $this->userService->getById($id);
+
             return $this->successResponseWithData(
                 new UserResources($user),
                 'Data user berhasil diambil'
@@ -85,6 +87,7 @@ class UserController extends Controller
     {
         try {
             $user = $this->userService->update($id, $request->validated());
+
             return $this->successResponseWithData(
                 new UserResources($user->load('roles')),
                 'User berhasil diperbarui'
@@ -101,6 +104,7 @@ class UserController extends Controller
     {
         try {
             $this->userService->delete($id);
+
             return $this->successResponse('User berhasil dihapus');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage());
@@ -114,11 +118,12 @@ class UserController extends Controller
     {
         $request->validate([
             'ids' => 'required|array|min:1',
-            'ids.*' => 'required|integer|exists:users,id'
+            'ids.*' => 'required|integer|exists:users,id',
         ]);
 
         try {
             $this->userService->multiDelete($request->ids);
+
             return $this->successResponse('User berhasil dihapus');
         } catch (\Exception $e) {
             return $this->errorResponse($e->getMessage());

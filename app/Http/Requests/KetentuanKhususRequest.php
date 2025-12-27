@@ -28,9 +28,9 @@ class KetentuanKhususRequest extends FormRequest
             'deskripsi' => 'string',
             'geojson_file' => "$docRule|file|extensions:geojson",
             'klasifikasi_id' => 'required',
-            'tipe_geometri'  => 'required|in:polyline,point,polygon',
-            'icon_titik'      => 'nullable|image|mimes:png,jpg,jpeg,webp',
-            'tipe_garis'     => 'nullable|string',
+            'tipe_geometri' => 'required|in:polyline,point,polygon',
+            'icon_titik' => 'nullable|image|mimes:png,jpg,jpeg,webp',
+            'tipe_garis' => 'nullable|string',
             'warna' => 'nullable|string',
         ];
     }

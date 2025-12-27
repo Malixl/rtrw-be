@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class StrukturRuangService
 {
-
     use FileUpload;
 
     protected $path = 'struktur_ruang_file';
@@ -26,11 +25,11 @@ class StrukturRuangService
     {
         $per_page = $request->per_page ?? 10;
         $data = $this->model
-            ->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])
+            ->with(['klasifikasi.layerGroup'])
             ->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%' . $search . '%');
+            $data->where('nama', 'like', '%'.$search.'%');
         }
 
         if ($klasifikasi_id = $request->query('klasifikasi_id')) {
@@ -78,7 +77,7 @@ class StrukturRuangService
     public function show($id)
     {
         return $this->model
-            ->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])
+            ->with(['klasifikasi.layerGroup'])
             ->findOrFail($id);
     }
 
@@ -141,13 +140,13 @@ class StrukturRuangService
     {
         DB::beginTransaction();
         try {
-            $data = $this->model->whereIn('id', explode(",", $ids))->get();
+            $data = $this->model->whereIn('id', explode(',', $ids))->get();
 
             if ($data->isEmpty()) {
                 DB::rollBack();
                 throw new Exception('Data tidak ditemukan');
             }
-            $this->model->whereIn('id', explode(",", $ids))->delete();
+            $this->model->whereIn('id', explode(',', $ids))->delete();
 
             DB::commit();
         } catch (Exception $e) {
@@ -161,11 +160,11 @@ class StrukturRuangService
         $struktur_ruang = $this->model->findOrFail($id);
 
         // Cek apakah ada file
-        if (!empty($struktur_ruang->geojson_file)) {
+        if (! empty($struktur_ruang->geojson_file)) {
 
             $filename = $struktur_ruang->geojson_file;
 
-            if (!Storage::disk('public')->exists($filename)) {
+            if (! Storage::disk('public')->exists($filename)) {
                 return response()->json(['error' => 'File not found on disk'], 404);
             }
 

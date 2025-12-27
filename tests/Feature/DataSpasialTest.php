@@ -19,23 +19,7 @@ class DataSpasialTest extends TestCase
     protected function createPrerequisites(): Klasifikasi
     {
         // Use DB inserts to ensure ids are created (models have non-standard incrementing flags)
-        $periodeId = \Illuminate\Support\Facades\DB::table('periode')->insertGetId([
-            'tahun_mulai' => 2020,
-            'tahun_akhir' => 2025,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $rtrwId = \Illuminate\Support\Facades\DB::table('rtrw')->insertGetId([
-            'nama' => 'Test RTRW',
-            'deskripsi' => 'desc',
-            'periode_id' => $periodeId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         $klasifikasiId = \Illuminate\Support\Facades\DB::table('klasifikasi')->insertGetId([
-            'rtrw_id' => $rtrwId,
             'nama' => 'Klas A',
             'deskripsi' => 'desc',
             'tipe' => 'pkkprl',
@@ -77,7 +61,7 @@ class DataSpasialTest extends TestCase
         ]);
 
         if ($response->status() !== 201) {
-            $this->fail('Create response failed: ' . $response->getContent());
+            $this->fail('Create response failed: '.$response->getContent());
         }
 
         $this->assertDatabaseHas('data_spasial', ['nama' => 'Spatial 1']);
@@ -109,12 +93,12 @@ class DataSpasialTest extends TestCase
         ]);
 
         if ($create->status() !== 201) {
-            $this->fail('Create response failed: ' . $create->getContent());
+            $this->fail('Create response failed: '.$create->getContent());
         }
 
         $record = DataSpasial::first();
 
-        $resp = $this->get('/api/data_spasial/' . $record->id . '/geojson');
+        $resp = $this->get('/api/data_spasial/'.$record->id.'/geojson');
         $resp->assertStatus(200);
         $resp->assertHeader('Content-Type', 'application/geo+json');
     }
@@ -145,7 +129,7 @@ class DataSpasialTest extends TestCase
         $geojson2 = UploadedFile::fake()->create('file2.geojson', 10, 'application/geo+json');
         $icon2 = UploadedFile::fake()->image('icon2.webp');
 
-        $this->post('/api/data_spasial/' . $record->id, [
+        $this->post('/api/data_spasial/'.$record->id, [
             'nama' => 'Spatial 3 updated',
             'klasifikasi_id' => $klasifikasi->id,
             'tipe_geometri' => 'point',

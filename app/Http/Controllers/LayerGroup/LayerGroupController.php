@@ -5,9 +5,9 @@ namespace App\Http\Controllers\LayerGroup;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreLayerGroupRequest;
 use App\Http\Requests\UpdateLayerGroupRequest;
-use App\Http\Resources\LayerGroupResource;
-use App\Http\Resources\LayerGroupMapResource;
 use App\Http\Resources\KlasifikasiMapResources;
+use App\Http\Resources\LayerGroupMapResource;
+use App\Http\Resources\LayerGroupResource;
 use App\Http\Services\LayerGroupService;
 use App\Http\Traits\ApiResponse;
 use Exception;
@@ -70,21 +70,15 @@ class LayerGroupController extends Controller
     public function withKlasifikasi(Request $request)
     {
         try {
-            $rtrwId = $request->query('rtrw_id');
             $onlyWithChildren = filter_var($request->query('only_with_children', true), FILTER_VALIDATE_BOOLEAN);
             $format = $request->query('format', 'group');
 
             if ($format === 'flat') {
-                // flat format requires rtrw_id
-                if (!$rtrwId) {
-                    return $this->errorResponse('rtrw_id is required for flat format', Response::HTTP_BAD_REQUEST);
-                }
-
-                $flat = $this->layerGroupService->getAllWithKlasifikasi($rtrwId, $onlyWithChildren, 'flat');
+                // flat format now returns per-type klasifikasi across all RTRW
+                $flat = $this->layerGroupService->getAllWithKlasifikasi($onlyWithChildren, 'flat');
 
                 // transform with resources
                 $payload = [
-                    'rtrw' => $flat['rtrw'],
                     'klasifikasi_pola_ruang' => KlasifikasiMapResources::collection($flat['klasifikasi_pola_ruang']),
                     'klasifikasi_struktur_ruang' => KlasifikasiMapResources::collection($flat['klasifikasi_struktur_ruang']),
                     'klasifikasi_ketentuan_khusus' => KlasifikasiMapResources::collection($flat['klasifikasi_ketentuan_khusus']),
@@ -96,7 +90,7 @@ class LayerGroupController extends Controller
                 return $this->successResponseWithData($payload, 'Data klasifikasi per type berhasil diambil', Response::HTTP_OK);
             }
 
-            $data = $this->layerGroupService->getAllWithKlasifikasi($rtrwId, $onlyWithChildren);
+            $data = $this->layerGroupService->getAllWithKlasifikasi($onlyWithChildren);
 
             return $this->successResponseWithDataIndex(
                 $data,
@@ -109,6 +103,39 @@ class LayerGroupController extends Controller
                 $e->getMessage(),
                 Response::HTTP_BAD_REQUEST
             );
+        }
+    }
+
+    /**
+     * Search endpoint for GIS (by klasifikasi id or aset type). This replaces RTRW-based search in map.
+     */
+    public function search(Request $request)
+    {
+        try {
+            $klasifikasiId = $request->query('klasifikasi_id');
+            $tipe = $request->query('tipe');
+
+            if ($klasifikasiId) {
+                $k = \App\Models\Klasifikasi::with(['polaRuang', 'strukturRuang', 'ketentuanKhusus', 'indikasiProgram', 'pkkprl', 'dataSpasial', 'layerGroup'])->findOrFail($klasifikasiId);
+
+                return $this->successResponseWithData(
+                    KlasifikasiMapResources::make($k),
+                    'Klasifikasi ditemukan',
+                    Response::HTTP_OK
+                );
+            }
+
+            $q = \App\Models\Klasifikasi::with(['polaRuang', 'strukturRuang', 'ketentuanKhusus', 'indikasiProgram', 'pkkprl', 'dataSpasial', 'layerGroup']);
+
+            if ($tipe) {
+                $q->where('tipe', $tipe);
+            }
+
+            $list = $q->get();
+
+            return $this->successResponseWithDataIndex($list, KlasifikasiMapResources::collection($list), 'List klasifikasi berhasil diambil', Response::HTTP_OK);
+        } catch (Exception $e) {
+            return $this->errorResponse($e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
     }
 

@@ -3,31 +3,29 @@
 namespace App\Http\Traits;
 
 use App\Helpers\ConvertImage\ConvertImage;
-use Illuminate\Support\Str;
 use Exception;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 trait FileUpload
 {
     /**
      * Upload dokumen.
      *
-     * @param \Illuminate\Http\UploadedFile $file
-     * @param string $folder
-     * @param string $disk
+     * @param  \Illuminate\Http\UploadedFile  $file
      * @return string Path file yang disimpan
      */
     public function uploadDocument($file, array $allowedExtensions = ['geojson', 'png', 'pdf'], string $folder = 'documents', string $disk = 'public'): string
     {
         $extension = $file->getClientOriginalExtension();
 
-        if (!in_array(strtolower($extension), $allowedExtensions)) {
-            throw new \Exception("Ekstensi file tidak diizinkan.");
+        if (! in_array(strtolower($extension), $allowedExtensions)) {
+            throw new \Exception('Ekstensi file tidak diizinkan.');
         }
 
         // Simpan file dengan ekstensi asli
-        $fileName = Str::random(20) . '-' . time(); // Buatkan nama file yang random
-        $fileNameWithExtension = $fileName . '.' . $extension; // Tambahkan ekstensi asli
+        $fileName = Str::random(20).'-'.time(); // Buatkan nama file yang random
+        $fileNameWithExtension = $fileName.'.'.$extension; // Tambahkan ekstensi asli
 
         return $file->storeAs($folder, $fileNameWithExtension, $disk);
     }
@@ -37,8 +35,8 @@ trait FileUpload
         try {
             // Jika string memiliki header MIME
             if (preg_match('/^data:[\w\/]+;base64,/', $base64String)) {
-                list($type, $data) = explode(';', $base64String);
-                list(, $data)      = explode(',', $data);
+                [$type, $data] = explode(';', $base64String);
+                [, $data] = explode(',', $data);
                 $mimeType = str_replace('data:', '', $type);
 
                 // Validasi hanya PDF yang diizinkan
@@ -57,11 +55,11 @@ trait FileUpload
             }
 
             // Hanya gunakan ekstensi .pdf
-            $fileName = uniqid() . '.pdf';
-            $filePath = $path . '/' . $fileName;
+            $fileName = uniqid().'.pdf';
+            $filePath = $path.'/'.$fileName;
 
             // Pastikan direktori tujuan ada
-            if (!file_exists($path)) {
+            if (! file_exists($path)) {
                 mkdir($path, 0777, true);
             }
 
@@ -74,7 +72,7 @@ trait FileUpload
             // Kembalikan hanya nama file
             return $fileName;
         } catch (Exception $e) {
-            throw new Exception('Error saat mengunggah dokumen: ' . $e->getMessage());
+            throw new Exception('Error saat mengunggah dokumen: '.$e->getMessage());
         }
     }
 
@@ -83,24 +81,23 @@ trait FileUpload
         $filePath = $file->store($folder, $disk);
         $extension = $file->getClientOriginalExtension();
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
-        if (!in_array(strtolower($extension), $allowedExtensions)) {
-            throw new \Exception("File extension not allowed.");
+        if (! in_array(strtolower($extension), $allowedExtensions)) {
+            throw new \Exception('File extension not allowed.');
         }
 
-
         if (strtolower($extension) !== 'webp') {
-            $webpPath = storage_path("app/{$disk}/" . $folder . '/' . pathinfo($filePath, PATHINFO_FILENAME) . '.webp');
-            ConvertImage::convertImageToWebP(storage_path("app/{$disk}/" . $filePath), $webpPath);
+            $webpPath = storage_path("app/{$disk}/".$folder.'/'.pathinfo($filePath, PATHINFO_FILENAME).'.webp');
+            ConvertImage::convertImageToWebP(storage_path("app/{$disk}/".$filePath), $webpPath);
 
             Storage::disk($disk)->delete($filePath);
 
-            $filePath = "{$folder}/" . pathinfo($webpPath, PATHINFO_BASENAME);
+            $filePath = "{$folder}/".pathinfo($webpPath, PATHINFO_BASENAME);
         }
 
         return $filePath;
     }
 
-     public function unlinkPhoto(?string $filePath, string $disk = 'public'): bool
+    public function unlinkPhoto(?string $filePath, string $disk = 'public'): bool
     {
         if (empty($filePath)) {
             return true;
@@ -108,8 +105,6 @@ trait FileUpload
 
         return Storage::disk($disk)->delete($filePath);
     }
-
-
 
     public function unlinkFile(?string $filePath, string $disk = 'public'): bool
     {

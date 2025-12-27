@@ -7,21 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 class Klasifikasi extends Model
 {
     protected $table = 'klasifikasi';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [
-        'rtrw_id',
         'layer_group_id',
         'nama',
         'deskripsi',
         'tipe',
     ];
-
-    public function rtrw()
-    {
-        return $this->belongsTo(Rtrw::class);
-    }
 
     public function layerGroup()
     {
@@ -42,10 +38,12 @@ class Klasifikasi extends Model
     {
         return $this->hasMany(KetentuanKhusus::class);
     }
+
     public function indikasiProgram()
     {
         return $this->hasMany(indikasiProgram::class);
     }
+
     public function pkkprl()
     {
         return $this->hasMany(Pkkprl::class);

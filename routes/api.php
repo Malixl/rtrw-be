@@ -1,21 +1,19 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\RoleController;
 use App\Http\Controllers\BatasAdministrasi\BatasAdministrasiController;
 use App\Http\Controllers\Berita\BeritaController;
 use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\DataSpasial\DataSpasialController;
 use App\Http\Controllers\IndikasiProgram\IndikasiProgramController;
 use App\Http\Controllers\KetentuanKhusus\KetentuanKhususController;
-use App\Http\Controllers\Pkkprl\PkkprlController;
-use App\Http\Controllers\DataSpasial\DataSpasialController;
 use App\Http\Controllers\Klasifikasi\KlasifikasiController;
 use App\Http\Controllers\LayerGroup\LayerGroupController;
-use App\Http\Controllers\Periode\PeriodeController;
+use App\Http\Controllers\Pkkprl\PkkprlController;
 use App\Http\Controllers\Polaruang\PolaruangController;
-use App\Http\Controllers\Rtrw\RtrwController;
 use App\Http\Controllers\StrukturRuang\StrukturRuangController;
-use App\Http\Controllers\Admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -34,7 +32,7 @@ use Illuminate\Support\Facades\Route;
 $registerPublicRoutes = function (?string $nameSuffix = null) {
     // Auth Routes
     Route::prefix('auth')->controller(AuthController::class)->group(function () use ($nameSuffix) {
-        $routeName = $nameSuffix ? 'login.' . $nameSuffix : 'login';
+        $routeName = $nameSuffix ? 'login.'.$nameSuffix : 'login';
         Route::post('login', 'login')->name($routeName);
     });
 
@@ -53,16 +51,14 @@ $registerPublicRoutes = function (?string $nameSuffix = null) {
     Route::get('/batas_administrasi', [BatasAdministrasiController::class, 'index']);
     Route::get('/batas_administrasi/{id}/geojson', [BatasAdministrasiController::class, 'showGeoJson']);
 
-    Route::get('/rtrw', [RtrwController::class, 'index']);
-    Route::get('/rtrw/{id}', [RtrwController::class, 'show']);
-    Route::get('/rtrw/{id}/klasifikasi', [RtrwController::class, 'klasifikasiByRTRW']);
-
-    Route::get('/periode', [PeriodeController::class, 'index']);
-    Route::get('/periode/{id}', [PeriodeController::class, 'show']);
+    // /rtrw and /periode endpoints removed — use search and klasifikasi-based loading instead
 
     Route::get('/layer-groups', [LayerGroupController::class, 'index']);
     Route::get('/layer-groups/with-klasifikasi', [LayerGroupController::class, 'withKlasifikasi']);
     Route::get('/layer-groups/{id}', [LayerGroupController::class, 'show']);
+
+    // GIS search endpoint - replaces RTRW-driven search
+    Route::get('/gis/search', [LayerGroupController::class, 'search']);
 
     Route::get('/klasifikasi', [KlasifikasiController::class, 'index']);
     Route::get('/klasifikasi/{id}', [KlasifikasiController::class, 'show']);
@@ -114,17 +110,7 @@ $registerAdminRoutes = function () {
     // Role Capabilities (Admin Only)
     Route::get('/role/all-capabilities', [RoleController::class, 'allCapabilities']);
 
-    // RTRW CRUD
-    Route::post('/rtrw', [RtrwController::class, 'store']);
-    Route::put('/rtrw/{id}', [RtrwController::class, 'update']);
-    Route::delete('/rtrw/multi-delete', [RtrwController::class, 'multiDestroy']);
-    Route::delete('/rtrw/{id}', [RtrwController::class, 'destroy']);
-
-    // Periode CRUD
-    Route::post('/periode', [PeriodeController::class, 'store']);
-    Route::put('/periode/{id}', [PeriodeController::class, 'update']);
-    Route::delete('/periode/multi-delete', [PeriodeController::class, 'multiDestroy']);
-    Route::delete('/periode/{id}', [PeriodeController::class, 'destroy']);
+    // RTRW and Periode CRUD removed (modules deprecated)
 
     // Klasifikasi CRUD
     Route::post('/klasifikasi', [KlasifikasiController::class, 'store']);

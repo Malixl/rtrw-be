@@ -2,11 +2,10 @@
 
 namespace App\Http\Services;
 
-use Exception;
-use App\Models\Berita;
 use App\Exceptions\ServiceException;
 use App\Http\Traits\FileUpload;
-use Illuminate\Support\Facades\Auth;
+use App\Models\Berita;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -15,6 +14,7 @@ class BeritaService
     use FileUpload;
 
     protected $path = 'berita';
+
     protected $model;
 
     public function __construct(Berita $model)
@@ -28,7 +28,7 @@ class BeritaService
         $data = $this->model->where('status', 'publikasi')->latest();
 
         if ($search = $request->query('search')) {
-            $data->where('judul', 'like', '%' . $search . '%');
+            $data->where('judul', 'like', '%'.$search.'%');
         }
 
         if ($status = $request->query('status')) {
@@ -42,7 +42,7 @@ class BeritaService
     {
         $data = $this->model->where('slug', $slug)->where('status', 'publikasi')->first();
 
-        if (!$data) {
+        if (! $data) {
             throw new ServiceException('Berita tidak ditemukan', 404);
         }
 
@@ -55,7 +55,7 @@ class BeritaService
         $data = $this->model->latest();
 
         if ($search = $request->query('search')) {
-            $data->where('judul', 'like', '%' . $search . '%');
+            $data->where('judul', 'like', '%'.$search.'%');
         }
 
         if ($status = $request->query('status')) {
@@ -116,9 +116,10 @@ class BeritaService
     {
         $data = $this->model->find($id);
 
-        if (!$data) {
+        if (! $data) {
             throw new NotFoundHttpException('Data tidak ditemukan');
         }
+
         return $data;
     }
 
@@ -140,7 +141,7 @@ class BeritaService
                 'slug' => $validatedData['slug'],
                 'konten' => $validatedData['konten'],
                 'thumnbail' => $validatedData['thumbnail'] ?? $data->thumnbail,
-                'status' => $request->status ? $validatedData['status'] : $data->status
+                'status' => $request->status ? $validatedData['status'] : $data->status,
             ]);
 
             return $data;
@@ -166,14 +167,14 @@ class BeritaService
     {
         DB::beginTransaction();
         try {
-            $data = $this->model->whereIn('id', explode(",", $ids))->get();
+            $data = $this->model->whereIn('id', explode(',', $ids))->get();
 
             if ($data->isEmpty()) {
                 DB::rollBack();
                 throw new Exception('Data tidak ditemukan');
             }
 
-            $this->model->whereIn('id', explode(",", $ids))->delete();
+            $this->model->whereIn('id', explode(',', $ids))->delete();
 
             DB::commit();
         } catch (Exception $e) {

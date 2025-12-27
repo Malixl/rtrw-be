@@ -5,7 +5,6 @@ namespace App\Http\Services;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class AuthService
 {
@@ -48,7 +47,7 @@ class AuthService
             ? ['email' => $request->email, 'password' => $request->password]
             : ['name' => $request->email, 'password' => $request->password];
 
-        if (!Auth::attempt($credentials)) {
+        if (! Auth::attempt($credentials)) {
             throw new Exception('Email atau password salah');
         }
 
@@ -61,7 +60,7 @@ class AuthService
         return [
             'token_type' => 'Bearer',
             'token' => $token,
-            'user'  => $this->formatUserData($user),
+            'user' => $this->formatUserData($user),
         ];
     }
 
@@ -79,10 +78,10 @@ class AuthService
         $capabilities = $this->getRoleCapabilities($role);
 
         return [
-            'id'    => $user->id,
-            'name'  => $user->name,
+            'id' => $user->id,
+            'name' => $user->name,
             'email' => $user->email,
-            'role'  => $role,
+            'role' => $role,
             'permissions' => $user->getAllPermissions()->pluck('name'),
             'capabilities' => $capabilities,
         ];
@@ -93,13 +92,13 @@ class AuthService
      */
     private function getUserRole($user): string
     {
-        if (!$user) {
+        if (! $user) {
             return 'guest';
         }
 
         $role = $user->roles->first();
 
-        if (!$role) {
+        if (! $role) {
             return 'guest';
         }
 
@@ -128,6 +127,7 @@ class AuthService
     public function logout($request)
     {
         $request->user()->currentAccessToken()->delete();
+
         return true;
     }
 }

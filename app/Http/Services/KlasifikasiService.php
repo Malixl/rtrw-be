@@ -8,8 +8,6 @@ use Illuminate\Support\Facades\DB;
 
 class KlasifikasiService
 {
-
-
     protected $model;
 
     public function __construct(Klasifikasi $model)
@@ -20,14 +18,10 @@ class KlasifikasiService
     public function getAll($request)
     {
         $per_page = $request->per_page ?? 10;
-        $data = $this->model->with(['rtrw.periode', 'layerGroup'])->orderBy('created_at');
+        $data = $this->model->with(['layerGroup'])->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%' . $search . '%');
-        }
-
-        if ($rtrw_id = $request->query('rtrw_id')) {
-            $data->where('rtrw_id', $rtrw_id);
+            $data->where('nama', 'like', '%'.$search.'%');
         }
 
         if ($tipe = $request->query('tipe')) {
@@ -63,7 +57,7 @@ class KlasifikasiService
 
     public function show($id)
     {
-        return $this->model->with(['rtrw.periode', 'layerGroup'])->findOrFail($id);
+        return $this->model->with(['layerGroup'])->findOrFail($id);
     }
 
     public function update($request, $id)
@@ -104,13 +98,13 @@ class KlasifikasiService
     {
         DB::beginTransaction();
         try {
-            $data = $this->model->whereIn('id', explode(",", $ids))->get();
+            $data = $this->model->whereIn('id', explode(',', $ids))->get();
 
             if ($data->isEmpty()) {
                 DB::rollBack();
                 throw new Exception('Data tidak ditemukan');
             }
-            $this->model->whereIn('id', explode(",", $ids))->delete();
+            $this->model->whereIn('id', explode(',', $ids))->delete();
 
             DB::commit();
         } catch (Exception $e) {

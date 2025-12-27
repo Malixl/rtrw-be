@@ -13,6 +13,7 @@ class BatasAdministrasiService
     use FileUpload;
 
     protected $path = 'batas_administrasi_file';
+
     protected $model;
 
     public function __construct(BatasAdministrasi $model)
@@ -26,7 +27,7 @@ class BatasAdministrasiService
         $data = $this->model->orderBy('created_at', 'desc');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%' . $search . '%');
+            $data->where('nama', 'like', '%'.$search.'%');
         }
 
         if ($request->page) {
@@ -123,7 +124,7 @@ class BatasAdministrasiService
     {
         DB::beginTransaction();
         try {
-            $idsArray = explode(",", $ids);
+            $idsArray = explode(',', $ids);
             $data = $this->model->whereIn('id', $idsArray)->get();
 
             if ($data->isEmpty()) {
@@ -151,11 +152,11 @@ class BatasAdministrasiService
         $data = $this->model->findOrFail($id);
 
         // Cek apakah ada file
-        if (!empty($data->geojson_file)) {
+        if (! empty($data->geojson_file)) {
 
             $filename = $data->geojson_file;
 
-            if (!Storage::disk('public')->exists($filename)) {
+            if (! Storage::disk('public')->exists($filename)) {
                 return response()->json(['error' => 'File not found on disk'], 404);
             }
 

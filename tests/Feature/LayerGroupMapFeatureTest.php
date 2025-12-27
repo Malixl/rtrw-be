@@ -3,15 +3,13 @@
 namespace Tests\Feature;
 
 use App\Models\Klasifikasi;
-use App\Models\Periode;
 use App\Models\Polaruang;
-use App\Models\Rtrw;
 use App\Models\StrukturRuang;
 use App\Models\User;
-use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Spatie\Permission\Models\Role;
+use Tests\TestCase;
 
 class LayerGroupMapFeatureTest extends TestCase
 {
@@ -24,22 +22,6 @@ class LayerGroupMapFeatureTest extends TestCase
         $user = User::factory()->create();
         $user->assignRole('admin');
         $this->actingAs($user, 'sanctum');
-
-        // Create periode and rtrw
-        $periodeId = \Illuminate\Support\Facades\DB::table('periode')->insertGetId([
-            'tahun_mulai' => 2020,
-            'tahun_akhir' => 2025,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $rtrwId = \Illuminate\Support\Facades\DB::table('rtrw')->insertGetId([
-            'nama' => 'RTRW Map Test',
-            'deskripsi' => 'desc',
-            'periode_id' => $periodeId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
 
         // create two layer groups
         $this->postJson('/api/layer-groups', ['nama_layer_group' => 'Peta Dasar', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
@@ -57,17 +39,15 @@ class LayerGroupMapFeatureTest extends TestCase
         $this->postJson('/api/klasifikasi', [
             'nama' => 'Sungai',
             'deskripsi' => 'layer sungai',
-            'rtrw_id' => $rtrwId,
             'layer_group_id' => $petaDasarId,
-            'tipe' => 'data_spasial'
+            'tipe' => 'data_spasial',
         ])->assertStatus(201);
 
         $this->postJson('/api/klasifikasi', [
             'nama' => 'Toponym',
             'deskripsi' => 'toponym layer',
-            'rtrw_id' => $rtrwId,
             'layer_group_id' => $petaTematikId,
-            'tipe' => 'struktur_ruang'
+            'tipe' => 'struktur_ruang',
         ])->assertStatus(201);
 
         // fetch klasifikasi ids
@@ -82,7 +62,7 @@ class LayerGroupMapFeatureTest extends TestCase
             'nama' => 'Sungai Layer',
             'deskripsi' => 'desc',
             'geojson_file' => '',
-            'warna' => '#000'
+            'warna' => '#000',
         ]);
 
         StrukturRuang::create([
@@ -93,16 +73,15 @@ class LayerGroupMapFeatureTest extends TestCase
             'tipe_geometri' => 'polyline',
             'icon_titik' => null,
             'tipe_garis' => 'solid',
-            'warna' => '#111'
+            'warna' => '#111',
         ]);
 
         // Now call the new endpoint
-        $resp = $this->getJson('/api/layer-groups/with-klasifikasi?rtrw_id=' . $rtrwId);
+        $resp = $this->getJson('/api/layer-groups/with-klasifikasi');
         $resp->assertStatus(200);
 
         $resp->assertJson(
-            fn(\Illuminate\Testing\Fluent\AssertableJson $json) =>
-            $json->has('data')
+            fn (\Illuminate\Testing\Fluent\AssertableJson $json) => $json->has('data')
                 ->etc()
         );
 
@@ -137,22 +116,6 @@ class LayerGroupMapFeatureTest extends TestCase
         $user->assignRole('admin');
         $this->actingAs($user, 'sanctum');
 
-        // Create periode and rtrw
-        $periodeId = \Illuminate\Support\Facades\DB::table('periode')->insertGetId([
-            'tahun_mulai' => 2020,
-            'tahun_akhir' => 2025,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $rtrwId = \Illuminate\Support\Facades\DB::table('rtrw')->insertGetId([
-            'nama' => 'RTRW Compact Test',
-            'deskripsi' => 'desc',
-            'periode_id' => $periodeId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         // create one layer group
         $this->postJson('/api/layer-groups', ['nama_layer_group' => 'Peta Compact', 'deskripsi' => '', 'urutan_tampil' => 1])->assertStatus(201);
 
@@ -164,9 +127,8 @@ class LayerGroupMapFeatureTest extends TestCase
         $this->postJson('/api/klasifikasi', [
             'nama' => 'Perahu',
             'deskripsi' => 'layer perahu',
-            'rtrw_id' => $rtrwId,
             'layer_group_id' => $petaCompactId,
-            'tipe' => 'data_spasial'
+            'tipe' => 'data_spasial',
         ])->assertStatus(201);
 
         $klList = $this->getJson('/api/klasifikasi');
@@ -179,11 +141,11 @@ class LayerGroupMapFeatureTest extends TestCase
             'nama' => 'Danau',
             'deskripsi' => 'desc',
             'geojson_file' => '',
-            'tipe_geometri' => 'polygon'
+            'tipe_geometri' => 'polygon',
         ]);
 
         // Now call the new endpoint without compact param (default compact=true)
-        $resp = $this->getJson('/api/layer-groups/with-klasifikasi?rtrw_id=' . $rtrwId);
+        $resp = $this->getJson('/api/layer-groups/with-klasifikasi');
         $resp->assertStatus(200);
 
         $data = $resp->json('data');

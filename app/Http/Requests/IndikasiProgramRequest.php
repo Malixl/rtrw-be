@@ -29,7 +29,7 @@ class IndikasiProgramRequest extends FormRequest
         // Validasi file hanya jika ada file yang diupload atau ini adalah request create
         if ($this->hasFile('file_dokumen')) {
             $rules['file_dokumen'] = 'required|file|mimes:pdf';
-        } elseif (!$this->route('id')) {
+        } elseif (! $this->route('id')) {
             // Jika create (tidak ada ID), file wajib
             $rules['file_dokumen'] = 'required|file|mimes:pdf';
         }
@@ -40,9 +40,9 @@ class IndikasiProgramRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'nama.required' => 'Nama RTRW wajib diisi.',
-            'nama.string' => 'Nama RTRW harus berupa teks.',
-            'nama.max' => 'Nama RTRW maksimal 255 karakter.',
+            // 'nama.required' => 'Nama RTRW wajib diisi.',
+            // 'nama.string' => 'Nama RTRW harus berupa teks.',
+            // 'nama.max' => 'Nama RTRW maksimal 255 karakter.',
 
             'file_dokumen.required' => 'Dokumen wajib diisi.',
             'file_dokumen.file' => 'Dokumen harus berupa file.',

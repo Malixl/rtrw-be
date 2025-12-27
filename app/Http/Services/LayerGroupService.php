@@ -23,7 +23,7 @@ class LayerGroupService
             ->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama_layer_group', 'like', '%' . $search . '%');
+            $data->where('nama_layer_group', 'like', '%'.$search.'%');
         }
 
         // eager load klasifikasis and their related data
@@ -38,7 +38,7 @@ class LayerGroupService
                         'pkkprl',
                         'dataSpasial',
                     ]);
-            }
+            },
         ]);
 
         if ($request->page) {
@@ -54,17 +54,13 @@ class LayerGroupService
      * Get all layer groups with nested klasifikasis and geo-data children
      * Optionally filter klasifikasis by rtrw_id and only include klasifikasi that have geo children
      */
-    public function getAllWithKlasifikasi($rtrwId = null, $onlyWithChildren = true, $format = 'group')
+    public function getAllWithKlasifikasi($onlyWithChildren = true, $format = 'group')
     {
         // group format (default) — return collection of LayerGroups with nested klasifikasis and geo children
         if ($format === 'group') {
             $groups = $this->model->orderBy('urutan_tampil')
                 ->orderBy('created_at')
-                ->with(['klasifikasis' => function ($q) use ($rtrwId) {
-                    if ($rtrwId) {
-                        $q->where('rtrw_id', $rtrwId);
-                    }
-
+                ->with(['klasifikasis' => function ($q) {
                     $q->orderBy('nama')
                         ->with([
                             'polaRuang',
@@ -80,17 +76,17 @@ class LayerGroupService
                 // filter klasifikasis that have at least one geo child
                 $groups = $groups->map(function ($g) {
                     $filtered = $g->klasifikasis->filter(function ($k) {
-                        return (
+                        return
                             ($k->polaRuang && $k->polaRuang->isNotEmpty()) ||
                             ($k->strukturRuang && $k->strukturRuang->isNotEmpty()) ||
                             ($k->ketentuanKhusus && $k->ketentuanKhusus->isNotEmpty()) ||
                             ($k->indikasiProgram && $k->indikasiProgram->isNotEmpty()) ||
                             ($k->pkkprl && $k->pkkprl->isNotEmpty()) ||
-                            ($k->dataSpasial && $k->dataSpasial->isNotEmpty())
-                        );
+                            ($k->dataSpasial && $k->dataSpasial->isNotEmpty());
                     })->values();
 
                     $g->setRelation('klasifikasis', $filtered);
+
                     return $g;
                 })->filter(function ($g) {
                     return $g->klasifikasis->isNotEmpty();
@@ -100,50 +96,33 @@ class LayerGroupService
             return $groups;
         }
 
-        // flat format — build per-type klasifikasi lists for a given RTRW
+        // flat format — build per-type klasifikasi lists across all RTRW (no rtrw dependency)
         if ($format === 'flat') {
-            if (!$rtrwId) {
-                throw new \Exception('rtrw_id is required for flat format');
-            }
-
-            $rtrw = \App\Models\Rtrw::findOrFail($rtrwId);
-
-            $klasifikasi_pola_ruang = $rtrw->klasifikasis()
-                ->whereHas('polaRuang')
-                ->with(['polaRuang', 'rtrw.periode', 'layerGroup'])
+            $klasifikasi_pola_ruang = \App\Models\Klasifikasi::whereHas('polaRuang')
+                ->with(['polaRuang', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_struktur_ruang = $rtrw->klasifikasis()
-                ->whereHas('strukturRuang')
-                ->with(['strukturRuang', 'rtrw.periode', 'layerGroup'])
+            $klasifikasi_struktur_ruang = \App\Models\Klasifikasi::whereHas('strukturRuang')
+                ->with(['strukturRuang', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_ketentuan_khusus = $rtrw->klasifikasis()
-                ->whereHas('ketentuanKhusus')
-                ->with(['ketentuanKhusus', 'rtrw.periode', 'layerGroup'])
+            $klasifikasi_ketentuan_khusus = \App\Models\Klasifikasi::whereHas('ketentuanKhusus')
+                ->with(['ketentuanKhusus', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_indikasi_program = $rtrw->klasifikasis()
-                ->whereHas('indikasiProgram')
-                ->with(['indikasiProgram', 'rtrw.periode', 'layerGroup'])
+            $klasifikasi_indikasi_program = \App\Models\Klasifikasi::whereHas('indikasiProgram')
+                ->with(['indikasiProgram', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_pkkprl = $rtrw->klasifikasis()
-                ->whereHas('pkkprl')
-                ->with(['pkkprl', 'rtrw.periode', 'layerGroup'])
+            $klasifikasi_pkkprl = \App\Models\Klasifikasi::whereHas('pkkprl')
+                ->with(['pkkprl', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_data_spasial = $rtrw->klasifikasis()
-                ->whereHas('dataSpasial')
-                ->with(['dataSpasial', 'rtrw.periode', 'layerGroup'])
+            $klasifikasi_data_spasial = \App\Models\Klasifikasi::whereHas('dataSpasial')
+                ->with(['dataSpasial', 'layerGroup'])
                 ->get();
 
             return [
-                'rtrw' => [
-                    'id' => $rtrw->id,
-                    'nama' => $rtrw->nama,
-                    'deskripsi' => $rtrw->deskripsi,
-                ],
                 'klasifikasi_pola_ruang' => $klasifikasi_pola_ruang,
                 'klasifikasi_struktur_ruang' => $klasifikasi_struktur_ruang,
                 'klasifikasi_ketentuan_khusus' => $klasifikasi_ketentuan_khusus,
@@ -219,13 +198,13 @@ class LayerGroupService
     {
         DB::beginTransaction();
         try {
-            $data = $this->model->whereIn('id', explode(",", $ids))->get();
+            $data = $this->model->whereIn('id', explode(',', $ids))->get();
 
             if ($data->isEmpty()) {
                 DB::rollBack();
                 throw new Exception('Data tidak ditemukan');
             }
-            $this->model->whereIn('id', explode(",", $ids))->delete();
+            $this->model->whereIn('id', explode(',', $ids))->delete();
 
             DB::commit();
         } catch (Exception $e) {

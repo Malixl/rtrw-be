@@ -15,8 +15,6 @@ class StrukturRuangResources extends JsonResource
     public function toArray(Request $request): array
     {
         $klasifikasi = optional($this->klasifikasi);
-        $rtrw = optional($klasifikasi->rtrw);
-        $periode = optional($rtrw->periode);
 
         return [
             'id' => $this->id,
@@ -25,20 +23,9 @@ class StrukturRuangResources extends JsonResource
                 'nama' => $klasifikasi->nama,
                 'deskripsi' => $klasifikasi->deskripsi,
                 'tipe' => $klasifikasi->tipe,
-                'rtrw' => [
-                    'id' => $rtrw->id,
-                    'nama' => $rtrw->nama,
-                    'periode' => [
-                        'id' => $periode->id,
-                        'tahun_mulai' => $periode->tahun_mulai,
-                        'tahun_akhir' => $periode->tahun_akhir,
-                    ],
-                    'deskripsi' => $rtrw->deskripsi,
-
-                ],
                 'layer_group' => [
-                    'id' => $klasifikasi->layerGroup->id,
-                    'nama_layer_group' => $klasifikasi->layerGroup->nama_layer_group,
+                    'id' => optional($klasifikasi->layerGroup)->id,
+                    'nama_layer_group' => optional($klasifikasi->layerGroup)->nama_layer_group,
                 ],
             ],
             'nama' => $this->nama,

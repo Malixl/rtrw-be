@@ -16,7 +16,7 @@ class UserSeeder extends Seeder
     {
         // 1. Create Roles
         $adminRole = Role::findOrCreate('admin', 'web');
-        $opdRole   = Role::findOrCreate('opd', 'web');
+        $opdRole = Role::findOrCreate('opd', 'web');
 
         // 2. Create Permissions
         // Admin Permissions (Full CRUD)
@@ -26,8 +26,6 @@ class UserSeeder extends Seeder
             'manajemen_polaruang',
             'manajemen_struktur_ruang',
             'manajemen_klasifikasi',
-            'manajemen_rtrw',
-            'manajemen_periode',
             'manajemen_ketentuan_khusus',
             'manajemen_indikasi_program',
             'manajemen_pkkprl',

@@ -8,7 +8,6 @@ class Berita extends Model
 {
     protected $table = 'berita';
 
-
     protected $fillable = [
         'judul',
         'slug',
@@ -16,5 +15,4 @@ class Berita extends Model
         'thumbnail',
         'status',
     ];
-
 }

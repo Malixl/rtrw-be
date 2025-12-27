@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Periode;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PeriodeRequest;
 use App\Http\Resources\PeriodeResources;
-use App\Http\Services\PeriodeService;
 use App\Http\Traits\ApiResponse;
 use Exception;
 use Illuminate\Http\Request;
@@ -16,11 +15,19 @@ class PeriodeController extends Controller
 {
     use ApiResponse;
 
-    protected $periodeService;
-
-    public function __construct(PeriodeService $periodeService)
+    public function __construct()
     {
-        $this->periodeService = $periodeService;
+        // Controller kept for compat; routes removed. Any call returns 410 Gone.
+    }
+
+    protected function goneResponse()
+    {
+        return response()->json(['status' => 'error', 'message' => 'Periode module removed'], 410);
+    }
+
+    public function __call($method, $parameters)
+    {
+        return $this->goneResponse();
     }
 
     public function index(Request $request)
@@ -37,7 +44,7 @@ class PeriodeController extends Controller
         } catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], Response::HTTP_BAD_REQUEST);
         }
     }

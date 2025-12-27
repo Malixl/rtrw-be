@@ -61,28 +61,11 @@ class LayerGroupAdditionalTest extends TestCase
 
         $this->actingAs($user, 'sanctum');
 
-        // need an RTRW and Periode
-        $periodeId = \Illuminate\Support\Facades\DB::table('periode')->insertGetId([
-            'tahun_mulai' => 2020,
-            'tahun_akhir' => 2025,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
-        $rtrwId = \Illuminate\Support\Facades\DB::table('rtrw')->insertGetId([
-            'nama' => 'RTRW Test',
-            'deskripsi' => 'desc',
-            'periode_id' => $periodeId,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
-
         $payload = [
             'nama' => 'Test K',
             'deskripsi' => 'desc',
-            'rtrw_id' => $rtrwId,
             'layer_group_id' => 999999, // invalid
-            'tipe' => 'data_spasial'
+            'tipe' => 'data_spasial',
         ];
 
         $resp = $this->postJson('/api/klasifikasi', $payload);

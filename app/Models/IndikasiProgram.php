@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class IndikasiProgram extends Model
 {
     protected $table = 'indikasi_program';
+
     public $incrementing = false;
+
     protected $keyType = 'string';
 
     protected $fillable = [

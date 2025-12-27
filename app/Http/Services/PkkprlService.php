@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PkkprlService
 {
-
     use FileUpload;
 
     protected $path = 'pkkprl_service';
@@ -25,10 +24,10 @@ class PkkprlService
     public function getAll($request)
     {
         $per_page = $request->per_page ?? 10;
-        $data = $this->model->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])->orderBy('created_at');
+        $data = $this->model->with(['klasifikasi.layerGroup'])->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%' . $search . '%');
+            $data->where('nama', 'like', '%'.$search.'%');
         }
 
         if ($klasifikasi_id = $request->query('klasifikasi_id')) {
@@ -75,7 +74,7 @@ class PkkprlService
 
     public function show($id)
     {
-        return $this->model->with(['klasifikasi.rtrw.periode', 'klasifikasi.layerGroup'])->findOrFail($id);
+        return $this->model->with(['klasifikasi.layerGroup'])->findOrFail($id);
     }
 
     public function update($request, $id)
@@ -137,13 +136,13 @@ class PkkprlService
     {
         DB::beginTransaction();
         try {
-            $data = $this->model->whereIn('id', explode(",", $ids))->get();
+            $data = $this->model->whereIn('id', explode(',', $ids))->get();
 
             if ($data->isEmpty()) {
                 DB::rollBack();
                 throw new Exception('Data tidak ditemukan');
             }
-            $this->model->whereIn('id', explode(",", $ids))->delete();
+            $this->model->whereIn('id', explode(',', $ids))->delete();
 
             DB::commit();
         } catch (Exception $e) {
@@ -157,11 +156,11 @@ class PkkprlService
         $pkkprl = $this->model->findOrFail($id);
 
         // Cek apakah ada file
-        if (!empty($pkkprl->geojson_file)) {
+        if (! empty($pkkprl->geojson_file)) {
 
             $filename = $pkkprl->geojson_file;
 
-            if (!Storage::disk('public')->exists($filename)) {
+            if (! Storage::disk('public')->exists($filename)) {
                 return response()->json(['error' => 'File not found on disk'], 404);
             }
 

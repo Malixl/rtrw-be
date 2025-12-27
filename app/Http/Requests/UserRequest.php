@@ -29,13 +29,13 @@ class UserRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                Rule::unique('users', 'email')->ignore($userId)
+                Rule::unique('users', 'email')->ignore($userId),
             ],
             'role' => 'required|in:admin,opd',
         ];
 
         // Password required on create, optional on update
-        if ($this->isMethod('post') && !$userId) {
+        if ($this->isMethod('post') && ! $userId) {
             $rules['password'] = 'required|string|min:6';
             $rules['password_confirmation'] = 'required|same:password';
         } else {

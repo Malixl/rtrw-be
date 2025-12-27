@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Http\Services\AuthService;
 use App\Http\Traits\ApiResponse;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -58,7 +57,7 @@ class RoleController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return $this->successResponseWithData(
                 [
                     'is_authenticated' => false,
@@ -113,7 +112,7 @@ class RoleController extends Controller
         $user = $request->user();
 
         // Hanya admin yang bisa melihat semua capabilities
-        if (!$user || !$user->hasRole('admin')) {
+        if (! $user || ! $user->hasRole('admin')) {
             return $this->errorResponse(
                 'Hanya admin yang dapat mengakses endpoint ini',
                 Response::HTTP_FORBIDDEN
@@ -132,13 +131,13 @@ class RoleController extends Controller
      */
     private function getUserRole($user): string
     {
-        if (!$user) {
+        if (! $user) {
             return 'guest';
         }
 
         $role = $user->roles->first();
 
-        if (!$role) {
+        if (! $role) {
             return 'guest';
         }
 
