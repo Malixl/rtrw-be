@@ -1,0 +1,24 @@
+{
+  "code":200,
+  "status": true,
+  "data": [
+    {
+      "id": 1,
+      "nama_layer_group": "Peta Dasar V2",
+      "klasifikasis": [
+        {
+          "id": 12,
+          "nama": "perahu",
+          "tipe": "data_spasial",
+          "data_spasial": [ ]
+        },
+        {
+          "id": 13,
+          "nama": "mobil",
+          "tipe": "pkkprl",
+          "pkkprl": []
+        }
+      ]
+    }
+  ]
+}

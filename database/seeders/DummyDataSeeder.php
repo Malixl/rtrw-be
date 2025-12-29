@@ -93,6 +93,22 @@ class DummyDataSeeder extends Seeder
                             'geojson_file' => $filePath,
                         ]);
 
+                        Polaruang::create([
+                            'klasifikasi_id' => $klasifikasiId,
+                            'nama' => "Polaruang Extra $i",
+                            'deskripsi' => 'Contoh polaruang tambahan',
+                            'warna' => '#FF00FF',
+                            'geojson_file' => $filePath,
+                        ]);
+
+                        Polaruang::create([
+                            'klasifikasi_id' => $klasifikasiId,
+                            'nama' => "Polaruang Extra 2 $i",
+                            'deskripsi' => 'Contoh polaruang tambahan 2',
+                            'warna' => '#00FFFF',
+                            'geojson_file' => $filePath,
+                        ]);
+
                         break;
                     case 'struktur_ruang':
                         StrukturRuang::create([

@@ -97,27 +97,28 @@ class LayerGroupService
 
         // flat format — build per-type klasifikasi lists across all RTRW (no rtrw dependency)
         if ($format === 'flat') {
-            $klasifikasi_pola_ruang = \App\Models\Klasifikasi::whereHas('polaRuang')
+            // For flat format include all klasifikasi by tipe (even if they have no children)
+            $klasifikasi_pola_ruang = \App\Models\Klasifikasi::where('tipe', 'pola_ruang')
                 ->with(['polaRuang', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_struktur_ruang = \App\Models\Klasifikasi::whereHas('strukturRuang')
+            $klasifikasi_struktur_ruang = \App\Models\Klasifikasi::where('tipe', 'struktur_ruang')
                 ->with(['strukturRuang', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_ketentuan_khusus = \App\Models\Klasifikasi::whereHas('ketentuanKhusus')
+            $klasifikasi_ketentuan_khusus = \App\Models\Klasifikasi::where('tipe', 'ketentuan_khusus')
                 ->with(['ketentuanKhusus', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_indikasi_program = \App\Models\Klasifikasi::whereHas('indikasiProgram')
+            $klasifikasi_indikasi_program = \App\Models\Klasifikasi::where('tipe', 'indikasi_program')
                 ->with(['indikasiProgram', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_pkkprl = \App\Models\Klasifikasi::whereHas('pkkprl')
+            $klasifikasi_pkkprl = \App\Models\Klasifikasi::where('tipe', 'pkkprl')
                 ->with(['pkkprl', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_data_spasial = \App\Models\Klasifikasi::whereHas('dataSpasial')
+            $klasifikasi_data_spasial = \App\Models\Klasifikasi::where('tipe', 'data_spasial')
                 ->with(['dataSpasial', 'layerGroup'])
                 ->get();
 

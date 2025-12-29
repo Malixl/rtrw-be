@@ -11,7 +11,7 @@ Default grouped map endpoint:
 
 -   GET /api/layer-groups/with-klasifikasi
 -   Query params: `rtrw_id` (optional), `only_with_children` (optional, default: `true`), `format=group` (default)
--   Response: list of LayerGroups ordered by `urutan_tampil`, each containing `klasifikasis` and nested geo children arrays (`pola_ruang`, `struktur_ruang`, `ketentuan_khusus`, `indikasi_program`, `pkkprl`, `data_spasial`).
+-   Response: list of LayerGroups ordered by `urutan_tampil`, each containing **an array of full `klasifikasi` objects** (this is Rafiq's requested/grouped format) — each klasifikasi includes the relevant child geo arrays (`pola_ruang`, `struktur_ruang`, `ketentuan_khusus`, `indikasi_program`, `pkkprl`, or `data_spasial`).
 
 Flat per-type endpoint (Rafiq's example):
 

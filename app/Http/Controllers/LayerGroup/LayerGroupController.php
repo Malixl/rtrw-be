@@ -75,10 +75,10 @@ class LayerGroupController extends Controller
             $format = $request->query('format', 'group');
 
             if ($format === 'flat') {
-                // flat format now returns per-type klasifikasi across all RTRW
+                // flat format returns per-type klasifikasi across the system (no RTRW/Periode)
                 $flat = $this->layerGroupService->getAllWithKlasifikasi($onlyWithChildren, 'flat');
 
-                // transform with resources
+                // transform with flat resources
                 $payload = [
                     'klasifikasi_pola_ruang' => KlasifikasiMapResources::collection($flat['klasifikasi_pola_ruang']),
                     'klasifikasi_struktur_ruang' => KlasifikasiMapResources::collection($flat['klasifikasi_struktur_ruang']),
@@ -89,6 +89,37 @@ class LayerGroupController extends Controller
                 ];
 
                 return $this->successResponseWithData($payload, 'Data klasifikasi per type berhasil diambil', Response::HTTP_OK);
+            }
+
+            if ($format === 'grouped') {
+                // grouped format: build layer_group wrapper from flat data
+                $flat = $this->layerGroupService->getAllWithKlasifikasi(false, 'flat');
+
+                // merge all klasifikasi lists into a single collection
+                $all = collect([]);
+                foreach (['klasifikasi_pola_ruang', 'klasifikasi_struktur_ruang', 'klasifikasi_ketentuan_khusus', 'klasifikasi_indikasi_program', 'klasifikasi_pkkprl', 'klasifikasi_data_spasial'] as $key) {
+                    $all = $all->merge(collect($flat[$key]));
+                }
+
+                // group by layer_group_id and build wrapper
+                $groups = $all->groupBy(function ($k) {
+                    return $k->layer_group_id ?? 0;
+                })->map(function ($items, $groupId) {
+                    $first = $items->first();
+                    $layerName = $first && $first->layerGroup ? $first->layerGroup->nama_layer_group : null;
+
+                    return [
+                        'id' => $groupId ?: null,
+                        'nama_layer_group' => $layerName,
+                        'klasifikasis' => KlasifikasiMapResources::collection($items),
+                    ];
+                })->values();
+
+                return $this->successResponseWithData(
+                    $groups,
+                    'Data layer group berisi klasifikasi per layer berhasil diambil',
+                    Response::HTTP_OK
+                );
             }
 
             $data = $this->layerGroupService->getAllWithKlasifikasi($onlyWithChildren);

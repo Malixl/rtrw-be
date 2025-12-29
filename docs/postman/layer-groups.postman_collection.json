@@ -183,10 +183,19 @@
       "name": "LayerGroups - With Klasifikasi (Flat per-type)",
       "request": {
         "method": "GET",
-        "url": { "raw": "{{base_url}}/layer-groups/with-klasifikasi?format=flat&rtrw_id={{rtrw_id}}", "host": ["{{base_url}}"], "path": ["layer-groups","with-klasifikasi"], "query": [{ "key": "format", "value": "flat" }, { "key": "rtrw_id", "value": "{{rtrw_id}}" }] },
-        "description": "Flat structure per Rafiq's snippet: returns rtrw meta and per-type arrays (klasifikasi_pola_ruang, klasifikasi_struktur_ruang, ...)."
+        "url": { "raw": "{{base_url}}/layer-groups/with-klasifikasi?format=flat", "host": ["{{base_url}}"], "path": ["layer-groups","with-klasifikasi"], "query": [{ "key": "format", "value": "flat" }] },
+        "description": "Flat structure per Rafiq's snippet: returns per-type arrays (klasifikasi_pola_ruang, klasifikasi_struktur_ruang, ...). No RTRW/Periode included by default."
       },
       "event": [{ "listen": "test", "script": { "exec": ["pm.test(\"Map flat returns 200\", function () { pm.response.to.have.status(200); });"] }}]
+    },
+    {
+      "name": "LayerGroups - With Klasifikasi (Grouped by LayerGroup)",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/layer-groups/with-klasifikasi?format=grouped", "host": ["{{base_url}}"], "path": ["layer-groups","with-klasifikasi"], "query": [{ "key": "format", "value": "grouped" }] },
+        "description": "Grouped response: wrapper layer_group -> klasifikasis[]. Uses classifications grouped by layer_group_id."
+      },
+      "event": [{ "listen": "test", "script": { "exec": ["pm.test(\"Map grouped returns 200\", function () { pm.response.to.have.status(200); });"] }}]
     }
   ],
   "event": [],

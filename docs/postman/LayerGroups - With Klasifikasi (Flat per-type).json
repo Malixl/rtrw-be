@@ -1,0 +1,359 @@
+{
+    "code": 200,
+    "status": true,
+    "message": "Data klasifikasi per type berhasil diambil",
+    "data": {
+        "klasifikasi_pola_ruang": [
+            {
+                "id": 5,
+                "nama": "Pola ruang 1",
+                "deskripsi": "Contoh klasifikasi pola_ruang 1",
+                "tipe": "pola_ruang",
+                "pola_ruang": [
+                    {
+                        "id": 1,
+                        "klasifikasi": {
+                            "id": 5,
+                            "nama": "Pola ruang 1",
+                            "deskripsi": "Contoh klasifikasi pola_ruang 1",
+                            "tipe": "pola_ruang",
+                            "layer_group": {
+                                "id": 1,
+                                "layer_group_name": "Peta Contoh A"
+                            }
+                        },
+                        "nama": "Polaruang 1",
+                        "warna": "#FF000",
+                        "deskripsi": "Contoh polaruang",
+                        "geojson_file": "polaruang/sample_polygon_1.geojson",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            },
+            {
+                "id": 6,
+                "nama": "Pola ruang 2",
+                "deskripsi": "Contoh klasifikasi pola_ruang 2",
+                "tipe": "pola_ruang",
+                "pola_ruang": [
+                    {
+                        "id": 2,
+                        "klasifikasi": {
+                            "id": 6,
+                            "nama": "Pola ruang 2",
+                            "deskripsi": "Contoh klasifikasi pola_ruang 2",
+                            "tipe": "pola_ruang",
+                            "layer_group": {
+                                "id": 2,
+                                "layer_group_name": "Peta Contoh B"
+                            }
+                        },
+                        "nama": "Polaruang 2",
+                        "warna": "#FF000",
+                        "deskripsi": "Contoh polaruang",
+                        "geojson_file": "polaruang/sample_polygon_2.geojson",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            }
+        ],
+        "klasifikasi_struktur_ruang": [
+            {
+                "id": 7,
+                "nama": "Struktur ruang 1",
+                "deskripsi": "Contoh klasifikasi struktur_ruang 1",
+                "tipe": "struktur_ruang",
+                "struktur_ruang": [
+                    {
+                        "id": 1,
+                        "klasifikasi": {
+                            "id": 7,
+                            "nama": "Struktur ruang 1",
+                            "deskripsi": "Contoh klasifikasi struktur_ruang 1",
+                            "tipe": "struktur_ruang",
+                            "layer_group": {
+                                "id": 1,
+                                "layer_group_name": "Peta Contoh A"
+                            }
+                        },
+                        "nama": "Struktur 1",
+                        "deskripsi": "Contoh struktur ruang",
+                        "geojson_file": "",
+                        "tipe_geometri": "point",
+                        "icon_titik": "default.png",
+                        "tipe_garis": null,
+                        "warna": "#00FF00",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            },
+            {
+                "id": 8,
+                "nama": "Struktur ruang 2",
+                "deskripsi": "Contoh klasifikasi struktur_ruang 2",
+                "tipe": "struktur_ruang",
+                "struktur_ruang": [
+                    {
+                        "id": 2,
+                        "klasifikasi": {
+                            "id": 8,
+                            "nama": "Struktur ruang 2",
+                            "deskripsi": "Contoh klasifikasi struktur_ruang 2",
+                            "tipe": "struktur_ruang",
+                            "layer_group": {
+                                "id": 2,
+                                "layer_group_name": "Peta Contoh B"
+                            }
+                        },
+                        "nama": "Struktur 2",
+                        "deskripsi": "Contoh struktur ruang",
+                        "geojson_file": "",
+                        "tipe_geometri": "point",
+                        "icon_titik": "default.png",
+                        "tipe_garis": null,
+                        "warna": "#00FF00",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            }
+        ],
+        "klasifikasi_ketentuan_khusus": [
+            {
+                "id": 9,
+                "nama": "Ketentuan khusus 1",
+                "deskripsi": "Contoh klasifikasi ketentuan_khusus 1",
+                "tipe": "ketentuan_khusus",
+                "ketentuan_khusus": [
+                    {
+                        "id": 1,
+                        "klasifikasi": {
+                            "id": 9,
+                            "nama": "Ketentuan khusus 1",
+                            "deskripsi": "Contoh klasifikasi ketentuan_khusus 1",
+                            "tipe": "ketentuan_khusus",
+                            "layer_group": {
+                                "id": 1,
+                                "layer_group_name": "Peta Contoh A"
+                            }
+                        },
+                        "nama": "Ketentuan 1",
+                        "deskripsi": "Contoh ketentuan khusus",
+                        "geojson_file": "",
+                        "tipe_geometri": "polygon",
+                        "icon_titik": "default.png",
+                        "tipe_garis": null,
+                        "warna": "#0000FF",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            },
+            {
+                "id": 10,
+                "nama": "Ketentuan khusus 2",
+                "deskripsi": "Contoh klasifikasi ketentuan_khusus 2",
+                "tipe": "ketentuan_khusus",
+                "ketentuan_khusus": [
+                    {
+                        "id": 2,
+                        "klasifikasi": {
+                            "id": 10,
+                            "nama": "Ketentuan khusus 2",
+                            "deskripsi": "Contoh klasifikasi ketentuan_khusus 2",
+                            "tipe": "ketentuan_khusus",
+                            "layer_group": {
+                                "id": 2,
+                                "layer_group_name": "Peta Contoh B"
+                            }
+                        },
+                        "nama": "Ketentuan 2",
+                        "deskripsi": "Contoh ketentuan khusus",
+                        "geojson_file": "",
+                        "tipe_geometri": "polygon",
+                        "icon_titik": "default.png",
+                        "tipe_garis": null,
+                        "warna": "#0000FF",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            }
+        ],
+        "klasifikasi_indikasi_program": [
+            {
+                "id": 11,
+                "nama": "Indikasi program 1",
+                "deskripsi": "Contoh klasifikasi indikasi_program 1",
+                "tipe": "indikasi_program",
+                "indikasi_program": [
+                    {
+                        "id": 1,
+                        "klasifikasi": {
+                            "id": 11,
+                            "nama": "Indikasi program 1",
+                            "deskripsi": "Contoh klasifikasi indikasi_program 1",
+                            "tipe": "indikasi_program",
+                            "layer_group": {
+                                "id": 1,
+                                "layer_group_name": "Peta Contoh A"
+                            }
+                        },
+                        "nama": "Indikasi 1",
+                        "file_dokumen": "indikasi_program/sample_doc_1.txt"
+                    }
+                ]
+            },
+            {
+                "id": 12,
+                "nama": "Indikasi program 2",
+                "deskripsi": "Contoh klasifikasi indikasi_program 2",
+                "tipe": "indikasi_program",
+                "indikasi_program": [
+                    {
+                        "id": 2,
+                        "klasifikasi": {
+                            "id": 12,
+                            "nama": "Indikasi program 2",
+                            "deskripsi": "Contoh klasifikasi indikasi_program 2",
+                            "tipe": "indikasi_program",
+                            "layer_group": {
+                                "id": 2,
+                                "layer_group_name": "Peta Contoh B"
+                            }
+                        },
+                        "nama": "Indikasi 2",
+                        "file_dokumen": "indikasi_program/sample_doc_2.txt"
+                    }
+                ]
+            }
+        ],
+        "klasifikasi_pkkprl": [
+            {
+                "id": 13,
+                "nama": "Pkkprl 1",
+                "deskripsi": "Contoh klasifikasi pkkprl 1",
+                "tipe": "pkkprl",
+                "pkkprl": [
+                    {
+                        "id": 1,
+                        "klasifikasi": {
+                            "id": 13,
+                            "nama": "Pkkprl 1",
+                            "deskripsi": "Contoh klasifikasi pkkprl 1",
+                            "tipe": "pkkprl",
+                            "layer_group": {
+                                "id": 1,
+                                "layer_group_name": "Peta Contoh A"
+                            }
+                        },
+                        "nama": "PKKPRL 1",
+                        "deskripsi": "Contoh PKKPRL",
+                        "geojson_file": "",
+                        "tipe_geometri": "polygon",
+                        "icon_titik": "default.png",
+                        "tipe_garis": null,
+                        "warna": "#FFA500",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            },
+            {
+                "id": 14,
+                "nama": "Pkkprl 2",
+                "deskripsi": "Contoh klasifikasi pkkprl 2",
+                "tipe": "pkkprl",
+                "pkkprl": [
+                    {
+                        "id": 2,
+                        "klasifikasi": {
+                            "id": 14,
+                            "nama": "Pkkprl 2",
+                            "deskripsi": "Contoh klasifikasi pkkprl 2",
+                            "tipe": "pkkprl",
+                            "layer_group": {
+                                "id": 2,
+                                "layer_group_name": "Peta Contoh B"
+                            }
+                        },
+                        "nama": "PKKPRL 2",
+                        "deskripsi": "Contoh PKKPRL",
+                        "geojson_file": "",
+                        "tipe_geometri": "polygon",
+                        "icon_titik": "default.png",
+                        "tipe_garis": null,
+                        "warna": "#FFA500",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            }
+        ],
+        "klasifikasi_data_spasial": [
+            {
+                "id": 15,
+                "nama": "Data spasial 1",
+                "deskripsi": "Contoh klasifikasi data_spasial 1",
+                "tipe": "data_spasial",
+                "data_spasial": [
+                    {
+                        "id": 6,
+                        "klasifikasi": {
+                            "id": 15,
+                            "nama": "Data spasial 1",
+                            "deskripsi": "Contoh klasifikasi data_spasial 1",
+                            "tipe": "data_spasial",
+                            "layer_group": {
+                                "id": 1,
+                                "layer_group_name": "Peta Contoh A"
+                            }
+                        },
+                        "nama": "DataSpasial 1",
+                        "deskripsi": "Contoh data spasial",
+                        "geojson_file": "data_spasial/sample_point_1.geojson",
+                        "tipe_geometri": "point",
+                        "icon_titik": "default.png",
+                        "tipe_garis": null,
+                        "warna": "#CCCCCC",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            },
+            {
+                "id": 16,
+                "nama": "Data spasial 2",
+                "deskripsi": "Contoh klasifikasi data_spasial 2",
+                "tipe": "data_spasial",
+                "data_spasial": [
+                    {
+                        "id": 7,
+                        "klasifikasi": {
+                            "id": 16,
+                            "nama": "Data spasial 2",
+                            "deskripsi": "Contoh klasifikasi data_spasial 2",
+                            "tipe": "data_spasial",
+                            "layer_group": {
+                                "id": 2,
+                                "layer_group_name": "Peta Contoh B"
+                            }
+                        },
+                        "nama": "DataSpasial 2",
+                        "deskripsi": "Contoh data spasial",
+                        "geojson_file": "data_spasial/sample_point_2.geojson",
+                        "tipe_geometri": "point",
+                        "icon_titik": "default.png",
+                        "tipe_garis": null,
+                        "warna": "#CCCCCC",
+                        "created_at": "29 December 2025",
+                        "updated_at": "29 December 2025"
+                    }
+                ]
+            }
+        ]
+    }
+}
