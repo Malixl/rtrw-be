@@ -31,7 +31,8 @@ class LayerGroupMapResource extends JsonResource
 
         return [
             'id' => $this->id,
-            // expose only `layer_group_name` (frontend contract)
+            // Keep both keys for backward compatibility: prefer `layer_group_name` as public contract
+            'layer_group_name' => $this->layer_group_name ?? $this->nama_layer_group,
             'nama_layer_group' => $this->nama_layer_group ?? $this->layer_group_name,
             'deskripsi' => $this->deskripsi,
             'urutan_tampil' => $this->urutan_tampil,

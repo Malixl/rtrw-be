@@ -16,6 +16,11 @@ class UpdateLayerGroupRequest extends FormRequest
         if ($this->has('layer_group_name')) {
             $this->merge(['nama_layer_group' => $this->input('layer_group_name')]);
         }
+
+        // Also accept legacy `nama_layer_group` from the front-end and map it to `layer_group_name`.
+        if ($this->has('nama_layer_group') && ! $this->has('layer_group_name')) {
+            $this->merge(['layer_group_name' => $this->input('nama_layer_group')]);
+        }
     }
 
     public function rules(): array
