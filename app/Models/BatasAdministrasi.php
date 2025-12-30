@@ -18,5 +18,11 @@ class BatasAdministrasi extends Model
         'tipe_geometri',
         'tipe_garis',
         'warna',
+        'klasifikasi_id',
     ];
+
+    public function klasifikasi()
+    {
+        return $this->belongsTo(Klasifikasi::class);
+    }
 }

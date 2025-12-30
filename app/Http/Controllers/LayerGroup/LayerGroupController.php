@@ -86,6 +86,7 @@ class LayerGroupController extends Controller
                     'klasifikasi_indikasi_program' => KlasifikasiMapResources::collection($flat['klasifikasi_indikasi_program']),
                     'klasifikasi_pkkprl' => KlasifikasiMapResources::collection($flat['klasifikasi_pkkprl']),
                     'klasifikasi_data_spasial' => KlasifikasiMapResources::collection($flat['klasifikasi_data_spasial']),
+                    'klasifikasi_batas_administrasi' => KlasifikasiMapResources::collection($flat['klasifikasi_batas_administrasi']),
                 ];
 
                 return $this->successResponseWithData($payload, 'Data klasifikasi per type berhasil diambil', Response::HTTP_OK);

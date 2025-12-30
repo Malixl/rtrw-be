@@ -13,6 +13,8 @@ return new class extends Migration
     {
         Schema::create('batas_administrasi', function (Blueprint $table) {
             $table->id();
+            // relation to klasifikasi (nullable for safe transition)
+            $table->foreignId('klasifikasi_id')->nullable()->constrained('klasifikasi')->nullOnDelete();
             $table->string('nama');
             $table->text('deskripsi')->nullable();
             $table->string('geojson_file');
@@ -27,6 +29,13 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('batas_administrasi', function (Blueprint $table) {
+            if (Schema::hasColumn('batas_administrasi', 'klasifikasi_id')) {
+                $table->dropForeign(['klasifikasi_id']);
+                $table->dropColumn('klasifikasi_id');
+            }
+        });
+
         Schema::dropIfExists('batas_administrasi');
     }
 };

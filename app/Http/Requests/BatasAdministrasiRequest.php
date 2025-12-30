@@ -27,7 +27,7 @@ class BatasAdministrasiRequest extends FormRequest
             'tipe_geometri' => 'required|in:polyline,polygon',
             'tipe_garis' => 'nullable|string',
             'warna' => 'nullable|string|max:20',
-
+            'klasifikasi_id' => 'nullable|exists:klasifikasi,id',
         ];
 
         // Tidak ada klasifikasi_id di BatasAdministrasi
