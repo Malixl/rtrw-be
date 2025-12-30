@@ -11,7 +11,7 @@ Default grouped map endpoint:
 
 -   GET /api/layer-groups/with-klasifikasi
 -   Query params: `rtrw_id` (optional), `only_with_children` (optional, default: `true`), `format=group` (default)
--   Response: list of LayerGroups ordered by `urutan_tampil`, each containing **an array of full `klasifikasi` objects** (this is Rafiq's requested/grouped format) — each klasifikasi includes the relevant child geo arrays (`pola_ruang`, `struktur_ruang`, `ketentuan_khusus`, `indikasi_program`, `pkkprl`, or `data_spasial`).
+-   Response: list of LayerGroups ordered by `urutan_tampil`, each containing a `klasifikasis` **object keyed per-type** (e.g. `klasifikasi_pola_ruang`) — each klasifikasi object includes its child geo arrays (`pola_ruang`, `struktur_ruang`, `ketentuan_khusus`, `indikasi_program`, `pkkprl`, `data_spasial`) and timestamps in ISO when `raw_dates=true` (child geo items now include `klasifikasi_id` rather than a nested `klasifikasi` object).
 
 Flat per-type endpoint (Rafiq's example):
 
@@ -32,7 +32,9 @@ Flat per-type endpoint (Rafiq's example):
 6. Test Map endpoints:
     - Group format: GET `/api/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true`
     - Flat format: GET `/api/layer-groups/with-klasifikasi?format=flat&rtrw_id={{rtrw_id}}`
-    - Compact behavior (default): responses now omit empty relation keys (mis. `pola_ruang`, `struktur_ruang`, dll.). To include empty arrays for backward compatibility, add `&compact=false` to the query string (example: `/api/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true&compact=false`).
+
+-   Compact behavior: by default map endpoints **include empty child arrays** (for example `pola_ruang: []`) so front-end can safely `map()` over them. To hide empty relations instead, add `&compact=true` to the query string (example: `/api/layer-groups/with-klasifikasi?rtrw_id={{rtrw_id}}&only_with_children=true&compact=true`).
+-   Date format: map endpoints return ISO 8601 timestamps by default (`raw_dates=true`). To get human-readable dates, add `&raw_dates=false`.
 
 ## Cara melihat detail Layer Group beserta geometrinya (Postman) ✅
 

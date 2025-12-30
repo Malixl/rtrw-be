@@ -92,31 +92,14 @@ class LayerGroupController extends Controller
             }
 
             if ($format === 'grouped') {
-                // grouped format: build layer_group wrapper from flat data
-                $flat = $this->layerGroupService->getAllWithKlasifikasi(false, 'flat');
+                // grouped format: return layer groups with klasifikasis object keyed per-type
+                $groups = $this->layerGroupService->getAllWithKlasifikasi(false, 'group');
 
-                // merge all klasifikasi lists into a single collection
-                $all = collect([]);
-                foreach (['klasifikasi_pola_ruang', 'klasifikasi_struktur_ruang', 'klasifikasi_ketentuan_khusus', 'klasifikasi_indikasi_program', 'klasifikasi_pkkprl', 'klasifikasi_data_spasial'] as $key) {
-                    $all = $all->merge(collect($flat[$key]));
-                }
-
-                // group by layer_group_id and build wrapper
-                $groups = $all->groupBy(function ($k) {
-                    return $k->layer_group_id ?? 0;
-                })->map(function ($items, $groupId) {
-                    $first = $items->first();
-                    $layerName = $first && $first->layerGroup ? $first->layerGroup->nama_layer_group : null;
-
-                    return [
-                        'id' => $groupId ?: null,
-                        'nama_layer_group' => $layerName,
-                        'klasifikasis' => KlasifikasiMapResources::collection($items),
-                    ];
-                })->values();
+                // transform with LayerGroupMapResource which produces per-type klasifikasi objects
+                $payload = LayerGroupMapResource::collection($groups)->toArray($request);
 
                 return $this->successResponseWithData(
-                    $groups,
+                    $payload,
                     'Data layer group berisi klasifikasi per layer berhasil diambil',
                     Response::HTTP_OK
                 );

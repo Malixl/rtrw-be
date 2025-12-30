@@ -9,19 +9,14 @@ class KlasifikasiMapResources extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $compact = filter_var($request->query('compact', true), FILTER_VALIDATE_BOOLEAN);
+        // Default behavior for map endpoints per Rafiq:
+        // - include empty child arrays by default (compact = false)
+        // - return ISO timestamps by default (raw_dates = true)
+        $compact = filter_var($request->query('compact', false), FILTER_VALIDATE_BOOLEAN);
+        $rawDates = filter_var($request->query('raw_dates', true), FILTER_VALIDATE_BOOLEAN);
 
         $data = [
             'id' => $this->id,
-            // 'rtrw' => [
-            //     'id' => $this->rtrw->id ?? null,
-            //     'nama' => $this->rtrw->nama ?? null,
-            //     'periode' => [
-            //         'id' => $this->rtrw->periode->id ?? null,
-            //         'tahun_mulai' => $this->rtrw->periode->tahun_mulai ?? null,
-            //         'tahun_akhir' => $this->rtrw->periode->tahun_akhir ?? null,
-            //     ],
-            // ],
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'tipe' => $this->tipe,
@@ -68,6 +63,16 @@ class KlasifikasiMapResources extends JsonResource
         } elseif (! $compact) {
             $data['data_spasial'] = [];
         }
+
+        // layer_group metadata (if available)
+        $data['layer_group'] = $this->relationLoaded('layerGroup') && $this->layerGroup ? [
+            'id' => $this->layerGroup->id,
+            'layer_group_name' => $this->layerGroup->nama_layer_group ?? $this->layerGroup->layer_group_name ?? null,
+        ] : null;
+
+        // timestamps
+        $data['created_at'] = $rawDates ? ($this->created_at?->format('c')) : ($this->created_at?->format('d F Y'));
+        $data['updated_at'] = $rawDates ? ($this->updated_at?->format('c')) : ($this->updated_at?->format('d F Y'));
 
         return $data;
     }

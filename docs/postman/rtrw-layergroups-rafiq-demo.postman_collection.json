@@ -1,0 +1,96 @@
+{
+  "info": {
+    "name": "RTRW - LayerGroups (Rafiq demo)",
+    "_postman_id": "rtrw-layergroups-rafiq-demo",
+    "description": "Minimal collection to demonstrate Rafiq format (flat per-type + grouped by layer). Run step-by-step: Login -> create sample data -> GET flat -> GET grouped.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{admin_email}}\",\n  \"password\": \"{{admin_password}}\"\n}"
+        },
+        "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth","login"] }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Login returns 200', function () { pm.response.to.have.status(200); });",
+              "try { var json = pm.response.json(); if (json.data && json.data.token) pm.environment.set('token', json.data.token); } catch (e) {}"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "LayerGroup - Create (Peta Dasar V2)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": { "mode": "raw", "raw": "{\n  \"nama_layer_group\": \"Peta Dasar V2\",\n  \"deskripsi\": \"Demo\",\n  \"urutan_tampil\": 1\n}" },
+        "url": { "raw": "{{base_url}}/layer-groups", "host": ["{{base_url}}"], "path": ["layer-groups"] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('LayerGroup created', function () { pm.response.to.have.status(201); }); try { var json = pm.response.json(); if (json.data && json.data.id) pm.environment.set('layer_group_id', json.data.id); } catch(e){}" ] } } ]
+    },
+    {
+      "name": "Klasifikasi - Create perahu (data_spasial)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"nama\": \"perahu\",\n  \"deskripsi\": \"demo perahu\",\n  \"layer_group_id\": {{layer_group_id}},\n  \"tipe\": \"data_spasial\"\n}" },
+        "url": { "raw": "{{base_url}}/klasifikasi", "host": ["{{base_url}}"], "path": ["klasifikasi"] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Klasifikasi perahu created', function () { pm.response.to.have.status(201); }); try { var json = pm.response.json(); if (json.data && json.data.id) pm.environment.set('klasifikasi_perahu_id', json.data.id); } catch(e){}" ] } } ]
+    },
+    {
+      "name": "Klasifikasi - Create mobil (pkkprl)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" }, { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "raw", "raw": "{\n  \"nama\": \"mobil\",\n  \"deskripsi\": \"demo mobil\",\n  \"layer_group_id\": {{layer_group_id}},\n  \"tipe\": \"pkkprl\"\n}" },
+        "url": { "raw": "{{base_url}}/klasifikasi", "host": ["{{base_url}}"], "path": ["klasifikasi"] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Klasifikasi mobil created', function () { pm.response.to.have.status(201); }); try { var json = pm.response.json(); if (json.data && json.data.id) pm.environment.set('klasifikasi_mobil_id', json.data.id); } catch(e){}" ] } } ]
+    },
+    {
+      "name": "Data Spasial - Create (attach to perahu)",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Authorization", "value": "Bearer {{token}}" } ],
+        "body": { "mode": "formdata", "formdata": [ { "key": "klasifikasi_id", "value": "{{klasifikasi_perahu_id}}", "type": "text" }, { "key": "nama", "value": "danauu", "type": "text" }, { "key": "deskripsi", "value": "demo geo", "type": "text" } ] },
+        "url": { "raw": "{{base_url}}/data_spasial", "host": ["{{base_url}}"], "path": ["data_spasial"] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('DataSpasial created', function () { pm.response.to.have.status(201); }); try { var json = pm.response.json(); if (json.data && json.data.id) pm.environment.set('data_spasial_id', json.data.id); } catch(e){}" ] } } ]
+    },
+    {
+      "name": "LayerGroups - With Klasifikasi (Flat per-type) - Smoke",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/layer-groups/with-klasifikasi?format=flat&compact=false&raw_dates=true", "host": ["{{base_url}}"], "path": ["layer-groups","with-klasifikasi"], "query": [ { "key": "format", "value": "flat" }, { "key": "compact", "value": "false" }, { "key": "raw_dates", "value": "true" } ] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Flat returns 200', function () { pm.response.to.have.status(200); });", "const json = pm.response.json();", "pm.test('contains perahu in data_spasial', function () { const arr = json.data.klasifikasi_data_spasial || []; pm.expect(arr.some(i => i.nama === 'perahu')).to.be.true; });", "pm.test('perahu has child array and ISO dates', function () { const arr = json.data.klasifikasi_data_spasial || []; const perahu = arr.find(i => i.nama === 'perahu'); if (perahu) { pm.expect(Array.isArray(perahu.data_spasial)).to.be.true; pm.expect(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/.test(perahu.created_at)).to.be.true; if (perahu.data_spasial.length) { const child = perahu.data_spasial[0]; pm.expect(child).to.have.property('klasifikasi_id'); pm.expect(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/.test(child.created_at)).to.be.true; } } else { pm.expect.fail('perahu not found'); } });" ] } } ]
+    },
+    {
+      "name": "LayerGroups - With Klasifikasi (Grouped by LayerGroup) - Smoke",
+      "request": {
+        "method": "GET",
+        "url": { "raw": "{{base_url}}/layer-groups/with-klasifikasi?format=grouped&compact=false&raw_dates=true", "host": ["{{base_url}}"], "path": ["layer-groups","with-klasifikasi"], "query": [ { "key": "format", "value": "grouped" }, { "key": "compact", "value": "false" }, { "key": "raw_dates", "value": "true" } ] }
+      },
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Grouped returns 200', function () { pm.response.to.have.status(200); });", "const json = pm.response.json(); pm.test('group contains Peta Dasar V2', function () { pm.expect(json.data.some(g => g.nama_layer_group === 'Peta Dasar V2')).to.be.true; });", "pm.test('group has klasifikasis object per-type and child arrays', function () { const group = json.data.find(g => g.nama_layer_group === 'Peta Dasar V2'); pm.expect(group).to.not.be.undefined; const klasObj = group.klasifikasis || {}; pm.expect(klasObj.klasifikasi_pola_ruang).to.be.an('array'); if (klasObj.klasifikasi_pola_ruang.length) { const first = klasObj.klasifikasi_pola_ruang[0]; pm.expect(Array.isArray(first.pola_ruang)).to.be.true; pm.expect(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/.test(first.created_at)).to.be.true; if (first.pola_ruang.length) { const child = first.pola_ruang[0]; pm.expect(child).to.have.property('klasifikasi_id'); pm.expect(/\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}/.test(child.created_at)).to.be.true; } } });" ] } } ]
+    }
+  ],
+  "event": [],
+  "protocolProfileBehavior": {}
+}

@@ -14,20 +14,12 @@ class StrukturRuangResources extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        $rawDates = filter_var($request->query('raw_dates', true), FILTER_VALIDATE_BOOLEAN);
         $klasifikasi = optional($this->klasifikasi);
 
         return [
             'id' => $this->id,
-            'klasifikasi' => [
-                'id' => $klasifikasi->id,
-                'nama' => $klasifikasi->nama,
-                'deskripsi' => $klasifikasi->deskripsi,
-                'tipe' => $klasifikasi->tipe,
-                'layer_group' => [
-                    'id' => optional($klasifikasi->layerGroup)->id,
-                    'layer_group_name' => optional($klasifikasi->layerGroup)->layer_group_name,
-                ],
-            ],
+            'klasifikasi_id' => $this->klasifikasi_id ?? $klasifikasi->id ?? null,
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'geojson_file' => $this->geojson_file,
@@ -35,8 +27,8 @@ class StrukturRuangResources extends JsonResource
             'icon_titik' => $this->icon_titik,
             'tipe_garis' => $this->tipe_garis,
             'warna' => $this->warna,
-            'created_at' => $this->created_at->format('d F Y'),
-            'updated_at' => $this->updated_at->format('d F Y'),
+            'created_at' => $rawDates ? ($this->created_at?->format('c')) : ($this->created_at?->format('d F Y')),
+            'updated_at' => $rawDates ? ($this->updated_at?->format('c')) : ($this->updated_at?->format('d F Y')),
         ];
     }
 }

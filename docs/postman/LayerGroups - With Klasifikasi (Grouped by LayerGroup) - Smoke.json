@@ -1,0 +1,419 @@
+{
+    "code": 200,
+    "status": true,
+    "message": "Data layer group berisi klasifikasi per layer berhasil diambil",
+    "data": [
+        {
+            "id": 1,
+            "nama_layer_group": "Peta Contoh A",
+            "deskripsi": "Layer group contoh A",
+            "urutan_tampil": 1,
+            "klasifikasis": {
+                "klasifikasi_pola_ruang": [
+                    {
+                        "id": 1,
+                        "nama": "Pola ruang 1",
+                        "deskripsi": "Contoh klasifikasi pola_ruang 1",
+                        "tipe": "pola_ruang",
+                        "pola_ruang": [
+                            {
+                                "id": 1,
+                                "klasifikasi_id": 1,
+                                "nama": "Polaruang 1",
+                                "warna": "#FF000",
+                                "deskripsi": "Contoh polaruang",
+                                "geojson_file": "polaruang/sample_polygon_1.geojson",
+                                "created_at": "2025-12-30T04:25:29+00:00",
+                                "updated_at": "2025-12-30T04:25:29+00:00"
+                            },
+                            {
+                                "id": 2,
+                                "klasifikasi_id": 1,
+                                "nama": "Polaruang Extra 1",
+                                "warna": "#FF00FF",
+                                "deskripsi": "Contoh polaruang tambahan",
+                                "geojson_file": "polaruang/sample_polygon_1.geojson",
+                                "created_at": "2025-12-30T04:25:29+00:00",
+                                "updated_at": "2025-12-30T04:25:29+00:00"
+                            },
+                            {
+                                "id": 3,
+                                "klasifikasi_id": 1,
+                                "nama": "Polaruang Extra 2 1",
+                                "warna": "#00FFFF",
+                                "deskripsi": "Contoh polaruang tambahan 2",
+                                "geojson_file": "polaruang/sample_polygon_1.geojson",
+                                "created_at": "2025-12-30T04:25:29+00:00",
+                                "updated_at": "2025-12-30T04:25:29+00:00"
+                            }
+                        ],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [],
+                        "pkkprl": [],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:27+00:00",
+                        "updated_at": "2025-12-30T04:25:27+00:00"
+                    }
+                ],
+                "klasifikasi_struktur_ruang": [
+                    {
+                        "id": 3,
+                        "nama": "Struktur ruang 1",
+                        "deskripsi": "Contoh klasifikasi struktur_ruang 1",
+                        "tipe": "struktur_ruang",
+                        "pola_ruang": [],
+                        "struktur_ruang": [
+                            {
+                                "id": 1,
+                                "klasifikasi_id": 3,
+                                "nama": "Struktur 1",
+                                "deskripsi": "Contoh struktur ruang",
+                                "geojson_file": "",
+                                "tipe_geometri": "point",
+                                "icon_titik": "default.png",
+                                "tipe_garis": null,
+                                "warna": "#00FF00",
+                                "created_at": "2025-12-30T04:25:29+00:00",
+                                "updated_at": "2025-12-30T04:25:29+00:00"
+                            }
+                        ],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [],
+                        "pkkprl": [],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:29+00:00",
+                        "updated_at": "2025-12-30T04:25:29+00:00"
+                    }
+                ],
+                "klasifikasi_ketentuan_khusus": [
+                    {
+                        "id": 5,
+                        "nama": "Ketentuan khusus 1",
+                        "deskripsi": "Contoh klasifikasi ketentuan_khusus 1",
+                        "tipe": "ketentuan_khusus",
+                        "pola_ruang": [],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [
+                            {
+                                "id": 1,
+                                "klasifikasi_id": 5,
+                                "nama": "Ketentuan 1",
+                                "deskripsi": "Contoh ketentuan khusus",
+                                "geojson_file": "",
+                                "tipe_geometri": "polygon",
+                                "icon_titik": "default.png",
+                                "tipe_garis": null,
+                                "warna": "#0000FF",
+                                "created_at": "2025-12-30T04:25:30+00:00",
+                                "updated_at": "2025-12-30T04:25:30+00:00"
+                            }
+                        ],
+                        "indikasi_program": [],
+                        "pkkprl": [],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:30+00:00",
+                        "updated_at": "2025-12-30T04:25:30+00:00"
+                    }
+                ],
+                "klasifikasi_indikasi_program": [
+                    {
+                        "id": 7,
+                        "nama": "Indikasi program 1",
+                        "deskripsi": "Contoh klasifikasi indikasi_program 1",
+                        "tipe": "indikasi_program",
+                        "pola_ruang": [],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [
+                            {
+                                "id": 1,
+                                "klasifikasi_id": 7,
+                                "nama": "Indikasi 1",
+                                "file_dokumen": "indikasi_program/sample_doc_1.txt"
+                            }
+                        ],
+                        "pkkprl": [],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:30+00:00",
+                        "updated_at": "2025-12-30T04:25:30+00:00"
+                    }
+                ],
+                "klasifikasi_pkkprl": [
+                    {
+                        "id": 9,
+                        "nama": "Pkkprl 1",
+                        "deskripsi": "Contoh klasifikasi pkkprl 1",
+                        "tipe": "pkkprl",
+                        "pola_ruang": [],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [],
+                        "pkkprl": [
+                            {
+                                "id": 1,
+                                "klasifikasi_id": 9,
+                                "nama": "PKKPRL 1",
+                                "deskripsi": "Contoh PKKPRL",
+                                "geojson_file": "",
+                                "tipe_geometri": "polygon",
+                                "icon_titik": "default.png",
+                                "tipe_garis": null,
+                                "warna": "#FFA500",
+                                "created_at": "2025-12-30T04:25:30+00:00",
+                                "updated_at": "2025-12-30T04:25:30+00:00"
+                            }
+                        ],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:30+00:00",
+                        "updated_at": "2025-12-30T04:25:30+00:00"
+                    }
+                ],
+                "klasifikasi_data_spasial": [
+                    {
+                        "id": 11,
+                        "nama": "Data spasial 1",
+                        "deskripsi": "Contoh klasifikasi data_spasial 1",
+                        "tipe": "data_spasial",
+                        "pola_ruang": [],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [],
+                        "pkkprl": [],
+                        "data_spasial": [
+                            {
+                                "id": 1,
+                                "klasifikasi_id": 11,
+                                "nama": "DataSpasial 1",
+                                "deskripsi": "Contoh data spasial",
+                                "geojson_file": "data_spasial/sample_point_1.geojson",
+                                "tipe_geometri": "point",
+                                "icon_titik": "default.png",
+                                "tipe_garis": null,
+                                "warna": "#CCCCCC",
+                                "created_at": "2025-12-30T04:25:31+00:00",
+                                "updated_at": "2025-12-30T04:25:31+00:00"
+                            }
+                        ],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:31+00:00",
+                        "updated_at": "2025-12-30T04:25:31+00:00"
+                    }
+                ]
+            },
+            "created_at": "2025-12-30T04:25:27+00:00",
+            "updated_at": "2025-12-30T04:25:27+00:00"
+        },
+        {
+            "id": 2,
+            "nama_layer_group": "Peta Contoh B",
+            "deskripsi": "Layer group contoh B",
+            "urutan_tampil": 2,
+            "klasifikasis": {
+                "klasifikasi_pola_ruang": [
+                    {
+                        "id": 2,
+                        "nama": "Pola ruang 2",
+                        "deskripsi": "Contoh klasifikasi pola_ruang 2",
+                        "tipe": "pola_ruang",
+                        "pola_ruang": [
+                            {
+                                "id": 4,
+                                "klasifikasi_id": 2,
+                                "nama": "Polaruang 2",
+                                "warna": "#FF000",
+                                "deskripsi": "Contoh polaruang",
+                                "geojson_file": "polaruang/sample_polygon_2.geojson",
+                                "created_at": "2025-12-30T04:25:29+00:00",
+                                "updated_at": "2025-12-30T04:25:29+00:00"
+                            },
+                            {
+                                "id": 5,
+                                "klasifikasi_id": 2,
+                                "nama": "Polaruang Extra 2",
+                                "warna": "#FF00FF",
+                                "deskripsi": "Contoh polaruang tambahan",
+                                "geojson_file": "polaruang/sample_polygon_2.geojson",
+                                "created_at": "2025-12-30T04:25:29+00:00",
+                                "updated_at": "2025-12-30T04:25:29+00:00"
+                            },
+                            {
+                                "id": 6,
+                                "klasifikasi_id": 2,
+                                "nama": "Polaruang Extra 2 2",
+                                "warna": "#00FFFF",
+                                "deskripsi": "Contoh polaruang tambahan 2",
+                                "geojson_file": "polaruang/sample_polygon_2.geojson",
+                                "created_at": "2025-12-30T04:25:29+00:00",
+                                "updated_at": "2025-12-30T04:25:29+00:00"
+                            }
+                        ],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [],
+                        "pkkprl": [],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:29+00:00",
+                        "updated_at": "2025-12-30T04:25:29+00:00"
+                    }
+                ],
+                "klasifikasi_struktur_ruang": [
+                    {
+                        "id": 4,
+                        "nama": "Struktur ruang 2",
+                        "deskripsi": "Contoh klasifikasi struktur_ruang 2",
+                        "tipe": "struktur_ruang",
+                        "pola_ruang": [],
+                        "struktur_ruang": [
+                            {
+                                "id": 2,
+                                "klasifikasi_id": 4,
+                                "nama": "Struktur 2",
+                                "deskripsi": "Contoh struktur ruang",
+                                "geojson_file": "",
+                                "tipe_geometri": "point",
+                                "icon_titik": "default.png",
+                                "tipe_garis": null,
+                                "warna": "#00FF00",
+                                "created_at": "2025-12-30T04:25:29+00:00",
+                                "updated_at": "2025-12-30T04:25:29+00:00"
+                            }
+                        ],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [],
+                        "pkkprl": [],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:29+00:00",
+                        "updated_at": "2025-12-30T04:25:29+00:00"
+                    }
+                ],
+                "klasifikasi_ketentuan_khusus": [
+                    {
+                        "id": 6,
+                        "nama": "Ketentuan khusus 2",
+                        "deskripsi": "Contoh klasifikasi ketentuan_khusus 2",
+                        "tipe": "ketentuan_khusus",
+                        "pola_ruang": [],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [
+                            {
+                                "id": 2,
+                                "klasifikasi_id": 6,
+                                "nama": "Ketentuan 2",
+                                "deskripsi": "Contoh ketentuan khusus",
+                                "geojson_file": "",
+                                "tipe_geometri": "polygon",
+                                "icon_titik": "default.png",
+                                "tipe_garis": null,
+                                "warna": "#0000FF",
+                                "created_at": "2025-12-30T04:25:30+00:00",
+                                "updated_at": "2025-12-30T04:25:30+00:00"
+                            }
+                        ],
+                        "indikasi_program": [],
+                        "pkkprl": [],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:30+00:00",
+                        "updated_at": "2025-12-30T04:25:30+00:00"
+                    }
+                ],
+                "klasifikasi_indikasi_program": [
+                    {
+                        "id": 8,
+                        "nama": "Indikasi program 2",
+                        "deskripsi": "Contoh klasifikasi indikasi_program 2",
+                        "tipe": "indikasi_program",
+                        "pola_ruang": [],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [
+                            {
+                                "id": 2,
+                                "klasifikasi_id": 8,
+                                "nama": "Indikasi 2",
+                                "file_dokumen": "indikasi_program/sample_doc_2.txt"
+                            }
+                        ],
+                        "pkkprl": [],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:30+00:00",
+                        "updated_at": "2025-12-30T04:25:30+00:00"
+                    }
+                ],
+                "klasifikasi_pkkprl": [
+                    {
+                        "id": 10,
+                        "nama": "Pkkprl 2",
+                        "deskripsi": "Contoh klasifikasi pkkprl 2",
+                        "tipe": "pkkprl",
+                        "pola_ruang": [],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [],
+                        "pkkprl": [
+                            {
+                                "id": 2,
+                                "klasifikasi_id": 10,
+                                "nama": "PKKPRL 2",
+                                "deskripsi": "Contoh PKKPRL",
+                                "geojson_file": "",
+                                "tipe_geometri": "polygon",
+                                "icon_titik": "default.png",
+                                "tipe_garis": null,
+                                "warna": "#FFA500",
+                                "created_at": "2025-12-30T04:25:31+00:00",
+                                "updated_at": "2025-12-30T04:25:31+00:00"
+                            }
+                        ],
+                        "data_spasial": [],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:31+00:00",
+                        "updated_at": "2025-12-30T04:25:31+00:00"
+                    }
+                ],
+                "klasifikasi_data_spasial": [
+                    {
+                        "id": 12,
+                        "nama": "Data spasial 2",
+                        "deskripsi": "Contoh klasifikasi data_spasial 2",
+                        "tipe": "data_spasial",
+                        "pola_ruang": [],
+                        "struktur_ruang": [],
+                        "ketentuan_khusus": [],
+                        "indikasi_program": [],
+                        "pkkprl": [],
+                        "data_spasial": [
+                            {
+                                "id": 2,
+                                "klasifikasi_id": 12,
+                                "nama": "DataSpasial 2",
+                                "deskripsi": "Contoh data spasial",
+                                "geojson_file": "data_spasial/sample_point_2.geojson",
+                                "tipe_geometri": "point",
+                                "icon_titik": "default.png",
+                                "tipe_garis": null,
+                                "warna": "#CCCCCC",
+                                "created_at": "2025-12-30T04:25:31+00:00",
+                                "updated_at": "2025-12-30T04:25:31+00:00"
+                            }
+                        ],
+                        "layer_group": null,
+                        "created_at": "2025-12-30T04:25:31+00:00",
+                        "updated_at": "2025-12-30T04:25:31+00:00"
+                    }
+                ]
+            },
+            "created_at": "2025-12-30T04:25:27+00:00",
+            "updated_at": "2025-12-30T04:25:27+00:00"
+        }
+    ]
+}

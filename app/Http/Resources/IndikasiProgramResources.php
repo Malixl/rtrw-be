@@ -16,27 +16,7 @@ class IndikasiProgramResources extends JsonResource
     {
         return [
             'id' => $this->id,
-            'klasifikasi' => [
-                'id' => $this->klasifikasi->id ?? null,
-                'nama' => $this->klasifikasi->nama ?? null,
-                'deskripsi' => $this->klasifikasi->deskripsi ?? null,
-                'tipe' => $this->klasifikasi->tipe ?? null,
-                // 'rtrw' => [
-                //     'id' => $this->klasifikasi->rtrw->id ?? null,
-                //     'nama' => $this->klasifikasi->rtrw->nama ?? null,
-                //     'periode' => [
-                //         'id' => $this->klasifikasi->rtrw->periode->id ?? null,
-                //         'tahun_mulai' => $this->klasifikasi->rtrw->periode->tahun_mulai ?? null,
-                //         'tahun_akhir' => $this->klasifikasi->rtrw->periode->tahun_akhir ?? null,
-                //     ],
-                //     'deskripsi' => $this->klasifikasi->rtrw->deskripsi ?? null,
-
-                // ],
-                'layer_group' => [
-                    'id' => optional($this->klasifikasi->layerGroup)->id ?? null,
-                    'layer_group_name' => optional($this->klasifikasi->layerGroup)->layer_group_name ?? null,
-                ],
-            ],
+            'klasifikasi_id' => $this->klasifikasi_id ?? $this->klasifikasi->id ?? null,
             'nama' => $this->nama,
             'file_dokumen' => $this->file_dokumen,
         ];

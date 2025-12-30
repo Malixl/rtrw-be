@@ -93,7 +93,7 @@
         "url": { "raw": "{{base_url}}/layer-groups/with-klasifikasi?format=flat", "host": ["{{base_url}}"], "path": ["layer-groups","with-klasifikasi"], "query": [ { "key": "format", "value": "flat" } ] },
         "description": "Return per-type lists (flat) per Rafiq format"
       },
-      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Flat returns 200', function () { pm.response.to.have.status(200); });", "const json = pm.response.json(); pm.test('contains perahu in data_spasial', function () { const arr = json.data.klasifikasi_data_spasial || []; pm.expect(arr.some(i => i.nama === 'perahu')).to.be.true; });", "pm.test('contains mobil in pkkprl list (maybe empty child)', function () { const arr = json.data.klasifikasi_pkkprl || []; pm.expect(arr.some(i => i.nama === 'mobil')).to.be.true; });" ] } } ]
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Flat returns 200', function () { pm.response.to.have.status(200); });", "const json = pm.response.json(); pm.test('contains perahu in data_spasial', function () { const arr = json.data.klasifikasi_data_spasial || []; pm.expect(arr.some(i => i.nama === 'perahu')).to.be.true; });", "pm.test('perahu has child array and ISO dates', function () { const arr = json.data.klasifikasi_data_spasial || []; const perahu = arr.find(i => i.nama === 'perahu'); if (perahu) { pm.expect(Array.isArray(perahu.data_spasial)).to.be.true; pm.expect(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(perahu.created_at)).to.be.true; } else { pm.expect.fail('perahu not found'); } });", "pm.test('contains mobil in pkkprl list (maybe empty child)', function () { const arr = json.data.klasifikasi_pkkprl || []; pm.expect(arr.some(i => i.nama === 'mobil')).to.be.true; });"}  } ] } ]" ] } } ]
     },
     {
       "name": "LayerGroups - With Klasifikasi (Grouped by LayerGroup)",
@@ -102,7 +102,7 @@
         "url": { "raw": "{{base_url}}/layer-groups/with-klasifikasi?format=grouped", "host": ["{{base_url}}"], "path": ["layer-groups","with-klasifikasi"], "query": [ { "key": "format", "value": "grouped" } ] },
         "description": "Grouped response: layer_group wrapper"
       },
-      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Grouped returns 200', function () { pm.response.to.have.status(200); });", "const json = pm.response.json(); pm.test('group contains Peta Dasar V2', function () { pm.expect(json.data.some(g => g.nama_layer_group === 'Peta Dasar V2')).to.be.true; });" ] } } ]
+      "event": [ { "listen": "test", "script": { "exec": [ "pm.test('Grouped returns 200', function () { pm.response.to.have.status(200); });", "const json = pm.response.json(); pm.test('group contains Peta Dasar V2', function () { pm.expect(json.data.some(g => g.nama_layer_group === 'Peta Dasar V2')).to.be.true; });", "pm.test('group has klasifikasis object per-type and child arrays', function () { const group = json.data.find(g => g.nama_layer_group === 'Peta Dasar V2'); pm.expect(group).to.not.be.undefined; const klasObj = group.klasifikasis || {}; pm.expect(klasObj.klasifikasi_pola_ruang).to.be.an('array'); if (klasObj.klasifikasi_pola_ruang.length) { const first = klasObj.klasifikasi_pola_ruang[0]; pm.expect(Array.isArray(first.pola_ruang)).to.be.true; pm.expect(/\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/.test(first.created_at)).to.be.true; } });" ] } } ]
     }
   ],
   "event": [],
