@@ -17,13 +17,12 @@ class BatasAdministrasiResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'klasifikasi_id' => $this->klasifikasi_id ?? $this->klasifikasi->id ?? null,
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'warna' => $this->warna,
             'tipe_geometri' => $this->tipe_geometri,
             'tipe_garis' => $this->tipe_garis,
-            // Menggunakan helper url() manual untuk menghindari false error di editor
-            // 'geojson_file' => $this->geojson_file ? url('storage/' . $this->geojson_file) : null,
             'geojson_file' => $this->geojson_file,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

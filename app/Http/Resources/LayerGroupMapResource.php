@@ -19,6 +19,7 @@ class LayerGroupMapResource extends JsonResource
             'indikasi_program',
             'pkkprl',
             'data_spasial',
+            'batas_administrasi',
         ];
 
         $klasifikasisByType = [];

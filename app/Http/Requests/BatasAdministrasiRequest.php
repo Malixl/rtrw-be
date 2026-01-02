@@ -27,7 +27,7 @@ class BatasAdministrasiRequest extends FormRequest
             'tipe_geometri' => 'required|in:polyline,polygon',
             'tipe_garis' => 'nullable|string',
             'warna' => 'nullable|string|max:20',
-
+            'klasifikasi_id' => 'required',
         ];
 
         // Tidak ada klasifikasi_id di BatasAdministrasi
@@ -41,5 +41,18 @@ class BatasAdministrasiRequest extends FormRequest
         }
 
         return $rules;
+    }
+
+    public function messages(): array
+    {
+        return [
+            'nama.required' => 'Nama wajib diisi.',
+            'nama.string' => 'Nama harus berupa teks.',
+            'deskripsi.string' => 'Deskripsi harus berupa text.',
+            'klasifikasi_id' => 'Klasifikasi wajib diisi',
+            'geojson_file.file' => 'geojson_file harus berupa file.',
+            'geojson_file.mimes' => 'geojson_file harus berformat geojson.',
+            'warna.string' => 'warna harus berupa teks.',
+        ];
     }
 }

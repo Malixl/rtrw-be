@@ -53,4 +53,9 @@ class Klasifikasi extends Model
     {
         return $this->hasMany(DataSpasial::class);
     }
+
+    public function batasAdministrasi()
+    {
+        return $this->hasMany(BatasAdministrasi::class);
+    }
 }

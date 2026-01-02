@@ -64,6 +64,13 @@ class KlasifikasiMapResources extends JsonResource
             $data['data_spasial'] = [];
         }
 
+        // batas_administrasi
+        if ($this->relationLoaded('batasAdministrasi') && $this->batasAdministrasi->isNotEmpty()) {
+            $data['batas_administrasi'] = \App\Http\Resources\BatasAdministrasiResource::collection($this->batasAdministrasi);
+        } elseif (! $compact) {
+            $data['batas_administrasi'] = [];
+        }
+
         // layer_group metadata (if available)
         $data['layer_group'] = $this->relationLoaded('layerGroup') && $this->layerGroup ? [
             'id' => $this->layerGroup->id,

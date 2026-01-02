@@ -37,6 +37,7 @@ class LayerGroupService
                         'indikasiProgram',
                         'pkkprl',
                         'dataSpasial',
+                        'batasAdministrasi',
                     ]);
             },
         ]);
@@ -69,6 +70,7 @@ class LayerGroupService
                             'indikasiProgram',
                             'pkkprl',
                             'dataSpasial',
+                            'batasAdministrasi',
                         ]);
                 }])->get();
 
@@ -81,7 +83,8 @@ class LayerGroupService
                             ($k->ketentuanKhusus && $k->ketentuanKhusus->isNotEmpty()) ||
                             ($k->indikasiProgram && $k->indikasiProgram->isNotEmpty()) ||
                             ($k->pkkprl && $k->pkkprl->isNotEmpty()) ||
-                            ($k->dataSpasial && $k->dataSpasial->isNotEmpty());
+                            ($k->dataSpasial && $k->dataSpasial->isNotEmpty()) ||
+                            ($k->batasAdministrasi && $k->batasAdministrasi->isNotEmpty());
                     })->values();
 
                     $g->setRelation('klasifikasis', $filtered);
@@ -122,6 +125,10 @@ class LayerGroupService
                 ->with(['dataSpasial', 'layerGroup'])
                 ->get();
 
+            $klasifikasi_batas_administrasi = \App\Models\Klasifikasi::where('tipe', 'batas_administrasi')
+                ->with(['batasAdministrasi', 'layerGroup'])
+                ->get();
+
             return [
                 'klasifikasi_pola_ruang' => $klasifikasi_pola_ruang,
                 'klasifikasi_struktur_ruang' => $klasifikasi_struktur_ruang,
@@ -129,6 +136,7 @@ class LayerGroupService
                 'klasifikasi_indikasi_program' => $klasifikasi_indikasi_program,
                 'klasifikasi_pkkprl' => $klasifikasi_pkkprl,
                 'klasifikasi_data_spasial' => $klasifikasi_data_spasial,
+                'klasifikasi_batas_administrasi' => $klasifikasi_batas_administrasi,
             ];
         }
 
@@ -165,6 +173,7 @@ class LayerGroupService
                     'klasifikasi_ketentuan_khusus' => 'ketentuan_khusus',
                     'klasifikasi_pkkprl' => 'pkkprl',
                     'klasifikasi_indikasi_program' => 'indikasi_program',
+                    'klasifikasi_batas_administrasi' => 'batas_administrasi',
                 ];
 
                 $klasMap = $group['klasifikasis'] ?? [];

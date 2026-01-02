@@ -38,6 +38,7 @@ class DummyDataSeeder extends Seeder
             'indikasi_program',
             'pkkprl',
             'data_spasial',
+            'batas_administrasi',
         ];
 
         foreach ($types as $type) {
@@ -183,27 +184,36 @@ class DummyDataSeeder extends Seeder
                         ]);
 
                         break;
+                    case 'batas_administrasi':
+                        $baFile = '';
+                        if ($samplePolygon) {
+                            $baFile = 'batas_administrasi/sample_batas_' . $i . '.geojson';
+                            \Illuminate\Support\Facades\Storage::disk('public')->put($baFile, $samplePolygon);
+                        }
+
+                        BatasAdministrasi::create([
+                            'klasifikasi_id' => $klasifikasiId,
+                            'nama' => "Batas Administrasi $i",
+                            'deskripsi' => 'Contoh batas administrasi',
+                            'tipe_geometri' => 'polyline',
+                            'tipe_garis' => 'solid',
+                            'warna' => '#123456',
+                            'geojson_file' => $baFile,
+                        ]);
+
+                        BatasAdministrasi::create([
+                            'klasifikasi_id' => $klasifikasiId,
+                            'nama' => "Batas Administrasi Extra $i",
+                            'deskripsi' => 'Contoh batas administrasi tambahan',
+                            'tipe_geometri' => 'polyline',
+                            'tipe_garis' => 'dashed',
+                            'warna' => '#654321',
+                            'geojson_file' => $baFile,
+                        ]);
+
+                        break;
                 }
             }
         }
-
-        // Create two Batas Administrasi
-        BatasAdministrasi::create([
-            'nama' => 'Batas Administrasi 1',
-            'deskripsi' => 'Contoh batas administrasi 1',
-            'geojson_file' => '',
-            'tipe_geometri' => 'polygon',
-            'tipe_garis' => null,
-            'warna' => '#123456',
-        ]);
-
-        BatasAdministrasi::create([
-            'nama' => 'Batas Administrasi 2',
-            'deskripsi' => 'Contoh batas administrasi 2',
-            'geojson_file' => '',
-            'tipe_geometri' => 'polygon',
-            'tipe_garis' => null,
-            'warna' => '#654321',
-        ]);
     }
 }
