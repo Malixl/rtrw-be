@@ -71,7 +71,7 @@ class LayerGroupController extends Controller
     public function withKlasifikasi(Request $request)
     {
         try {
-            $onlyWithChildren = filter_var($request->query('only_with_children', true), FILTER_VALIDATE_BOOLEAN);
+            $onlyWithChildren = filter_var($request->query('only_with_children', false), FILTER_VALIDATE_BOOLEAN);
             $format = $request->query('format', 'group');
 
             if ($format === 'flat') {
