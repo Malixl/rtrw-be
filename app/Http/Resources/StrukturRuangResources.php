@@ -15,11 +15,18 @@ class StrukturRuangResources extends JsonResource
     public function toArray(Request $request): array
     {
         $rawDates = filter_var($request->query('raw_dates', true), FILTER_VALIDATE_BOOLEAN);
-        $klasifikasi = optional($this->klasifikasi);
 
         return [
             'id' => $this->id,
-            'klasifikasi_id' => $this->klasifikasi_id ?? $klasifikasi->id ?? null,
+            'klasifikasi_id' => $this->klasifikasi_id ?? $this->klasifikasi->id ?? null,
+            'klasifikasi' => $this->whenLoaded('klasifikasi', function () {
+                return [
+                    'id' => $this->klasifikasi->id,
+                    'nama' => $this->klasifikasi->nama,
+                    'tipe' => $this->klasifikasi->tipe,
+                    'deskripsi' => $this->klasifikasi->deskripsi,
+                ];
+            }),
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'geojson_file' => $this->geojson_file,
