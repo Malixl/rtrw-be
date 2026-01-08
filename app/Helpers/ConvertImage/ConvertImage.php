@@ -39,6 +39,26 @@ class ConvertImage
             throw new Exception("Gagal memuat gambar: $imagePath");
         }
 
+        // Konversi palette image ke true color untuk mendukung WebP
+        if (! imageistruecolor($image)) {
+            $width = imagesx($image);
+            $height = imagesy($image);
+
+            // Buat image true color baru
+            $trueColorImage = imagecreatetruecolor($width, $height);
+
+            // Pertahankan transparansi jika ada
+            imagealphablending($trueColorImage, false);
+            imagesavealpha($trueColorImage, true);
+
+            // Copy image palette ke true color
+            imagecopy($trueColorImage, $image, 0, 0, 0, 0, $width, $height);
+
+            // Hapus image lama dan gunakan yang baru
+            imagedestroy($image);
+            $image = $trueColorImage;
+        }
+
         // Convert dan simpan sebagai WebP
         if (! imagewebp($image, $outputPath, $quality)) {
             imagedestroy($image);

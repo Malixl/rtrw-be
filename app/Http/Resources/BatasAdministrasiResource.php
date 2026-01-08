@@ -18,6 +18,14 @@ class BatasAdministrasiResource extends JsonResource
         return [
             'id' => $this->id,
             'klasifikasi_id' => $this->klasifikasi_id ?? $this->klasifikasi->id ?? null,
+            'klasifikasi' => $this->whenLoaded('klasifikasi', function () {
+                return [
+                    'id' => $this->klasifikasi->id,
+                    'nama' => $this->klasifikasi->nama,
+                    'tipe' => $this->klasifikasi->tipe,
+                    'deskripsi' => $this->klasifikasi->deskripsi,
+                ];
+            }),
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'warna' => $this->warna,

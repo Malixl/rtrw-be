@@ -24,10 +24,14 @@ class BatasAdministrasiService
     public function getAll($request)
     {
         $per_page = $request->per_page ?? 10;
-        $data = $this->model->orderBy('created_at', 'desc');
+        $data = $this->model->with(['klasifikasi.layerGroup'])->orderBy('created_at', 'desc');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%'.$search.'%');
+            $data->where('nama', 'like', '%' . $search . '%');
+        }
+
+        if ($klasifikasi_id = $request->query('klasifikasi_id')) {
+            $data->where('klasifikasi_id', $klasifikasi_id);
         }
 
         if ($request->page) {
