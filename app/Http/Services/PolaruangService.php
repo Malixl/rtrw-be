@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Traits\FileUpload;
+use App\Http\Traits\GeoJsonOptimizer;
 use App\Models\Polaruang;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PolaruangService
 {
-    use FileUpload;
+    use FileUpload, GeoJsonOptimizer;
 
     protected $path = 'polaruang_file';
 
@@ -27,7 +28,7 @@ class PolaruangService
         $data = $this->model->with(['klasifikasi.layerGroup'])->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%'.$search.'%');
+            $data->where('nama', 'like', '%' . $search . '%');
         }
 
         if ($klasifikasi_id = $request->query('klasifikasi_id')) {
@@ -51,8 +52,7 @@ class PolaruangService
             $validatedData = $request->validated();
 
             if ($request->hasFile('geojson_file')) {
-                $extension = ['geojson'];
-                $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
+                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
                 $validatedData['geojson_file'] = $filePath;
             }
 
@@ -81,9 +81,7 @@ class PolaruangService
             $data = $this->model->findOrFail($id);
 
             if ($request->hasFile('geojson_file')) {
-                $extension = ['geojson'];
-
-                $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
+                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
 
                 if ($data->geojson_file) {
                     $this->unlinkFile($data->geojson_file);

@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Traits\FileUpload;
+use App\Http\Traits\GeoJsonOptimizer;
 use App\Models\BatasAdministrasi;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class BatasAdministrasiService
 {
-    use FileUpload;
+    use FileUpload, GeoJsonOptimizer;
 
     protected $path = 'batas_administrasi_file';
 
@@ -51,8 +52,7 @@ class BatasAdministrasiService
             $validatedData = $request->validated();
 
             if ($request->hasFile('geojson_file')) {
-                $extension = ['geojson'];
-                $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
+                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
                 $validatedData['geojson_file'] = $filePath;
             }
 
@@ -81,9 +81,7 @@ class BatasAdministrasiService
             $data = $this->model->findOrFail($id);
 
             if ($request->hasFile('geojson_file')) {
-                $extension = ['geojson', 'json'];
-
-                $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
+                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
 
                 if ($data->geojson_file) {
                     $this->unlinkFile($data->geojson_file);
