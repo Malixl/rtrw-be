@@ -3,6 +3,7 @@
 namespace App\Http\Services;
 
 use App\Http\Traits\FileUpload;
+use App\Http\Traits\GeoJsonOptimizer;
 use App\Models\StrukturRuang;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -10,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class StrukturRuangService
 {
-    use FileUpload;
+    use FileUpload, GeoJsonOptimizer;
 
     protected $path = 'struktur_ruang_file';
 
@@ -29,7 +30,7 @@ class StrukturRuangService
             ->orderBy('created_at');
 
         if ($search = $request->query('search')) {
-            $data->where('nama', 'like', '%'.$search.'%');
+            $data->where('nama', 'like', '%' . $search . '%');
         }
 
         if ($klasifikasi_id = $request->query('klasifikasi_id')) {
@@ -53,8 +54,7 @@ class StrukturRuangService
             $validatedData = $request->validated();
 
             if ($request->hasFile('geojson_file')) {
-                $extension = ['geojson'];
-                $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
+                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
                 $validatedData['geojson_file'] = $filePath;
             }
 
@@ -90,9 +90,7 @@ class StrukturRuangService
             $data = $this->model->findOrFail($id);
 
             if ($request->hasFile('geojson_file')) {
-                $extension = ['geojson'];
-
-                $filePath = $this->uploadDocument($request->file('geojson_file'), $extension, $this->path);
+                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
 
                 if ($data->geojson_file) {
                     $this->unlinkFile($data->geojson_file);
