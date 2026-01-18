@@ -29,6 +29,15 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
+// Health Check Endpoint (untuk Render.com monitoring)
+Route::get('/health', function () {
+    return response()->json([
+        'status' => 'ok',
+        'timestamp' => now()->toISOString(),
+        'app' => config('app.name'),
+    ]);
+});
+
 $registerPublicRoutes = function (?string $nameSuffix = null) {
     // Auth Routes
     Route::prefix('auth')->controller(AuthController::class)->group(function () use ($nameSuffix) {
