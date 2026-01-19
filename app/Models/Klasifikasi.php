@@ -26,7 +26,7 @@ class Klasifikasi extends Model
 
     public function polaRuang()
     {
-        return $this->hasMany(PolaRuang::class);
+        return $this->hasMany(Polaruang::class);
     }
 
     public function strukturRuang()
@@ -41,7 +41,7 @@ class Klasifikasi extends Model
 
     public function indikasiProgram()
     {
-        return $this->hasMany(indikasiProgram::class);
+        return $this->hasMany(IndikasiProgram::class);
     }
 
     public function pkkprl()
