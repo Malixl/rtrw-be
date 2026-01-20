@@ -52,19 +52,10 @@ class DataSpasialService
         try {
             $validatedData = $request->validated();
 
-            // Create the model first to get ID for queue job
             if ($request->hasFile('geojson_file')) {
-                $file = $request->file('geojson_file');
-                
-                if ($this->shouldQueueFile($file)) {
-                    // Large file: will be processed via queue
-                    $validatedData['processing_status'] = 'pending';
-                    $validatedData['geojson_file'] = null; // Will be set by job
-                } else {
-                    // Small file: process synchronously
-                    $validatedData['geojson_file'] = $this->optimizeAndStore($file, $this->path);
-                    $validatedData['processing_status'] = 'completed';
-                }
+                // Simpan langsung tanpa queue - lebih reliable
+                $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
+                $validatedData['processing_status'] = 'completed';
             }
 
             if ($request->hasFile('icon_titik')) {
@@ -73,16 +64,6 @@ class DataSpasialService
             }
 
             $data = $this->model->create($validatedData);
-
-            // If large file, dispatch queue job after model is created
-            if ($request->hasFile('geojson_file') && $this->shouldQueueFile($request->file('geojson_file'))) {
-                $result = $this->storeAndOptimizeGeoJson(
-                    $request->file('geojson_file'),
-                    $this->path,
-                    DataSpasial::class,
-                    $data->id
-                );
-            }
 
             DB::commit();
 
