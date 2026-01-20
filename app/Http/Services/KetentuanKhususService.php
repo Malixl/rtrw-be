@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Http\Traits\FileUpload;
 use App\Http\Traits\GeoJsonOptimizer;
+use App\Http\Traits\QueueableGeoJson;
 use App\Models\KetentuanKhusus;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 class KetentuanKhususService
 {
-    use FileUpload, GeoJsonOptimizer;
+    use FileUpload, GeoJsonOptimizer, QueueableGeoJson;
 
     protected $path = 'ketentuan_khusus_file';
 
@@ -52,8 +53,15 @@ class KetentuanKhususService
             $validatedData = $request->validated();
 
             if ($request->hasFile('geojson_file')) {
-                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
-                $validatedData['geojson_file'] = $filePath;
+                $file = $request->file('geojson_file');
+                
+                if ($this->shouldQueueFile($file)) {
+                    $validatedData['processing_status'] = 'pending';
+                    $validatedData['geojson_file'] = null;
+                } else {
+                    $validatedData['geojson_file'] = $this->optimizeAndStore($file, $this->path);
+                    $validatedData['processing_status'] = 'completed';
+                }
             }
 
             if ($request->hasFile('icon_titik')) {
@@ -62,6 +70,15 @@ class KetentuanKhususService
             }
 
             $data = $this->model->create($validatedData);
+
+            if ($request->hasFile('geojson_file') && $this->shouldQueueFile($request->file('geojson_file'))) {
+                $this->storeAndOptimizeGeoJson(
+                    $request->file('geojson_file'),
+                    $this->path,
+                    KetentuanKhusus::class,
+                    $data->id
+                );
+            }
 
             DB::commit();
 

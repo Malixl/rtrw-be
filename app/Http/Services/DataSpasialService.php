@@ -4,6 +4,7 @@ namespace App\Http\Services;
 
 use App\Http\Traits\FileUpload;
 use App\Http\Traits\GeoJsonOptimizer;
+use App\Http\Traits\QueueableGeoJson;
 use App\Models\DataSpasial;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +12,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DataSpasialService
 {
-    use FileUpload, GeoJsonOptimizer;
+    use FileUpload, GeoJsonOptimizer, QueueableGeoJson;
 
     protected $path = 'data_spasial_service';
 
@@ -51,9 +52,19 @@ class DataSpasialService
         try {
             $validatedData = $request->validated();
 
+            // Create the model first to get ID for queue job
             if ($request->hasFile('geojson_file')) {
-                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
-                $validatedData['geojson_file'] = $filePath;
+                $file = $request->file('geojson_file');
+                
+                if ($this->shouldQueueFile($file)) {
+                    // Large file: will be processed via queue
+                    $validatedData['processing_status'] = 'pending';
+                    $validatedData['geojson_file'] = null; // Will be set by job
+                } else {
+                    // Small file: process synchronously
+                    $validatedData['geojson_file'] = $this->optimizeAndStore($file, $this->path);
+                    $validatedData['processing_status'] = 'completed';
+                }
             }
 
             if ($request->hasFile('icon_titik')) {
@@ -62,6 +73,16 @@ class DataSpasialService
             }
 
             $data = $this->model->create($validatedData);
+
+            // If large file, dispatch queue job after model is created
+            if ($request->hasFile('geojson_file') && $this->shouldQueueFile($request->file('geojson_file'))) {
+                $result = $this->storeAndOptimizeGeoJson(
+                    $request->file('geojson_file'),
+                    $this->path,
+                    DataSpasial::class,
+                    $data->id
+                );
+            }
 
             DB::commit();
 

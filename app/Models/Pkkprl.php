@@ -21,6 +21,8 @@ class Pkkprl extends Model
         'icon_titik',
         'tipe_garis',
         'warna',
+        'processing_status',
+        'processing_error',
     ];
 
     public function klasifikasi()

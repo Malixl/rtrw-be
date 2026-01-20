@@ -18,6 +18,8 @@ class Polaruang extends Model
         'deskripsi',
         'geojson_file',
         'warna',
+        'processing_status',
+        'processing_error',
     ];
 
     public function klasifikasi()

@@ -19,6 +19,8 @@ class BatasAdministrasi extends Model
         'tipe_garis',
         'warna',
         'klasifikasi_id',
+        'processing_status',
+        'processing_error',
     ];
 
     public function klasifikasi()
