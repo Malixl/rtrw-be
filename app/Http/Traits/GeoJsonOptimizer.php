@@ -8,11 +8,10 @@ use Illuminate\Http\UploadedFile;
 trait GeoJsonOptimizer
 {
     /**
-     * Maximum file size in bytes for optimization (200KB)
+     * Maximum file size in bytes for optimization (500KB)
      * Files larger than this will be stored without optimization to prevent timeout
-     * Point geometries with many features can cause timeout even at small sizes
      */
-    protected int $maxOptimizeSize = 200 * 1024; // 200KB
+    protected int $maxOptimizeSize = 500 * 1024; // 500KB
 
     /**
      * Optimize (round coordinates) and store a GeoJSON file.

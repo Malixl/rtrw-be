@@ -21,18 +21,11 @@ trait QueueableGeoJson
      * @param UploadedFile $file
      * @param string $folderPath
      * @param string $modelClass
-     * @param int|string|null $modelId
+     * @param string $modelId
      * @return array ['path' => string, 'queued' => bool]
      */
-    public function storeAndOptimizeGeoJson(UploadedFile $file, string $folderPath, string $modelClass, int|string|null $modelId): array
+    public function storeAndOptimizeGeoJson(UploadedFile $file, string $folderPath, string $modelClass, string $modelId): array
     {
-        // Validate modelId is not null
-        if ($modelId === null) {
-            throw new \Exception("Model ID cannot be null when queueing GeoJSON processing");
-        }
-        
-        // Cast modelId to string for consistency
-        $modelId = (string) $modelId;
         $fileSize = $file->getSize();
 
         if ($fileSize > $this->queueThreshold) {
@@ -52,7 +45,7 @@ trait QueueableGeoJson
     /**
      * Store file temporarily and dispatch background job.
      */
-    protected function storeForQueueProcessing(UploadedFile $file, string $folderPath, string $modelClass, int|string $modelId): array
+    protected function storeForQueueProcessing(UploadedFile $file, string $folderPath, string $modelClass, string $modelId): array
     {
         // Generate temp filename
         $tempFilename = 'temp/' . Str::random(20) . '-' . time() . '.geojson';
