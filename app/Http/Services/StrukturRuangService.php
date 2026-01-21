@@ -55,9 +55,15 @@ class StrukturRuangService
             $validatedData = $request->validated();
 
             if ($request->hasFile('geojson_file')) {
-                // Simpan langsung tanpa queue - lebih reliable
-                $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
-                $validatedData['processing_status'] = 'completed';
+                $file = $request->file('geojson_file');
+                
+                if ($this->shouldQueueFile($file)) {
+                    $validatedData['processing_status'] = 'pending';
+                    $validatedData['geojson_file'] = null;
+                } else {
+                    $validatedData['geojson_file'] = $this->optimizeAndStore($file, $this->path);
+                    $validatedData['processing_status'] = 'completed';
+                }
             }
 
             if ($request->hasFile('icon_titik')) {
@@ -66,6 +72,15 @@ class StrukturRuangService
             }
 
             $data = $this->model->create($validatedData);
+
+            if ($request->hasFile('geojson_file') && $this->shouldQueueFile($request->file('geojson_file'))) {
+                $this->storeAndOptimizeGeoJson(
+                    $request->file('geojson_file'),
+                    $this->path,
+                    StrukturRuang::class,
+                    $data->id
+                );
+            }
 
             DB::commit();
 

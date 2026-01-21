@@ -53,12 +53,30 @@ class BatasAdministrasiService
             $validatedData = $request->validated();
 
             if ($request->hasFile('geojson_file')) {
-                // Simpan langsung tanpa queue - lebih reliable
-                $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
-                $validatedData['processing_status'] = 'completed';
+                $file = $request->file('geojson_file');
+                
+                if ($this->shouldQueueFile($file)) {
+                    // Large file: will be processed via queue
+                    $validatedData['processing_status'] = 'pending';
+                    $validatedData['geojson_file'] = null;
+                } else {
+                    // Small file: process synchronously
+                    $validatedData['geojson_file'] = $this->optimizeAndStore($file, $this->path);
+                    $validatedData['processing_status'] = 'completed';
+                }
             }
 
             $data = $this->model->create($validatedData);
+
+            // If large file, dispatch queue job after model is created
+            if ($request->hasFile('geojson_file') && $this->shouldQueueFile($request->file('geojson_file'))) {
+                $this->storeAndOptimizeGeoJson(
+                    $request->file('geojson_file'),
+                    $this->path,
+                    BatasAdministrasi::class,
+                    $data->id
+                );
+            }
 
             DB::commit();
 
