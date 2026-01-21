@@ -8,14 +8,7 @@ use Illuminate\Http\UploadedFile;
 trait GeoJsonOptimizer
 {
     /**
-     * Maximum file size in bytes for optimization (500KB)
-     * Files larger than this will be stored without optimization to prevent timeout
-     */
-    protected int $maxOptimizeSize = 500 * 1024; // 500KB
-
-    /**
      * Optimize (round coordinates) and store a GeoJSON file.
-     * For large files, skip optimization to prevent timeout.
      *
      * @param UploadedFile $file
      * @param string $folderPath
@@ -24,36 +17,31 @@ trait GeoJsonOptimizer
      */
     public function optimizeAndStore(UploadedFile $file, string $folderPath): string
     {
-        $fileSize = $file->getSize();
-        
-        // Generate unique filename
-        $filename = md5(uniqid() . time()) . '.geojson';
-        $path = $folderPath . '/' . $filename;
-
-        // For large files, skip optimization to prevent timeout/memory issues
-        if ($fileSize > $this->maxOptimizeSize) {
-            // Store file directly without optimization
-            Storage::disk('public')->put($path, file_get_contents($file->getRealPath()));
-            return $path;
-        }
-
-        // For smaller files, apply optimization
+        // 1. Decode the uploaded file content
         $content = file_get_contents($file->getRealPath());
         $json = json_decode($content, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
+            // Fallback or throw exception. Since we expect valid GeoJSON, we throw.
             throw new \Exception("Invalid JSON file uploaded.");
         }
 
-        // Recursively traverse to find 'coordinates' and round them
+        // 2. Recursively traverse to find 'coordinates' and round them
         $this->optimizeGeometry($json);
 
-        // Encode back to JSON string
+        // 3. Encode back to JSON string
+        // JSON_PRESERVE_ZERO_FRACTION is useful if we want 1.0 to stay 1.0, but round() returns float.
         $optimizedContent = json_encode($json);
 
-        // Store optimized content
+        // 4. Generate unique filename
+        // Using hash of content + timestamp ensures uniqueness
+        $filename = md5($optimizedContent . time()) . '.geojson';
+        $path = $folderPath . '/' . $filename;
+
+        // 5. Store optimized content
         Storage::disk('public')->put($path, $optimizedContent);
 
+        // 6. Return relative file path string (for the database)
         return $path;
     }
 
