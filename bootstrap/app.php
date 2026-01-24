@@ -3,6 +3,7 @@
 use App\Http\Middleware\CheckPermission;
 use App\Http\Middleware\CheckRole;
 use App\Http\Middleware\forceJSONResponse;
+use App\Http\Middleware\GzipResponse;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -28,6 +29,8 @@ return Application::configure(basePath: dirname(__DIR__))
         // $middleware->append(PreventAccessFromCentralDomains::class);
         $middleware->append(HandleCors::class);
         $middleware->append(forceJSONResponse::class);
+        // Gzip compression untuk semua response (khususnya GeoJSON)
+        $middleware->append(GzipResponse::class);
 
         $middleware->alias([
             'role' => RoleMiddleware::class,
@@ -35,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'check.role' => CheckRole::class,
             'check.permission' => CheckPermission::class,
+            'gzip' => GzipResponse::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
