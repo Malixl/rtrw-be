@@ -86,6 +86,9 @@ $registerPublicRoutes = function (?string $nameSuffix = null) {
 
     Route::get('/indikasi_program', [IndikasiProgramController::class, 'index']);
     Route::get('/indikasi_program/{id}', [IndikasiProgramController::class, 'show']);
+
+    // Storage Proxy (untuk mengatasi masalah CORS/Ngrok pada gambar)
+    Route::get('/storage-proxy/{filename}', [\App\Http\Controllers\StorageController::class, 'show'])->where('filename', '.*');
 };
 
 $registerAuthenticatedRoutes = function () {

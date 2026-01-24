@@ -19,29 +19,58 @@ class GzipResponse
     {
         $response = $next($request);
         
+        // Debug header untuk memastikan middleware berjalan
+        $response->headers->set('X-Gzip-Middleware', 'Active');
+        
         // Skip jika sudah terkompresi atau client tidak mendukung gzip
         if (!$this->shouldCompress($request, $response)) {
+            $response->headers->set('X-Gzip-Status', 'Skipped');
             return $response;
         }
         
-        // Dapatkan content
-        $content = $response->getContent();
+        // Handle BinaryFileResponse (file download)
+        if ($response instanceof \Symfony\Component\HttpFoundation\BinaryFileResponse) {
+            $path = $response->getFile()->getPathname();
+            $content = file_get_contents($path);
+        } else {
+            $content = $response->getContent();
+        }
         
-        // Skip jika content terlalu kecil (overhead gzip tidak worth it)
-        if (strlen($content) < 1024) {
+        // Skip jika content kosong atau gagal baca
+        if (!$content || strlen($content) < 1024) {
+            $response->headers->set('X-Gzip-Status', 'Too Small');
             return $response;
         }
         
-        // Kompresi dengan gzip level 6 (balance antara kecepatan dan kompresi)
+        // Kompresi dengan gzip level 6
         $compressedContent = gzencode($content, 6);
         
-        // Set response dengan content terkompresi
-        $response->setContent($compressedContent);
-        $response->headers->set('Content-Encoding', 'gzip');
-        $response->headers->set('Content-Length', strlen($compressedContent));
-        $response->headers->set('Vary', 'Accept-Encoding');
+        // Jika gagal kompresi
+        if ($compressedContent === false) {
+            $response->headers->set('X-Gzip-Status', 'Compression Failed');
+            return $response;
+        }
         
-        return $response;
+        // Buat response baru dengan content terkompresi
+        // Kita tidak bisa sekadar setContent di BinaryFileResponse karena strukturnya beda
+        // Jadi kita ganti response objectnya
+        $newResponse = new Response($compressedContent);
+        
+        // Copy headers dari response lama
+        foreach ($response->headers->all() as $name => $values) {
+            foreach ($values as $value) {
+                $newResponse->headers->set($name, $value);
+            }
+        }
+        
+        $newResponse->headers->set('Content-Encoding', 'gzip');
+        $newResponse->headers->set('Content-Length', strlen($compressedContent));
+        $newResponse->headers->set('Vary', 'Accept-Encoding');
+        $newResponse->headers->set('X-Gzip-Status', 'Compressed');
+        
+        // Hapus header content-length lama jika ada (karena size berubah)
+        
+        return $newResponse;
     }
     
     /**
