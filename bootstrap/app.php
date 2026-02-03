@@ -25,6 +25,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Trust all proxies (untuk Coolify/Traefik reverse proxy)
+        // Ini WAJIB agar Laravel bisa detect HTTPS dan client IP dengan benar
+        $middleware->trustProxies(at: '*');
         // $middleware->append(InitializeTenancyByDomain::class);
         // $middleware->append(PreventAccessFromCentralDomains::class);
         $middleware->append(HandleCors::class);

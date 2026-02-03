@@ -9,6 +9,8 @@ services:
     working_dir: /var/www/html
     volumes:
       - /var/www/webgis-rtrw:/var/www/html
+      # Persistent storage for uploaded files (GeoJSON, images, etc.)
+      - storage_data:/var/www/html/storage/app/public
     environment:
       APP_ENV: ${APP_ENV:-production}
       APP_DEBUG: ${APP_DEBUG:-false}
@@ -24,10 +26,20 @@ services:
       SESSION_DRIVER: ${SESSION_DRIVER:-database}
       QUEUE_CONNECTION: ${QUEUE_CONNECTION:-database}
     ports:
-      - "3000:3000"
-    networks:
+      - "8000:3000"
+    labels:
+      # Traefik labels untuk Coolify - upload file besar (200MB)
+      - "traefik.http.middlewares.webgis-buffering.buffering.maxRequestBodyBytes=209715200"
+      - "traefik.http.middlewares.webgis-buffering.buffering.maxResponseBodyBytes=209715200"
+      - "traefik.http.middlewares.webgis-buffering.buffering.memRequestBodyBytes=2097152"
+      - "traefik.http.middlewares.webgis-buffering.buffering.memResponseBodyBytes=2097152"
       - appnet
 
 networks:
   appnet:
     driver: bridge
+
+# Persistent volume for uploaded files
+volumes:
+  storage_data:
+    driver: local

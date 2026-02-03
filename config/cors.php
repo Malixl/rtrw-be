@@ -3,13 +3,14 @@
 return [
     'paths' => ['api/*', 'sanctum/csrf-cookie', 'storage/*'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['*'],  // Izinkan semua origin (untuk development/demo)
-    'allowed_origins_patterns' => [
-        'https://*.vercel.app',   // Semua subdomain Vercel
-        'https://*.ngrok-free.dev', // Ngrok
+    'allowed_origins' => [
+        'https://gis.nekoknights.com',     // Frontend production
+        'http://localhost:3000',            // Development
+        'http://localhost:5173',            // Vite dev
     ],
+    'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
-    'max_age' => 86400,  // Cache preflight selama 24 jam
+    'max_age' => 86400,
     'supports_credentials' => true,
 ];
