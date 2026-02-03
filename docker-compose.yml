@@ -33,6 +33,7 @@ services:
       - "traefik.http.middlewares.webgis-buffering.buffering.maxResponseBodyBytes=209715200"
       - "traefik.http.middlewares.webgis-buffering.buffering.memRequestBodyBytes=2097152"
       - "traefik.http.middlewares.webgis-buffering.buffering.memResponseBodyBytes=2097152"
+    networks:
       - appnet
 
 networks:
