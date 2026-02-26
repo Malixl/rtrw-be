@@ -34,11 +34,14 @@ class DataSpasialController extends Controller
                 'Data data spasial berhasil diambil',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengambil data spasial: ' . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => $e->getMessage(),
-            ], Response::HTTP_BAD_REQUEST);
+                'message' => 'Terjadi kesalahan sistem saat mengambil data.',
+                'error_detail' => env('APP_DEBUG') ? $e->getMessage() : null
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -51,12 +54,15 @@ class DataSpasialController extends Controller
                 'Berhasil menambah data data spasial',
                 Response::HTTP_CREATED
             );
-        } catch (Exception $e) {
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal menambah data spasial: ' . $e->getMessage());
             return $this->errorResponse(
-                $e->getMessage(),
-                Response::HTTP_BAD_REQUEST
+                'Terjadi kesalahan sistem saat memproses data.',
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
-        } catch (ValidationException $e) {
+        }
+        catch (ValidationException $e) {
             return $this->errorResponse(
                 $e->errors(),
                 Response::HTTP_BAD_REQUEST
@@ -74,10 +80,12 @@ class DataSpasialController extends Controller
                 'Data data spasial berhasil diambil',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengambil detail data spasial: ' . $e->getMessage());
             return $this->errorResponse(
-                $e->getMessage(),
-                Response::HTTP_BAD_REQUEST
+                'Terjadi kesalahan sistem saat mengambil data.',
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
     }
@@ -91,12 +99,15 @@ class DataSpasialController extends Controller
                 'Berhasil mengubah data data spasial',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal mengubah data spasial: ' . $e->getMessage());
             return $this->errorResponse(
-                $e->getMessage(),
-                Response::HTTP_BAD_REQUEST
+                'Terjadi kesalahan sistem saat memproses data.',
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
-        } catch (ValidationException $e) {
+        }
+        catch (ValidationException $e) {
             return $this->errorResponse(
                 $e->errors(),
                 Response::HTTP_BAD_REQUEST
@@ -113,10 +124,12 @@ class DataSpasialController extends Controller
                 'Berhasil menghapus data data spasial',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal menghapus data spasial: ' . $e->getMessage());
             return $this->errorResponse(
-                $e->getMessage(),
-                Response::HTTP_BAD_REQUEST
+                'Terjadi kesalahan sistem saat menghapus data.',
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
     }
@@ -136,10 +149,12 @@ class DataSpasialController extends Controller
                 'Berhasil menghapus data data spasial',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal menghapus banyak data spasial: ' . $e->getMessage());
             return $this->errorResponse(
-                $e->getMessage(),
-                Response::HTTP_BAD_REQUEST
+                'Terjadi kesalahan sistem saat menghapus data.',
+                Response::HTTP_INTERNAL_SERVER_ERROR
             );
         }
     }

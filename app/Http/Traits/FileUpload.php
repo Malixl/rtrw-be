@@ -19,13 +19,13 @@ trait FileUpload
     {
         $extension = $file->getClientOriginalExtension();
 
-        if (! in_array(strtolower($extension), $allowedExtensions)) {
+        if (!in_array(strtolower($extension), $allowedExtensions)) {
             throw new \Exception('Ekstensi file tidak diizinkan.');
         }
 
         // Simpan file dengan ekstensi asli
-        $fileName = Str::random(20).'-'.time(); // Buatkan nama file yang random
-        $fileNameWithExtension = $fileName.'.'.$extension; // Tambahkan ekstensi asli
+        $fileName = Str::random(20) . '-' . time(); // Buatkan nama file yang random
+        $fileNameWithExtension = $fileName . '.' . $extension; // Tambahkan ekstensi asli
 
         return $file->storeAs($folder, $fileNameWithExtension, $disk);
     }
@@ -43,7 +43,8 @@ trait FileUpload
                 if ($mimeType !== 'application/pdf') {
                     throw new Exception('Hanya file PDF yang diizinkan.');
                 }
-            } else {
+            }
+            else {
                 // Jika base64 mentah, asumsikan PDF
                 $data = $base64String;
             }
@@ -55,11 +56,11 @@ trait FileUpload
             }
 
             // Hanya gunakan ekstensi .pdf
-            $fileName = uniqid().'.pdf';
-            $filePath = $path.'/'.$fileName;
+            $fileName = uniqid() . '.pdf';
+            $filePath = $path . '/' . $fileName;
 
             // Pastikan direktori tujuan ada
-            if (! file_exists($path)) {
+            if (!file_exists($path)) {
                 mkdir($path, 0777, true);
             }
 
@@ -71,8 +72,9 @@ trait FileUpload
 
             // Kembalikan hanya nama file
             return $fileName;
-        } catch (Exception $e) {
-            throw new Exception('Error saat mengunggah dokumen: '.$e->getMessage());
+        }
+        catch (Exception $e) {
+            throw new Exception('Error saat mengunggah dokumen: ' . $e->getMessage());
         }
     }
 
@@ -81,17 +83,27 @@ trait FileUpload
         $filePath = $file->store($folder, $disk);
         $extension = $file->getClientOriginalExtension();
         $allowedExtensions = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
-        if (! in_array(strtolower($extension), $allowedExtensions)) {
+        if (!in_array(strtolower($extension), $allowedExtensions)) {
             throw new \Exception('File extension not allowed.');
         }
 
         if (strtolower($extension) !== 'webp') {
-            $webpPath = storage_path("app/{$disk}/".$folder.'/'.pathinfo($filePath, PATHINFO_FILENAME).'.webp');
-            ConvertImage::convertImageToWebP(storage_path("app/{$disk}/".$filePath), $webpPath);
+            if (function_exists('imagewebp')) {
+                try {
+                    $webpPath = storage_path("app/{$disk}/" . $folder . '/' . pathinfo($filePath, PATHINFO_FILENAME) . '.webp');
+                    ConvertImage::convertImageToWebP(storage_path("app/{$disk}/" . $filePath), $webpPath);
 
-            Storage::disk($disk)->delete($filePath);
+                    Storage::disk($disk)->delete($filePath);
 
-            $filePath = "{$folder}/".pathinfo($webpPath, PATHINFO_BASENAME);
+                    $filePath = "{$folder}/" . pathinfo($webpPath, PATHINFO_BASENAME);
+                }
+                catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Gagal mengonversi gambar ke WebP: ' . $e->getMessage() . '. Menggunakan gambar asli.');
+                }
+            }
+            else {
+                \Illuminate\Support\Facades\Log::warning('Fungsi imagewebp() tidak tersedia di server. Mengabaikan konversi gambar ke WebP.');
+            }
         }
 
         return $filePath;
