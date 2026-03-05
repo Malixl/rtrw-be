@@ -4,11 +4,13 @@ namespace App\Http\Traits;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Str;
 
 trait GeoJsonOptimizer
 {
     /**
-     * Optimize (round coordinates) and store a GeoJSON file.
+     * Store a GeoJSON file as-is without any modification.
+     * Preserves original coordinate precision from QGIS.
      *
      * @param UploadedFile $file
      * @param string $folderPath
@@ -17,78 +19,39 @@ trait GeoJsonOptimizer
      */
     public function optimizeAndStore(UploadedFile $file, string $folderPath): string
     {
-        // 1. Decode the uploaded file content
-        $content = file_get_contents($file->getRealPath());
-        $json = json_decode($content, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            // Fallback or throw exception. Since we expect valid GeoJSON, we throw.
-            throw new \Exception("Invalid JSON file uploaded.");
+        // 1. Validate file extension quickly
+        $extension = strtolower($file->getClientOriginalExtension());
+        if ($extension !== 'geojson' && $extension !== 'json') {
+            throw new \Exception("Invalid file type. Only .geojson or .json allowed.");
         }
 
-        // 2. Recursively traverse to find 'coordinates' and round them
-        $this->optimizeGeometry($json);
+        // 2. Validate it's likely a JSON file efficiently (read first few bytes)
+        $handle = fopen($file->getRealPath(), 'r');
+        if ($handle) {
+            $firstChunk = fread($handle, 1024); // read first 1KB
+            fclose($handle);
 
-        // 3. Encode back to JSON string
-        // JSON_PRESERVE_ZERO_FRACTION is useful if we want 1.0 to stay 1.0, but round() returns float.
-        $optimizedContent = json_encode($json);
+            // Check if it looks like a JSON object or array
+            $trimmed = trim($firstChunk);
+            if (empty($trimmed) || ($trimmed[0] !== '{' && $trimmed[0] !== '[')) {
+                throw new \Exception("File does not appear to be a valid JSON/GeoJSON structure.");
+            }
+        } else {
+            throw new \Exception("Could not read the uploaded file.");
+        }
 
-        // 4. Generate unique filename
-        // Using hash of content + timestamp ensures uniqueness
-        $filename = md5($optimizedContent . time()) . '.geojson';
+        // 3. Generate unique filename
+        $filename = Str::random(20) . '-' . time() . '.geojson';
         $path = $folderPath . '/' . $filename;
 
-        // 5. Store optimized content
-        Storage::disk('public')->put($path, $optimizedContent);
+        // 4. Store using stream to avoid memory exhaustion (putFile handles streams automatically)
+        $storedPath = Storage::disk('public')->putFileAs($folderPath, $file, $filename);
 
-        // 6. Return relative file path string (for the database)
+        if (!$storedPath) {
+            throw new \Exception("Failed to save the file to storage.");
+        }
+
+        // 5. Return relative file path string (for the database)
         return $path;
-    }
-
-    /**
-     * Recursively find 'coordinates' keys and round their values.
-     *
-     * @param array $data
-     */
-    private function optimizeGeometry(array &$data)
-    {
-        foreach ($data as $key => &$value) {
-            if ($key === 'coordinates' && is_array($value)) {
-                $value = $this->roundCoordinates($value);
-            } elseif (is_array($value)) {
-                $this->optimizeGeometry($value);
-            }
-        }
-    }
-
-    /**
-     * Recursively round coordinates to 5 decimal places.
-     * Handles nested arrays for various geometry types (Point, Polygon, MultiPolygon, etc).
-     *
-     * @param array $coords
-     * @return array
-     */
-    private function roundCoordinates(array $coords)
-    {
-        if (empty($coords)) {
-            return $coords;
-        }
-
-        // Check if it is a coordinate point (array of numbers) like [x, y] or [x, y, z]
-        // Note: checking first element is numeric is usually sufficient for GeoJSON
-        if (isset($coords[0]) && is_numeric($coords[0])) {
-            return array_map(function ($val) {
-                return is_numeric($val) ? round((float)$val, 5) : $val;
-            }, $coords);
-        }
-
-        // If it's an array of arrays (LineString, Polygon, etc.), recurse
-        foreach ($coords as &$subCoords) {
-            if (is_array($subCoords)) {
-                $subCoords = $this->roundCoordinates($subCoords);
-            }
-        }
-
-        return $coords;
     }
 }

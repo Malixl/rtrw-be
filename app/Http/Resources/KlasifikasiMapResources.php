@@ -25,49 +25,49 @@ class KlasifikasiMapResources extends JsonResource
         // pola_ruang
         if ($this->relationLoaded('polaRuang') && $this->polaRuang->isNotEmpty()) {
             $data['pola_ruang'] = PolaruangResources::collection($this->polaRuang);
-        } elseif (! $compact) {
+        } elseif (!$compact) {
             $data['pola_ruang'] = [];
         }
 
         // struktur_ruang
         if ($this->relationLoaded('strukturRuang') && $this->strukturRuang->isNotEmpty()) {
             $data['struktur_ruang'] = StrukturRuangResources::collection($this->strukturRuang);
-        } elseif (! $compact) {
+        } elseif (!$compact) {
             $data['struktur_ruang'] = [];
         }
 
         // ketentuan_khusus
         if ($this->relationLoaded('ketentuanKhusus') && $this->ketentuanKhusus->isNotEmpty()) {
             $data['ketentuan_khusus'] = KetentuanKhususResources::collection($this->ketentuanKhusus);
-        } elseif (! $compact) {
+        } elseif (!$compact) {
             $data['ketentuan_khusus'] = [];
         }
 
-        // indikasi_program
-        if ($this->relationLoaded('indikasiProgram') && $this->indikasiProgram->isNotEmpty()) {
-            $data['indikasi_program'] = IndikasiProgramResources::collection($this->indikasiProgram);
-        } elseif (! $compact) {
-            $data['indikasi_program'] = [];
+        // dokumen
+        if ($this->relationLoaded('dokumen') && $this->dokumen->isNotEmpty()) {
+            $data['dokumen'] = DokumenResources::collection($this->dokumen);
+        } elseif (!$compact) {
+            $data['dokumen'] = [];
         }
 
-        // pkkprl
-        if ($this->relationLoaded('pkkprl') && $this->pkkprl->isNotEmpty()) {
-            $data['pkkprl'] = PkkprlResources::collection($this->pkkprl);
-        } elseif (! $compact) {
-            $data['pkkprl'] = [];
+        // kawasan_strategi_provinsi
+        if ($this->relationLoaded('kawasanStrategiProvinsi') && $this->kawasanStrategiProvinsi->isNotEmpty()) {
+            $data['kawasan_strategi_provinsi'] = KawasanStrategiProvinsiResources::collection($this->kawasanStrategiProvinsi);
+        } elseif (!$compact) {
+            $data['kawasan_strategi_provinsi'] = [];
         }
 
         // data_spasial
         if ($this->relationLoaded('dataSpasial') && $this->dataSpasial->isNotEmpty()) {
             $data['data_spasial'] = DataSpasialResources::collection($this->dataSpasial);
-        } elseif (! $compact) {
+        } elseif (!$compact) {
             $data['data_spasial'] = [];
         }
 
         // batas_administrasi
         if ($this->relationLoaded('batasAdministrasi') && $this->batasAdministrasi->isNotEmpty()) {
             $data['batas_administrasi'] = \App\Http\Resources\BatasAdministrasiResource::collection($this->batasAdministrasi);
-        } elseif (! $compact) {
+        } elseif (!$compact) {
             $data['batas_administrasi'] = [];
         }
 

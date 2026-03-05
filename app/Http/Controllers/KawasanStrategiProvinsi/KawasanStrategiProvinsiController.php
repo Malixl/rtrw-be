@@ -1,40 +1,41 @@
 <?php
 
-namespace App\Http\Controllers\Pkkprl;
+namespace App\Http\Controllers\KawasanStrategiProvinsi;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\PkkprlRequest;
-use App\Http\Resources\PkkprlResources;
-use App\Http\Services\PkkprlService;
+use App\Http\Requests\KawasanStrategiProvinsiRequest;
+use App\Http\Resources\KawasanStrategiProvinsiResources;
+use App\Http\Services\KawasanStrategiProvinsiService;
 use App\Http\Traits\ApiResponse;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Symfony\Component\HttpFoundation\Response;
 
-class PkkprlController extends Controller
+class KawasanStrategiProvinsiController extends Controller
 {
     use ApiResponse;
 
-    protected $pkkprlService;
+    protected $kawasanStrategiProvinsiService;
 
-    public function __construct(PkkprlService $pkkprlService)
+    public function __construct(KawasanStrategiProvinsiService $kawasanStrategiProvinsiService)
     {
-        $this->pkkprlService = $pkkprlService;
+        $this->kawasanStrategiProvinsiService = $kawasanStrategiProvinsiService;
     }
 
     public function index(Request $request)
     {
         try {
-            $data = $this->pkkprlService->getAll($request);
+            $data = $this->kawasanStrategiProvinsiService->getAll($request);
 
             return $this->successResponseWithDataIndex(
                 $data,
-                PkkprlResources::collection($data),
-                'Data polruang berhasil diambil',
+                KawasanStrategiProvinsiResources::collection($data),
+                'Data Kawasan Strategi Provinsi berhasil diambil',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage(),
@@ -42,21 +43,23 @@ class PkkprlController extends Controller
         }
     }
 
-    public function store(PkkprlRequest $request)
+    public function store(KawasanStrategiProvinsiRequest $request)
     {
         try {
-            $this->pkkprlService->store($request);
+            $this->kawasanStrategiProvinsiService->store($request);
 
             return $this->successResponse(
-                'Berhasil menambah data pkkprl',
+                'Berhasil menambah data Kawasan Strategi Provinsi',
                 Response::HTTP_CREATED
             );
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return $this->errorResponse(
                 $e->getMessage(),
                 Response::HTTP_BAD_REQUEST
             );
-        } catch (ValidationException $e) {
+        }
+        catch (ValidationException $e) {
             return $this->errorResponse(
                 $e->errors(),
                 Response::HTTP_BAD_REQUEST
@@ -67,14 +70,15 @@ class PkkprlController extends Controller
     public function show($id)
     {
         try {
-            $data = $this->pkkprlService->show($id);
+            $data = $this->kawasanStrategiProvinsiService->show($id);
 
             return $this->successResponseWithData(
-                PkkprlResources::make($data),
-                'Data pkkprl berhasil diambil',
+                KawasanStrategiProvinsiResources::make($data),
+                'Data Kawasan Strategi Provinsi berhasil diambil',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return $this->errorResponse(
                 $e->getMessage(),
                 Response::HTTP_BAD_REQUEST
@@ -82,21 +86,23 @@ class PkkprlController extends Controller
         }
     }
 
-    public function update(PkkprlRequest $request, $id)
+    public function update(KawasanStrategiProvinsiRequest $request, $id)
     {
         try {
-            $this->pkkprlService->update($request, $id);
+            $this->kawasanStrategiProvinsiService->update($request, $id);
 
             return $this->successResponse(
-                'Berhasil mengubah data pkkprl',
+                'Berhasil mengubah data Kawasan Strategi Provinsi',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return $this->errorResponse(
                 $e->getMessage(),
                 Response::HTTP_BAD_REQUEST
             );
-        } catch (ValidationException $e) {
+        }
+        catch (ValidationException $e) {
             return $this->errorResponse(
                 $e->errors(),
                 Response::HTTP_BAD_REQUEST
@@ -107,13 +113,14 @@ class PkkprlController extends Controller
     public function destroy($id)
     {
         try {
-            $this->pkkprlService->destroy($id);
+            $this->kawasanStrategiProvinsiService->destroy($id);
 
             return $this->successResponse(
-                'Berhasil menghapus data pkkprl',
+                'Berhasil menghapus data Kawasan Strategi Provinsi',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return $this->errorResponse(
                 $e->getMessage(),
                 Response::HTTP_BAD_REQUEST
@@ -131,13 +138,14 @@ class PkkprlController extends Controller
                 $ids = implode(',', $ids);
             }
 
-            $this->pkkprlService->multiDestroy($ids);
+            $this->kawasanStrategiProvinsiService->multiDestroy($ids);
 
             return $this->successResponse(
-                'Berhasil menghapus data pkkprl',
+                'Berhasil menghapus data Kawasan Strategi Provinsi',
                 Response::HTTP_OK
             );
-        } catch (Exception $e) {
+        }
+        catch (Exception $e) {
             return $this->errorResponse(
                 $e->getMessage(),
                 Response::HTTP_BAD_REQUEST
@@ -147,7 +155,7 @@ class PkkprlController extends Controller
 
     public function showGeoJson($id)
     {
-        $data = $this->pkkprlService->showGeoJson($id);
+        $data = $this->kawasanStrategiProvinsiService->showGeoJson($id);
 
         return $data;
     }

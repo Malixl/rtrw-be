@@ -9,7 +9,7 @@ use App\Models\Klasifikasi;
 use App\Models\LayerGroup;
 use App\Models\KetentuanKhusus;
 use App\Models\Polaruang;
-use App\Models\Pkkprl;
+use App\Models\KawasanStrategiProvinsi;
 use App\Models\StrukturRuang;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -36,7 +36,7 @@ class DummyDataSeeder extends Seeder
             'struktur_ruang',
             'ketentuan_khusus',
             'indikasi_program',
-            'pkkprl',
+            'kawasan_strategi_provinsi',
             'data_spasial',
             'batas_administrasi',
         ];
@@ -152,11 +152,11 @@ class DummyDataSeeder extends Seeder
                         ]);
 
                         break;
-                    case 'pkkprl':
-                        Pkkprl::create([
+                    case 'kawasan_strategi_provinsi':
+                        KawasanStrategiProvinsi::create([
                             'klasifikasi_id' => $klasifikasiId,
-                            'nama' => "PKKPRL $i",
-                            'deskripsi' => 'Contoh PKKPRL',
+                            'nama' => "Kawasan Strategi Provinsi $i",
+                            'deskripsi' => 'Contoh Kawasan Strategi Provinsi',
                             'tipe_geometri' => 'polygon',
                             'icon_titik' => 'default.png',
                             'tipe_garis' => null,

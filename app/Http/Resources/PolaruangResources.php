@@ -31,6 +31,8 @@ class PolaruangResources extends JsonResource
             'warna' => $this->warna,
             'deskripsi' => $this->deskripsi,
             'geojson_file' => $this->geojson_file,
+            'render_type' => $this->render_type ?? 'geojson',
+            'tile_name' => $this->tile_path ? pathinfo($this->tile_path, PATHINFO_FILENAME) : null,
             'created_at' => $rawDates ? ($this->created_at?->format('c')) : ($this->created_at?->format('d F Y')),
             'updated_at' => $rawDates ? ($this->updated_at?->format('c')) : ($this->updated_at?->format('d F Y')),
         ];

@@ -8,10 +8,6 @@ class Klasifikasi extends Model
 {
     protected $table = 'klasifikasi';
 
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $fillable = [
         'layer_group_id',
         'nama',
@@ -39,14 +35,14 @@ class Klasifikasi extends Model
         return $this->hasMany(KetentuanKhusus::class);
     }
 
-    public function indikasiProgram()
+    public function dokumen()
     {
-        return $this->hasMany(IndikasiProgram::class);
+        return $this->hasMany(Dokumen::class);
     }
 
-    public function pkkprl()
+    public function kawasanStrategiProvinsi()
     {
-        return $this->hasMany(Pkkprl::class);
+        return $this->hasMany(KawasanStrategiProvinsi::class);
     }
 
     public function dataSpasial()

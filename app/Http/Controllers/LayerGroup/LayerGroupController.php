@@ -51,7 +51,7 @@ class LayerGroupController extends Controller
             $lg = $this->layerGroupService->store($request);
 
             return $this->successResponseWithData(
-                \App\Http\Resources\LayerGroupMapResource::make($lg->fresh()),
+                LayerGroupMapResource::make($lg->fresh()),
                 'Berhasil menambah data layer group',
                 Response::HTTP_CREATED
             );
@@ -83,8 +83,8 @@ class LayerGroupController extends Controller
                     'klasifikasi_pola_ruang' => KlasifikasiMapResources::collection($flat['klasifikasi_pola_ruang']),
                     'klasifikasi_struktur_ruang' => KlasifikasiMapResources::collection($flat['klasifikasi_struktur_ruang']),
                     'klasifikasi_ketentuan_khusus' => KlasifikasiMapResources::collection($flat['klasifikasi_ketentuan_khusus']),
-                    'klasifikasi_indikasi_program' => KlasifikasiMapResources::collection($flat['klasifikasi_indikasi_program']),
-                    'klasifikasi_pkkprl' => KlasifikasiMapResources::collection($flat['klasifikasi_pkkprl']),
+                    'klasifikasi_dokumen' => KlasifikasiMapResources::collection($flat['klasifikasi_dokumen']),
+                    'klasifikasi_kawasan_strategi_provinsi' => KlasifikasiMapResources::collection($flat['klasifikasi_kawasan_strategi_provinsi']),
                     'klasifikasi_data_spasial' => KlasifikasiMapResources::collection($flat['klasifikasi_data_spasial']),
                     'klasifikasi_batas_administrasi' => KlasifikasiMapResources::collection($flat['klasifikasi_batas_administrasi']),
                 ];
@@ -132,7 +132,7 @@ class LayerGroupController extends Controller
             $tipe = $request->query('tipe');
 
             if ($klasifikasiId) {
-                $k = \App\Models\Klasifikasi::with(['polaRuang', 'strukturRuang', 'ketentuanKhusus', 'indikasiProgram', 'pkkprl', 'dataSpasial', 'layerGroup'])->findOrFail($klasifikasiId);
+                $k = \App\Models\Klasifikasi::with(['polaRuang', 'strukturRuang', 'ketentuanKhusus', 'dokumen', 'kawasanStrategiProvinsi', 'dataSpasial', 'layerGroup'])->findOrFail($klasifikasiId);
 
                 return $this->successResponseWithData(
                     KlasifikasiMapResources::make($k),
@@ -141,7 +141,7 @@ class LayerGroupController extends Controller
                 );
             }
 
-            $q = \App\Models\Klasifikasi::with(['polaRuang', 'strukturRuang', 'ketentuanKhusus', 'indikasiProgram', 'pkkprl', 'dataSpasial', 'layerGroup']);
+            $q = \App\Models\Klasifikasi::with(['polaRuang', 'strukturRuang', 'ketentuanKhusus', 'dokumen', 'kawasanStrategiProvinsi', 'dataSpasial', 'layerGroup']);
 
             if ($tipe) {
                 $q->where('tipe', $tipe);
@@ -233,7 +233,7 @@ class LayerGroupController extends Controller
      * Bulk import LayerGroups in Rafiq format.
      * Accepts an array of LayerGroup objects with grouped klasifikasis.
      */
-    public function import(\App\Http\Requests\StoreLayerGroupRequest $request)
+    public function import(StoreLayerGroupRequest $request)
     {
         try {
             // validated() will contain ['data' => [...]] as defined in StoreLayerGroupRequest

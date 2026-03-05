@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class PkkprlRequest extends FormRequest
+class KawasanStrategiProvinsiRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -35,7 +35,8 @@ class PkkprlRequest extends FormRequest
         // Validasi file hanya jika ada file yang diupload atau ini adalah request create
         if ($this->hasFile('geojson_file')) {
             $rules['geojson_file'] = 'required|file|extensions:geojson';
-        } elseif (! $this->route('id')) {
+        }
+        elseif (!$this->route('id')) {
             // Jika create (tidak ada ID), file wajib
             $rules['geojson_file'] = 'required|file|extensions:geojson';
         }

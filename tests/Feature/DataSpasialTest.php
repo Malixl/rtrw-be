@@ -22,7 +22,7 @@ class DataSpasialTest extends TestCase
         $klasifikasiId = \Illuminate\Support\Facades\DB::table('klasifikasi')->insertGetId([
             'nama' => 'Klas A',
             'deskripsi' => 'desc',
-            'tipe' => 'pkkprl',
+            'tipe' => 'kawasan_strategi_provinsi',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

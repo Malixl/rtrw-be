@@ -16,8 +16,8 @@ class LayerGroupMapResource extends JsonResource
             'pola_ruang',
             'struktur_ruang',
             'ketentuan_khusus',
-            'indikasi_program',
-            'pkkprl',
+            'dokumen',
+            'kawasan_strategi_provinsi',
             'data_spasial',
             'batas_administrasi',
         ];

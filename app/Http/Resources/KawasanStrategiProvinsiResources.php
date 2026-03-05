@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class PkkprlResources extends JsonResource
+class KawasanStrategiProvinsiResources extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -30,6 +30,8 @@ class PkkprlResources extends JsonResource
             'nama' => $this->nama,
             'deskripsi' => $this->deskripsi,
             'geojson_file' => $this->geojson_file,
+            'render_type' => $this->render_type ?? 'geojson',
+            'tile_name' => $this->tile_path ? pathinfo($this->tile_path, PATHINFO_FILENAME) : null,
             'tipe_geometri' => $this->tipe_geometri,
             'icon_titik' => $this->icon_titik,
             'tipe_garis' => $this->tipe_garis,

@@ -7,34 +7,25 @@ use App\Http\Controllers\BatasAdministrasi\BatasAdministrasiController;
 use App\Http\Controllers\Berita\BeritaController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\DataSpasial\DataSpasialController;
-use App\Http\Controllers\IndikasiProgram\IndikasiProgramController;
+use App\Http\Controllers\Dokumen\DokumenController;
 use App\Http\Controllers\KetentuanKhusus\KetentuanKhususController;
 use App\Http\Controllers\Klasifikasi\KlasifikasiController;
 use App\Http\Controllers\LayerGroup\LayerGroupController;
-use App\Http\Controllers\Pkkprl\PkkprlController;
+use App\Http\Controllers\KawasanStrategiProvinsi\KawasanStrategiProvinsiController;
 use App\Http\Controllers\Polaruang\PolaruangController;
 use App\Http\Controllers\StrukturRuang\StrukturRuangController;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes - RBAC Structure
-|--------------------------------------------------------------------------
-| A. PUBLIC ROUTES (Guest - No Token Required)
-|    - Login, Berita Landing, Guest Capabilities
-| B. AUTHENTICATED ROUTES (Admin + OPD - Token Required)
-|    - Get User, Logout, View Map Data, Dashboard (Admin only)
-| C. ADMIN ONLY ROUTES (Admin Only - Token + Role Check)
-|    - CRUD Operations, User Management
-|--------------------------------------------------------------------------
-*/
+/* |-------------------------------------------------------------------------- | API Routes - RBAC Structure |-------------------------------------------------------------------------- | A. PUBLIC ROUTES (Guest - No Token Required) |    - Login, Berita Landing, Guest Capabilities | B. AUTHENTICATED ROUTES (Admin + OPD - Token Required) |    - Get User, Logout, View Map Data, Dashboard (Admin only) | C. ADMIN ONLY ROUTES (Admin Only - Token + Role Check) |    - CRUD Operations, User Management |-------------------------------------------------------------------------- */
 
 $registerPublicRoutes = function (?string $nameSuffix = null) {
     // Auth Routes
-    Route::prefix('auth')->controller(AuthController::class)->group(function () use ($nameSuffix) {
-        $routeName = $nameSuffix ? 'login.' . $nameSuffix : 'login';
-        Route::post('login', 'login')->name($routeName);
-    });
+    Route::prefix('auth')->controller(AuthController::class)->group(
+        function () use ($nameSuffix) {
+            $routeName = $nameSuffix ? 'login.' . $nameSuffix : 'login';
+            Route::post('login', 'login')->name($routeName);
+        }
+    );
 
     // Role Check (untuk guest capabilities)
     Route::get('/role/guest', [RoleController::class, 'guestCapabilities']);
@@ -75,28 +66,34 @@ $registerPublicRoutes = function (?string $nameSuffix = null) {
     Route::get('/ketentuan_khusus/{id}', [KetentuanKhususController::class, 'show']);
     Route::get('/ketentuan_khusus/{id}/geojson', [KetentuanKhususController::class, 'showGeoJson']);
 
-    Route::get('/pkkprl', [PkkprlController::class, 'index']);
-    Route::get('/pkkprl/{id}', [PkkprlController::class, 'show']);
-    Route::get('/pkkprl/{id}/geojson', [PkkprlController::class, 'showGeoJson']);
+    Route::get('/kawasan_strategi_provinsi', [KawasanStrategiProvinsiController::class, 'index']);
+    Route::get('/kawasan_strategi_provinsi/{id}', [KawasanStrategiProvinsiController::class, 'show']);
+    Route::get('/kawasan_strategi_provinsi/{id}/geojson', [KawasanStrategiProvinsiController::class, 'showGeoJson']);
 
-    // Data Spasial (mirip PKKPRL - public read)
+    // Data Spasial (mirip Kawasan Strategi Provinsi - public read)
     Route::get('/data_spasial', [DataSpasialController::class, 'index']);
     Route::get('/data_spasial/{id}', [DataSpasialController::class, 'show']);
     Route::get('/data_spasial/{id}/geojson', [DataSpasialController::class, 'showGeoJson']);
 
-    Route::get('/indikasi_program', [IndikasiProgramController::class, 'index']);
-    Route::get('/indikasi_program/{id}', [IndikasiProgramController::class, 'show']);
+    Route::get('/dokumen', [DokumenController::class, 'index']);
+    Route::get('/dokumen/{id}', [DokumenController::class, 'show']);
 
     // Storage Proxy (untuk mengatasi masalah CORS/Ngrok pada gambar)
     Route::get('/storage-proxy/{filename}', [\App\Http\Controllers\StorageController::class, 'show'])->where('filename', '.*');
+
+    // Vector Tile Serving - serve .pbf tiles from .mbtiles
+    Route::get('/tiles/{layer}/{z}/{x}/{y}.pbf', [\App\Http\Controllers\TileController::class, 'serve'])
+        ->where(['z' => '[0-9]+', 'x' => '[0-9]+', 'y' => '[0-9]+']);
 };
 
 $registerAuthenticatedRoutes = function () {
     // Auth Routes (Authenticated)
-    Route::prefix('auth')->controller(AuthController::class)->group(function () {
-        Route::get('me', 'getUser');
-        Route::post('logout', 'logout');
-    });
+    Route::prefix('auth')->controller(AuthController::class)->group(
+        function () {
+            Route::get('me', 'getUser');
+            Route::post('logout', 'logout');
+        }
+    );
 
     // Role Check (Authenticated)
     Route::get('/role/check', [RoleController::class, 'checkRole']);
@@ -156,26 +153,26 @@ $registerAdminRoutes = function () {
     Route::delete('/ketentuan_khusus/multi-delete', [KetentuanKhususController::class, 'multiDestroy']);
     Route::delete('/ketentuan_khusus/{id}', [KetentuanKhususController::class, 'destroy']);
 
-    // PKKPRL CRUD
-    Route::post('/pkkprl', [PkkprlController::class, 'store']);
-    Route::post('/pkkprl/batch', [PkkprlController::class, 'multiDestroy']);
-    Route::match(['post', 'put'], '/pkkprl/{id}', [PkkprlController::class, 'update']);
-    Route::delete('/pkkprl/multi-delete', [PkkprlController::class, 'multiDestroy']);
-    Route::delete('/pkkprl/{id}', [PkkprlController::class, 'destroy']);
+    // Kawasan Strategi Provinsi CRUD
+    Route::post('/kawasan_strategi_provinsi', [KawasanStrategiProvinsiController::class, 'store']);
+    Route::post('/kawasan_strategi_provinsi/batch', [KawasanStrategiProvinsiController::class, 'multiDestroy']);
+    Route::match(['post', 'put'], '/kawasan_strategi_provinsi/{id}', [KawasanStrategiProvinsiController::class, 'update']);
+    Route::delete('/kawasan_strategi_provinsi/multi-delete', [KawasanStrategiProvinsiController::class, 'multiDestroy']);
+    Route::delete('/kawasan_strategi_provinsi/{id}', [KawasanStrategiProvinsiController::class, 'destroy']);
 
-    // Data Spasial CRUD (mirip PKKPRL)
+    // Data Spasial CRUD (mirip Kawasan Strategi Provinsi)
     Route::post('/data_spasial', [DataSpasialController::class, 'store']);
     Route::post('/data_spasial/batch', [DataSpasialController::class, 'multiDestroy']);
     Route::match(['post', 'put'], '/data_spasial/{id}', [DataSpasialController::class, 'update']);
     Route::delete('/data_spasial/multi-delete', [DataSpasialController::class, 'multiDestroy']);
     Route::delete('/data_spasial/{id}', [DataSpasialController::class, 'destroy']);
 
-    // Indikasi Program CRUD
-    Route::post('/indikasi_program', [IndikasiProgramController::class, 'store']);
-    Route::post('/indikasi_program/batch', [IndikasiProgramController::class, 'multiDestroy']);
-    Route::match(['post', 'put'], '/indikasi_program/{id}', [IndikasiProgramController::class, 'update']);
-    Route::delete('/indikasi_program/multi-delete', [IndikasiProgramController::class, 'multiDestroy']);
-    Route::delete('/indikasi_program/{id}', [IndikasiProgramController::class, 'destroy']);
+    // Dokumen CRUD
+    Route::post('/dokumen', [DokumenController::class, 'store']);
+    Route::post('/dokumen/batch', [DokumenController::class, 'multiDestroy']);
+    Route::match(['post', 'put'], '/dokumen/{id}', [DokumenController::class, 'update']);
+    Route::delete('/dokumen/multi-delete', [DokumenController::class, 'multiDestroy']);
+    Route::delete('/dokumen/{id}', [DokumenController::class, 'destroy']);
 
     // Berita CRUD
     Route::post('/berita', [BeritaController::class, 'store']);

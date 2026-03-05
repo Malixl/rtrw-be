@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Pkkprl extends Model
+class Dokumen extends Model
 {
-    protected $table = 'pkkprl';
+    protected $table = 'dokumen';
 
     public $incrementing = false;
 
@@ -15,14 +15,7 @@ class Pkkprl extends Model
     protected $fillable = [
         'klasifikasi_id',
         'nama',
-        'deskripsi',
-        'geojson_file',
-        'tipe_geometri',
-        'icon_titik',
-        'tipe_garis',
-        'warna',
-        'processing_status',
-        'processing_error',
+        'file_dokumen',
     ];
 
     public function klasifikasi()

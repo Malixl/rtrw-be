@@ -4,7 +4,6 @@ namespace App\Http\Services;
 
 use App\Http\Traits\FileUpload;
 use App\Http\Traits\GeoJsonOptimizer;
-use App\Http\Traits\QueueableGeoJson;
 use App\Models\StrukturRuang;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class StrukturRuangService
 {
-    use FileUpload, GeoJsonOptimizer, QueueableGeoJson;
+    use FileUpload, GeoJsonOptimizer;
 
     protected $path = 'struktur_ruang_file';
 
@@ -49,44 +48,36 @@ class StrukturRuangService
 
     public function store($request)
     {
-        DB::beginTransaction();
+        $validatedData = $request->validated();
 
+        $uploadedFiles = [];
         try {
-            $validatedData = $request->validated();
-
             if ($request->hasFile('geojson_file')) {
-                $file = $request->file('geojson_file');
-                
-                if ($this->shouldQueueFile($file)) {
-                    $validatedData['processing_status'] = 'pending';
-                    $validatedData['geojson_file'] = null;
-                } else {
-                    $validatedData['geojson_file'] = $this->optimizeAndStore($file, $this->path);
-                    $validatedData['processing_status'] = 'completed';
-                }
+                $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
+                $validatedData['processing_status'] = 'completed';
+                $uploadedFiles[] = $validatedData['geojson_file'];
             }
 
             if ($request->hasFile('icon_titik')) {
-                $icon_titik = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
-                $validatedData['icon_titik'] = $icon_titik;
+                $validatedData['icon_titik'] = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
+                $uploadedFiles[] = $validatedData['icon_titik'];
             }
 
+            DB::beginTransaction();
             $data = $this->model->create($validatedData);
-
-            if ($request->hasFile('geojson_file') && $this->shouldQueueFile($request->file('geojson_file'))) {
-                $this->storeAndOptimizeGeoJson(
-                    $request->file('geojson_file'),
-                    $this->path,
-                    StrukturRuang::class,
-                    $data->id
-                );
-            }
-
             DB::commit();
 
             return $data;
         } catch (Exception $e) {
-            DB::rollBack();
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            // Cleanup files if DB fails
+            foreach ($uploadedFiles as $file) {
+                if (Storage::disk('public')->exists($file)) {
+                    $this->unlinkFile($file);
+                }
+            }
             throw $e;
         }
     }
@@ -175,11 +166,11 @@ class StrukturRuangService
         $struktur_ruang = $this->model->findOrFail($id);
 
         // Cek apakah ada file
-        if (! empty($struktur_ruang->geojson_file)) {
+        if (!empty($struktur_ruang->geojson_file)) {
 
             $filename = $struktur_ruang->geojson_file;
 
-            if (! Storage::disk('public')->exists($filename)) {
+            if (!Storage::disk('public')->exists($filename)) {
                 return response()->json(['error' => 'File not found on disk'], 404);
             }
 

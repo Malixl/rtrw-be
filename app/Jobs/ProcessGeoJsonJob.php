@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class ProcessGeoJsonJob implements ShouldQueue
 {
@@ -80,24 +81,19 @@ class ProcessGeoJsonJob implements ShouldQueue
             }
 
             $content = Storage::disk('public')->get($this->tempFilePath);
-            $json = json_decode($content, true);
 
+            // Validate JSON
+            json_decode($content);
             if (json_last_error() !== JSON_ERROR_NONE) {
                 throw new \Exception("Invalid JSON file: " . json_last_error_msg());
             }
 
-            // Optimize geometry (round coordinates)
-            $this->optimizeGeometry($json);
-
-            // Encode back to JSON
-            $optimizedContent = json_encode($json);
-
             // Generate final filename
-            $filename = md5($optimizedContent . time()) . '.geojson';
+            $filename = Str::random(20) . '-' . time() . '.geojson';
             $finalPath = $this->targetFolder . '/' . $filename;
 
-            // Store optimized content
-            Storage::disk('public')->put($finalPath, $optimizedContent);
+            // Store original content as-is (no coordinate rounding)
+            Storage::disk('public')->put($finalPath, $content);
 
             // Delete temp file
             Storage::disk('public')->delete($this->tempFilePath);
@@ -114,7 +110,8 @@ class ProcessGeoJsonJob implements ShouldQueue
                 'file' => $finalPath
             ]);
 
-        } catch (\Exception $e) {
+        }
+        catch (\Exception $e) {
             Log::error("ProcessGeoJsonJob: Failed", [
                 'class' => $this->modelClass,
                 'id' => $this->modelId,
@@ -131,46 +128,6 @@ class ProcessGeoJsonJob implements ShouldQueue
 
             throw $e; // Re-throw to trigger retry
         }
-    }
-
-    /**
-     * Recursively find 'coordinates' keys and round their values.
-     */
-    private function optimizeGeometry(array &$data): void
-    {
-        foreach ($data as $key => &$value) {
-            if ($key === 'coordinates' && is_array($value)) {
-                $value = $this->roundCoordinates($value);
-            } elseif (is_array($value)) {
-                $this->optimizeGeometry($value);
-            }
-        }
-    }
-
-    /**
-     * Recursively round coordinates to 5 decimal places.
-     */
-    private function roundCoordinates(array $coords): array
-    {
-        if (empty($coords)) {
-            return $coords;
-        }
-
-        // Check if it is a coordinate point (array of numbers)
-        if (isset($coords[0]) && is_numeric($coords[0])) {
-            return array_map(function ($val) {
-                return is_numeric($val) ? round((float)$val, 5) : $val;
-            }, $coords);
-        }
-
-        // If it's an array of arrays, recurse
-        foreach ($coords as &$subCoords) {
-            if (is_array($subCoords)) {
-                $subCoords = $this->roundCoordinates($subCoords);
-            }
-        }
-
-        return $coords;
     }
 
     /**

@@ -24,7 +24,7 @@ trait QueueableGeoJson
      * @param string $modelId
      * @return array ['path' => string, 'queued' => bool]
      */
-    public function storeAndOptimizeGeoJson(UploadedFile $file, string $folderPath, string $modelClass, string $modelId): array
+    public function storeAndOptimizeGeoJson(UploadedFile $file, string $folderPath, string $modelClass, string|int $modelId): array
     {
         $fileSize = $file->getSize();
 

@@ -8,10 +8,6 @@ class StrukturRuang extends Model
 {
     protected $table = 'struktur_ruang';
 
-    public $incrementing = false;
-
-    protected $keyType = 'string';
-
     protected $fillable = [
         'klasifikasi_id',
         'nama',

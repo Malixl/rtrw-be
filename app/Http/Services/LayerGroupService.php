@@ -34,8 +34,8 @@ class LayerGroupService
                         'polaRuang',
                         'strukturRuang',
                         'ketentuanKhusus',
-                        'indikasiProgram',
-                        'pkkprl',
+                        'dokumen',
+                        'kawasanStrategiProvinsi',
                         'dataSpasial',
                         'batasAdministrasi',
                     ]);
@@ -61,31 +61,35 @@ class LayerGroupService
         if ($format === 'group') {
             $groups = $this->model->orderBy('urutan_tampil')
                 ->orderBy('created_at')
-                ->with(['klasifikasis' => function ($q) {
-                    $q->orderBy('nama')
-                        ->with([
-                            'polaRuang',
-                            'strukturRuang',
-                            'ketentuanKhusus',
-                            'indikasiProgram',
-                            'pkkprl',
-                            'dataSpasial',
-                            'batasAdministrasi',
-                        ]);
-                }])->get();
+                ->with([
+                    'klasifikasis' => function ($q) {
+                        $q->orderBy('nama')
+                            ->with([
+                                'polaRuang',
+                                'strukturRuang',
+                                'ketentuanKhusus',
+                                'dokumen',
+                                'kawasanStrategiProvinsi',
+                                'dataSpasial',
+                                'batasAdministrasi',
+                            ]);
+                    }
+                ])->get();
 
             if ($onlyWithChildren) {
                 // filter klasifikasis that have at least one geo child
                 $groups = $groups->map(function ($g) {
-                    $filtered = $g->klasifikasis->filter(function ($k) {
-                        return ($k->polaRuang && $k->polaRuang->isNotEmpty()) ||
-                            ($k->strukturRuang && $k->strukturRuang->isNotEmpty()) ||
-                            ($k->ketentuanKhusus && $k->ketentuanKhusus->isNotEmpty()) ||
-                            ($k->indikasiProgram && $k->indikasiProgram->isNotEmpty()) ||
-                            ($k->pkkprl && $k->pkkprl->isNotEmpty()) ||
-                            ($k->dataSpasial && $k->dataSpasial->isNotEmpty()) ||
-                            ($k->batasAdministrasi && $k->batasAdministrasi->isNotEmpty());
-                    })->values();
+                    $filtered = $g->klasifikasis->filter(
+                        function ($k) {
+                            return ($k->polaRuang && $k->polaRuang->isNotEmpty()) ||
+                                ($k->strukturRuang && $k->strukturRuang->isNotEmpty()) ||
+                                ($k->ketentuanKhusus && $k->ketentuanKhusus->isNotEmpty()) ||
+                                ($k->dokumen && $k->dokumen->isNotEmpty()) ||
+                                ($k->kawasanStrategiProvinsi && $k->kawasanStrategiProvinsi->isNotEmpty()) ||
+                                ($k->dataSpasial && $k->dataSpasial->isNotEmpty()) ||
+                                ($k->batasAdministrasi && $k->batasAdministrasi->isNotEmpty());
+                        }
+                    )->values();
 
                     $g->setRelation('klasifikasis', $filtered);
 
@@ -113,12 +117,12 @@ class LayerGroupService
                 ->with(['ketentuanKhusus', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_indikasi_program = \App\Models\Klasifikasi::where('tipe', 'indikasi_program')
-                ->with(['indikasiProgram', 'layerGroup'])
+            $klasifikasi_dokumen = \App\Models\Klasifikasi::where('tipe', 'dokumen')
+                ->with(['dokumen', 'layerGroup'])
                 ->get();
 
-            $klasifikasi_pkkprl = \App\Models\Klasifikasi::where('tipe', 'pkkprl')
-                ->with(['pkkprl', 'layerGroup'])
+            $klasifikasi_kawasan_strategi_provinsi = \App\Models\Klasifikasi::where('tipe', 'kawasan_strategi_provinsi')
+                ->with(['kawasanStrategiProvinsi', 'layerGroup'])
                 ->get();
 
             $klasifikasi_data_spasial = \App\Models\Klasifikasi::where('tipe', 'data_spasial')
@@ -133,14 +137,14 @@ class LayerGroupService
                 'klasifikasi_pola_ruang' => $klasifikasi_pola_ruang,
                 'klasifikasi_struktur_ruang' => $klasifikasi_struktur_ruang,
                 'klasifikasi_ketentuan_khusus' => $klasifikasi_ketentuan_khusus,
-                'klasifikasi_indikasi_program' => $klasifikasi_indikasi_program,
-                'klasifikasi_pkkprl' => $klasifikasi_pkkprl,
+                'klasifikasi_dokumen' => $klasifikasi_dokumen,
+                'klasifikasi_kawasan_strategi_provinsi' => $klasifikasi_kawasan_strategi_provinsi,
                 'klasifikasi_data_spasial' => $klasifikasi_data_spasial,
                 'klasifikasi_batas_administrasi' => $klasifikasi_batas_administrasi,
             ];
         }
 
-        throw new \Exception('Invalid format parameter');
+        throw new Exception('Invalid format parameter');
     }
 
     /**
@@ -171,8 +175,8 @@ class LayerGroupService
                     'klasifikasi_pola_ruang' => 'pola_ruang',
                     'klasifikasi_struktur_ruang' => 'struktur_ruang',
                     'klasifikasi_ketentuan_khusus' => 'ketentuan_khusus',
-                    'klasifikasi_pkkprl' => 'pkkprl',
-                    'klasifikasi_indikasi_program' => 'indikasi_program',
+                    'klasifikasi_kawasan_strategi_provinsi' => 'kawasan_strategi_provinsi',
+                    'klasifikasi_dokumen' => 'dokumen',
                     'klasifikasi_batas_administrasi' => 'batas_administrasi',
                 ];
 
@@ -181,7 +185,7 @@ class LayerGroupService
                 foreach ($mapping as $key => $tipe) {
                     $items = $klasMap[$key] ?? [];
 
-                    if (! is_array($items)) {
+                    if (!is_array($items)) {
                         continue;
                     }
 

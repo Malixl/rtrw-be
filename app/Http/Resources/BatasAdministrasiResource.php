@@ -32,6 +32,8 @@ class BatasAdministrasiResource extends JsonResource
             'tipe_geometri' => $this->tipe_geometri,
             'tipe_garis' => $this->tipe_garis,
             'geojson_file' => $this->geojson_file,
+            'render_type' => $this->render_type ?? 'geojson',
+            'tile_name' => $this->tile_path ? pathinfo($this->tile_path, PATHINFO_FILENAME) : null,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

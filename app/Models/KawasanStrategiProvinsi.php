@@ -4,9 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class KetentuanKhusus extends Model
+class KawasanStrategiProvinsi extends Model
 {
-    protected $table = 'ketentuan_khusus';
+    protected $table = 'kawasan_strategi_provinsi';
 
     protected $fillable = [
         'klasifikasi_id',

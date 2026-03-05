@@ -4,7 +4,6 @@ namespace App\Http\Services;
 
 use App\Http\Traits\FileUpload;
 use App\Http\Traits\GeoJsonOptimizer;
-use App\Http\Traits\QueueableGeoJson;
 use App\Models\DataSpasial;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class DataSpasialService
 {
-    use FileUpload, GeoJsonOptimizer, QueueableGeoJson;
+    use FileUpload, GeoJsonOptimizer;
 
     protected $path = 'data_spasial_service';
 
@@ -47,48 +46,36 @@ class DataSpasialService
 
     public function store($request)
     {
-        DB::beginTransaction();
+        $validatedData = $request->validated();
 
+        $uploadedFiles = [];
         try {
-            $validatedData = $request->validated();
-
-            // Create the model first to get ID for queue job
             if ($request->hasFile('geojson_file')) {
-                $file = $request->file('geojson_file');
-                
-                if ($this->shouldQueueFile($file)) {
-                    // Large file: will be processed via queue
-                    $validatedData['processing_status'] = 'pending';
-                    $validatedData['geojson_file'] = null; // Will be set by job
-                } else {
-                    // Small file: process synchronously
-                    $validatedData['geojson_file'] = $this->optimizeAndStore($file, $this->path);
-                    $validatedData['processing_status'] = 'completed';
-                }
+                $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
+                $validatedData['processing_status'] = 'completed';
+                $uploadedFiles[] = $validatedData['geojson_file'];
             }
 
             if ($request->hasFile('icon_titik')) {
-                $icon_titik = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
-                $validatedData['icon_titik'] = $icon_titik;
+                $validatedData['icon_titik'] = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
+                $uploadedFiles[] = $validatedData['icon_titik'];
             }
 
+            DB::beginTransaction();
             $data = $this->model->create($validatedData);
-
-            // If large file, dispatch queue job after model is created
-            if ($request->hasFile('geojson_file') && $this->shouldQueueFile($request->file('geojson_file'))) {
-                $result = $this->storeAndOptimizeGeoJson(
-                    $request->file('geojson_file'),
-                    $this->path,
-                    DataSpasial::class,
-                    $data->id
-                );
-            }
-
             DB::commit();
 
             return $data;
         } catch (Exception $e) {
-            DB::rollBack();
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            // Cleanup files if DB fails
+            foreach ($uploadedFiles as $file) {
+                if (Storage::disk('public')->exists($file)) {
+                    $this->unlinkFile($file);
+                }
+            }
             throw $e;
         }
     }
@@ -100,37 +87,51 @@ class DataSpasialService
 
     public function update($request, $id)
     {
-        DB::beginTransaction();
+        $validatedData = $request->validated();
+        $data = $this->model->findOrFail($id);
+
+        $uploadedFiles = [];
+        $filesToDelete = [];
+
         try {
-            $validatedData = $request->validated();
-
-            $data = $this->model->findOrFail($id);
-
             if ($request->hasFile('geojson_file')) {
-                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
-
+                $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
+                $uploadedFiles[] = $validatedData['geojson_file'];
                 if ($data->geojson_file) {
-                    $this->unlinkFile($data->geojson_file);
+                    $filesToDelete[] = $data->geojson_file;
                 }
-
-                $validatedData['geojson_file'] = $filePath;
             }
 
             if ($request->hasFile('icon_titik')) {
-                $icon_titik = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
-                $validatedData['icon_titik'] = $icon_titik;
+                $validatedData['icon_titik'] = $this->uploadPhotoAndConvertToWebp($request->file('icon_titik'), $this->path);
+                $uploadedFiles[] = $validatedData['icon_titik'];
                 if ($data->icon_titik != 'default.png') {
-                    $this->unlinkPhoto($data->icon_titik);
+                    $filesToDelete[] = $data->icon_titik;
                 }
             }
 
+            DB::beginTransaction();
             $data->update($validatedData);
-
             DB::commit();
+
+            // Only delete old files if DB commit succeeds
+            foreach ($filesToDelete as $file) {
+                if (Storage::disk('public')->exists($file)) {
+                    $this->unlinkFile($file);
+                }
+            }
 
             return $data; // tetap object model
         } catch (Exception $e) {
-            DB::rollBack();
+            if (DB::transactionLevel() > 0) {
+                DB::rollBack();
+            }
+            // Cleanup newly uploaded files if DB fails
+            foreach ($uploadedFiles as $file) {
+                if (Storage::disk('public')->exists($file)) {
+                    $this->unlinkFile($file);
+                }
+            }
             throw $e;
         }
     }
@@ -175,11 +176,11 @@ class DataSpasialService
         $model = $this->model->findOrFail($id);
 
         // Cek apakah ada file
-        if (! empty($model->geojson_file)) {
+        if (!empty($model->geojson_file)) {
 
             $filename = $model->geojson_file;
 
-            if (! Storage::disk('public')->exists($filename)) {
+            if (!Storage::disk('public')->exists($filename)) {
                 return response()->json(['error' => 'File not found on disk'], 404);
             }
 

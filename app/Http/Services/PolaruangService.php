@@ -4,7 +4,6 @@ namespace App\Http\Services;
 
 use App\Http\Traits\FileUpload;
 use App\Http\Traits\GeoJsonOptimizer;
-use App\Http\Traits\QueueableGeoJson;
 use App\Models\Polaruang;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -12,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 
 class PolaruangService
 {
-    use FileUpload, GeoJsonOptimizer, QueueableGeoJson;
+    use FileUpload, GeoJsonOptimizer;
 
     protected $path = 'polaruang_file';
 
@@ -47,39 +46,25 @@ class PolaruangService
 
     public function store($request)
     {
+        $validatedData = $request->validated();
+
+        if ($request->hasFile('geojson_file')) {
+            // Upload file FIRST, outside the transaction to prevent DB timeout
+            $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
+            $validatedData['processing_status'] = 'completed';
+        }
+
         DB::beginTransaction();
-
         try {
-            $validatedData = $request->validated();
-
-            if ($request->hasFile('geojson_file')) {
-                $file = $request->file('geojson_file');
-                
-                if ($this->shouldQueueFile($file)) {
-                    $validatedData['processing_status'] = 'pending';
-                    $validatedData['geojson_file'] = null;
-                } else {
-                    $validatedData['geojson_file'] = $this->optimizeAndStore($file, $this->path);
-                    $validatedData['processing_status'] = 'completed';
-                }
-            }
-
             $data = $this->model->create($validatedData);
-
-            if ($request->hasFile('geojson_file') && $this->shouldQueueFile($request->file('geojson_file'))) {
-                $this->storeAndOptimizeGeoJson(
-                    $request->file('geojson_file'),
-                    $this->path,
-                    Polaruang::class,
-                    $data->id
-                );
-            }
-
             DB::commit();
-
             return $data;
         } catch (Exception $e) {
             DB::rollBack();
+            // Optional: cleanup uploaded file here if DB fails
+            if (isset($validatedData['geojson_file']) && Storage::disk('public')->exists($validatedData['geojson_file'])) {
+                $this->unlinkFile($validatedData['geojson_file']);
+            }
             throw $e;
         }
     }
@@ -91,29 +76,34 @@ class PolaruangService
 
     public function update($request, $id)
     {
+        $validatedData = $request->validated();
+        $data = $this->model->findOrFail($id);
+
+        $oldFile = null;
+        if ($request->hasFile('geojson_file')) {
+            // Upload new file FIRST, outside the transaction
+            $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
+            $oldFile = $data->geojson_file;
+            $validatedData['geojson_file'] = $filePath;
+        }
+
         DB::beginTransaction();
         try {
-            $validatedData = $request->validated();
-
-            $data = $this->model->findOrFail($id);
-
-            if ($request->hasFile('geojson_file')) {
-                $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
-
-                if ($data->geojson_file) {
-                    $this->unlinkFile($data->geojson_file);
-                }
-
-                $validatedData['geojson_file'] = $filePath;
-            }
-
             $data->update($validatedData);
-
             DB::commit();
+
+            // Delete old file only after DB commits successfully
+            if ($oldFile) {
+                $this->unlinkFile($oldFile);
+            }
 
             return $data; // tetap object model
         } catch (Exception $e) {
             DB::rollBack();
+            // Cleanup newly uploaded file if DB update fails
+            if (isset($validatedData['geojson_file']) && Storage::disk('public')->exists($validatedData['geojson_file'])) {
+                $this->unlinkFile($validatedData['geojson_file']);
+            }
             throw $e;
         }
     }
@@ -158,11 +148,11 @@ class PolaruangService
         $polaruang = $this->model->findOrFail($id);
 
         // Cek apakah ada file
-        if (! empty($polaruang->geojson_file)) {
+        if (!empty($polaruang->geojson_file)) {
 
             $filename = $polaruang->geojson_file;
 
-            if (! Storage::disk('public')->exists($filename)) {
+            if (!Storage::disk('public')->exists($filename)) {
                 return response()->json(['error' => 'File not found on disk'], 404);
             }
 
