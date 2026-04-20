@@ -52,7 +52,11 @@ class StrukturRuangService
 
         $uploadedFiles = [];
         try {
-            if ($request->hasFile('geojson_file')) {
+            if ($request->has('geojson_file_path') && $request->input('geojson_file_path')) {
+                $validatedData['geojson_file'] = $request->input('geojson_file_path');
+                $validatedData['processing_status'] = 'completed';
+                unset($validatedData['geojson_file_path']);
+            } elseif ($request->hasFile('geojson_file')) {
                 $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
                 $validatedData['processing_status'] = 'completed';
                 $uploadedFiles[] = $validatedData['geojson_file'];
@@ -97,7 +101,13 @@ class StrukturRuangService
 
             $data = $this->model->findOrFail($id);
 
-            if ($request->hasFile('geojson_file')) {
+            if ($request->has('geojson_file_path') && $request->input('geojson_file_path')) {
+                if ($data->geojson_file) {
+                    $this->unlinkFile($data->geojson_file);
+                }
+                $validatedData['geojson_file'] = $request->input('geojson_file_path');
+                unset($validatedData['geojson_file_path']);
+            } elseif ($request->hasFile('geojson_file')) {
                 $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
 
                 if ($data->geojson_file) {

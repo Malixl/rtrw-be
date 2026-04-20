@@ -26,10 +26,13 @@ class PolaruangRequest extends FormRequest
             'deskripsi' => 'nullable|string',
             'klasifikasi_id' => 'required',
             'warna' => 'required|string',
+            'geojson_file_path' => 'nullable|string',
         ];
 
         // Validasi file hanya jika ada file yang diupload atau ini adalah request create
-        if ($this->hasFile('geojson_file')) {
+        if ($this->has('geojson_file_path') && $this->input('geojson_file_path')) {
+            $rules['geojson_file'] = 'nullable|file|extensions:geojson';
+        } elseif ($this->hasFile('geojson_file')) {
             $rules['geojson_file'] = 'required|file|extensions:geojson';
         } elseif (! $this->route('id')) {
             // Jika create (tidak ada ID), file wajib

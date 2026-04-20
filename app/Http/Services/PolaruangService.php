@@ -48,7 +48,11 @@ class PolaruangService
     {
         $validatedData = $request->validated();
 
-        if ($request->hasFile('geojson_file')) {
+        if ($request->has('geojson_file_path') && $request->input('geojson_file_path')) {
+            $validatedData['geojson_file'] = $request->input('geojson_file_path');
+            $validatedData['processing_status'] = 'completed';
+            unset($validatedData['geojson_file_path']);
+        } elseif ($request->hasFile('geojson_file')) {
             // Upload file FIRST, outside the transaction to prevent DB timeout
             $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
             $validatedData['processing_status'] = 'completed';
@@ -80,7 +84,11 @@ class PolaruangService
         $data = $this->model->findOrFail($id);
 
         $oldFile = null;
-        if ($request->hasFile('geojson_file')) {
+        if ($request->has('geojson_file_path') && $request->input('geojson_file_path')) {
+            $oldFile = $data->geojson_file;
+            $validatedData['geojson_file'] = $request->input('geojson_file_path');
+            unset($validatedData['geojson_file_path']);
+        } elseif ($request->hasFile('geojson_file')) {
             // Upload new file FIRST, outside the transaction
             $filePath = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
             $oldFile = $data->geojson_file;

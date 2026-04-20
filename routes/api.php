@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\RoleController;
+use App\Http\Controllers\ChunkedUploadController;
 use App\Http\Controllers\BatasAdministrasi\BatasAdministrasiController;
 use App\Http\Controllers\Berita\BeritaController;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -107,6 +108,13 @@ $registerAuthenticatedRoutes = function () {
 };
 
 $registerAdminRoutes = function () {
+    // ====================================
+    // Chunked Upload (Resumable) — untuk file GeoJSON besar
+    // ====================================
+    Route::post('/upload-chunk', [ChunkedUploadController::class, 'uploadChunk']);
+    Route::get('/upload-status', [ChunkedUploadController::class, 'checkStatus']);
+    Route::post('/merge-chunks', [ChunkedUploadController::class, 'mergeChunks']);
+
     // Role Capabilities (Admin Only)
     Route::get('/role/all-capabilities', [RoleController::class, 'allCapabilities']);
 

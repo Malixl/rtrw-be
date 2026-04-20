@@ -20,12 +20,13 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install pdo_mysql bcmath zip gd \
     && rm -rf /var/lib/apt/lists/*
 
-# Konfigurasi PHP untuk upload file besar (GeoJSON ~100MB)
-RUN echo "upload_max_filesize=200M" >> /usr/local/etc/php/conf.d/uploads.ini \
-    && echo "post_max_size=200M" >> /usr/local/etc/php/conf.d/uploads.ini \
-    && echo "memory_limit=512M" >> /usr/local/etc/php/conf.d/uploads.ini \
-    && echo "max_execution_time=300" >> /usr/local/etc/php/conf.d/uploads.ini \
-    && echo "max_input_time=300" >> /usr/local/etc/php/conf.d/uploads.ini
+# Konfigurasi PHP untuk chunked upload (setiap chunk max 5MB)
+# Tidak perlu limit besar karena file dipotong-potong
+RUN echo "upload_max_filesize=10M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "post_max_size=12M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "memory_limit=128M" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "max_execution_time=120" >> /usr/local/etc/php/conf.d/uploads.ini \
+    && echo "max_input_time=60" >> /usr/local/etc/php/conf.d/uploads.ini
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 

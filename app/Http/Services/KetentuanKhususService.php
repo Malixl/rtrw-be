@@ -50,7 +50,11 @@ class KetentuanKhususService
 
         $uploadedFiles = [];
         try {
-            if ($request->hasFile('geojson_file')) {
+            if ($request->has('geojson_file_path') && $request->input('geojson_file_path')) {
+                $validatedData['geojson_file'] = $request->input('geojson_file_path');
+                $validatedData['processing_status'] = 'completed';
+                unset($validatedData['geojson_file_path']);
+            } elseif ($request->hasFile('geojson_file')) {
                 $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
                 $validatedData['processing_status'] = 'completed';
                 $uploadedFiles[] = $validatedData['geojson_file'];
@@ -94,7 +98,13 @@ class KetentuanKhususService
         $filesToDelete = [];
 
         try {
-            if ($request->hasFile('geojson_file')) {
+            if ($request->has('geojson_file_path') && $request->input('geojson_file_path')) {
+                $validatedData['geojson_file'] = $request->input('geojson_file_path');
+                unset($validatedData['geojson_file_path']);
+                if ($data->geojson_file) {
+                    $filesToDelete[] = $data->geojson_file;
+                }
+            } elseif ($request->hasFile('geojson_file')) {
                 $validatedData['geojson_file'] = $this->optimizeAndStore($request->file('geojson_file'), $this->path);
                 $uploadedFiles[] = $validatedData['geojson_file'];
                 if ($data->geojson_file) {

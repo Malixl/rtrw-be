@@ -21,9 +21,15 @@ class DataSpasialRequest extends FormRequest
             'icon_titik' => 'nullable|image|mimes:png,jpg,jpeg,webp',
             'tipe_garis' => 'nullable|string',
             'warna' => 'nullable|string',
+            // Path dari chunked upload merge result (alternatif dari geojson_file)
+            'geojson_file_path' => 'nullable|string',
         ];
 
-        if ($this->hasFile('geojson_file')) {
+        // Jika geojson_file_path sudah ada (dari chunked upload),
+        // maka geojson_file tidak wajib lagi
+        if ($this->has('geojson_file_path') && $this->input('geojson_file_path')) {
+            $rules['geojson_file'] = 'nullable|file|extensions:geojson';
+        } elseif ($this->hasFile('geojson_file')) {
             $rules['geojson_file'] = 'required|file|extensions:geojson';
         } elseif (! $this->route('id')) {
             $rules['geojson_file'] = 'required|file|extensions:geojson';

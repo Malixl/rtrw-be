@@ -23,10 +23,16 @@ class KetentuanKhususRequest extends FormRequest
     {
         $docRule = $this->route('id') ? 'nullable' : 'required';
 
+        // Jika request membawa path hasil merge, file tidak wajib
+        if ($this->has('geojson_file_path') && $this->input('geojson_file_path')) {
+            $docRule = 'nullable';
+        }
+
         return [
             'nama' => 'required|string',
             'deskripsi' => 'string',
             'geojson_file' => "$docRule|file|extensions:geojson",
+            'geojson_file_path' => 'nullable|string',
             'klasifikasi_id' => 'required',
             'tipe_geometri' => 'required|in:polyline,point,polygon',
             'icon_titik' => 'nullable|image|mimes:png,jpg,jpeg,webp',
