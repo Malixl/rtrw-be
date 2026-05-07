@@ -31,7 +31,7 @@ class KetentuanKhususController extends Controller
             return $this->successResponseWithDataIndex(
                 $data,
                 KetentuanKhususResources::collection($data),
-                'Data polruang berhasil diambil',
+                'Data ketentuan khusus berhasil diambil',
                 Response::HTTP_OK
             );
         } catch (Exception $e) {
@@ -110,7 +110,7 @@ class KetentuanKhususController extends Controller
             $this->ketentuanKhususService->destroy($id);
 
             return $this->successResponse(
-                'Berhasil menghapus data polaruanbg',
+                'Berhasil menghapus data ketentuan khusus',
                 Response::HTTP_OK
             );
         } catch (Exception $e) {

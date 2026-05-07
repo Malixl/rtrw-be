@@ -31,7 +31,7 @@ class StrukturRuangController extends Controller
             return $this->successResponseWithDataIndex(
                 $data,
                 StrukturRuangResources::collection($data),
-                'Data polruang berhasil diambil',
+                'Data struktur ruang berhasil diambil',
                 Response::HTTP_OK
             );
         } catch (Exception $e) {
@@ -48,7 +48,7 @@ class StrukturRuangController extends Controller
             $this->strukturRuangService->store($request);
 
             return $this->successResponse(
-                'Berhasil menambah data polrauang',
+                'Berhasil menambah data struktur ruang',
                 Response::HTTP_CREATED
             );
         } catch (Exception $e) {
@@ -71,7 +71,7 @@ class StrukturRuangController extends Controller
 
             return $this->successResponseWithData(
                 StrukturRuangResources::make($data),
-                'Data polaruang berhasil diambil',
+                'Data struktur ruang berhasil diambil',
                 Response::HTTP_OK
             );
         } catch (Exception $e) {
@@ -88,7 +88,7 @@ class StrukturRuangController extends Controller
             $this->strukturRuangService->update($request, $id);
 
             return $this->successResponse(
-                'Berhasil mengubah data polaruang',
+                'Berhasil mengubah data struktur ruang',
                 Response::HTTP_OK
             );
         } catch (Exception $e) {
@@ -110,7 +110,7 @@ class StrukturRuangController extends Controller
             $this->strukturRuangService->destroy($id);
 
             return $this->successResponse(
-                'Berhasil menghapus data polaruanbg',
+                'Berhasil menghapus data struktur ruang',
                 Response::HTTP_OK
             );
         } catch (Exception $e) {

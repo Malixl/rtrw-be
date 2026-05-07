@@ -31,7 +31,7 @@ class PolaruangController extends Controller
             return $this->successResponseWithDataIndex(
                 $data,
                 PolaruangResources::collection($data),
-                'Data polruang berhasil diambil',
+                'Data pola ruang berhasil diambil',
                 Response::HTTP_OK
             );
         } catch (Exception $e) {
@@ -48,7 +48,7 @@ class PolaruangController extends Controller
             $this->polaruangService->store($request);
 
             return $this->successResponse(
-                'Berhasil menambah data polrauang',
+                'Berhasil menambah data pola ruang',
                 Response::HTTP_CREATED
             );
         } catch (Exception $e) {
@@ -110,7 +110,7 @@ class PolaruangController extends Controller
             $this->polaruangService->destroy($id);
 
             return $this->successResponse(
-                'Berhasil menghapus data polaruanbg',
+                'Berhasil menghapus data pola ruang',
                 Response::HTTP_OK
             );
         } catch (Exception $e) {
